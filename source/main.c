@@ -6,6 +6,7 @@ struct node {
     struct node *next;
 };
 
+
 struct node *node_create(void *data, struct node *next) {
     struct node *node = malloc(sizeof(struct node));
     node->data = data;
@@ -23,6 +24,16 @@ void node_destroy(struct node *node) {
 void node_attach(struct node *from, struct node *to) {
     from->next = to;
     return;
+}
+
+struct node *node_index(struct node *head_node, int i) {
+    struct node *node_walker = head_node;
+    int counter = 0;
+    while(node_walker && counter <= i && counter >= 0) {
+        node_walker = node_walker->next;
+        counter++;
+    }
+    return node_walker;
 }
 
 int main() {
@@ -43,7 +54,8 @@ int main() {
         printf("%f\n", *(float *)node_walker->data);
         node_walker = node_walker->next;
     }
-
+    struct node *index = node_index(head_node, 0);
+    printf("%f\n", *(float *)index->data);
     node_destroy(node_01);
     node_destroy(node_00);
     node_destroy(head_node);
