@@ -1,3 +1,3 @@
 @echo off
-bbuild.bat
-brun.bat
+bbuild
+build\main.exe
