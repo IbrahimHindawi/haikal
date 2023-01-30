@@ -1,0 +1,27 @@
+pointer semantics:
+declare:        type *t;
+                type **t;
+                type ***t;
+                ...
+
+cast:           (type *)t;
+
+assign:         t = x;
+                t = &x;
+                t = (type *)x;
+
+
+nullify:        t = NULL;
+
+dereference:    t[0]; 
+                *t;
+                **t;
+                ***t;
+                ...
+
+reference:      &t;
+
+offset:         &t[x]; 
+                *(t+x);
+
+transform:      (size_t)(((type *)0)->x)

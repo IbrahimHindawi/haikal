@@ -64,13 +64,3 @@ int list_rem_next(List *list, ListElmt *element, void **data);
 
 #endif
 
-
-
-
-
-
-
-
-
-
-
