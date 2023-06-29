@@ -37,19 +37,37 @@ int main() {
     list_destroy(linked_list);
     */
 
-    /*
+    // char array
     darray da = {0};
-    darray_init(&da, sizeof(float));
-    float x = 1.0f;
-    float y = 3.141592653589f;
-    float z = 0.0f;
-    darray_insert(&da, &x, sizeof(float));
-    darray_insert(&da, &y, sizeof(float));
-    darray_insert(&da, &z, sizeof(float));
-    printf("%zu\n", da.capacity);
-    printf("%zu\n", da.occupied);
-    */
+    darray_create(&da, sizeof(char), 8);
 
+    char *cursor = (char *)da.data;
+    cursor[0] = 'a';
+    cursor[1] = 'b';
+    cursor[2] = 'c';
+    cursor[3] = '\0';
+    printf("%s\n", (char *)da.data);
+
+    darray_destroy(&da);
+
+    // float array
+    darray daf = {0};
+    darray_create(&daf, sizeof(float), 8);
+
+    float *fcursor = (float *)daf.data;
+    fcursor[0] = 3.141592f;
+    fcursor[1] = 1.0f;
+    fcursor[2] = 2.0f * 3.141592;
+    fcursor[3] = 1.0f;
+
+    for (int n  = 0; n < daf.count; n++) {
+        printf("%f ", fcursor[n]);
+    }
+
+    darray_destroy(&daf);
+
+
+    /*
     printf("string_t program.\n"); 
 
     buff[0] = 'a';
@@ -58,12 +76,14 @@ int main() {
     buff[3] = '\0';
     printf("%s\n", buff);
 
-    /* string memory allocation */
+    // string memory allocation dynamic
     string_t *s = NULL;
     s = malloc(sizeof(string_t));
     if (!s) {
         printf("Memory Allocation Failure"); 
     }
+    // string memory allocation static
+    // s = &buff;
 
     string_init(s, N);
 
@@ -71,14 +91,18 @@ int main() {
     s->buffer[1] = 'b';
     s->buffer[2] = 'c';
     s->buffer[3] = '\0';
-    string_insert(s, "deadbeef");
+    string_insert(s, "I like to program things in C.");
+    printf("%s\n", s->buffer);
+
+    string_insert(s, "I like C.");
     printf("%s\n", s->buffer);
 
     string_deinit(s);
 
-    /* string memory de-allocation */
+    // string memory de-allocation
     free(s);
     s = NULL;
+    */
 
     return 0;
 }
