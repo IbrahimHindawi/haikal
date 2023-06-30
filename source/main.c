@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 #include "list.h"
-#include "darray.h"
+#include "array.h"
 #include "xstring.h"
 
 /*
@@ -38,8 +38,8 @@ int main() {
     */
 
     // char array
-    darray da = {0};
-    darray_create(&da, sizeof(char), 8);
+    array da = {0};
+    array_create(&da, sizeof(char), 8);
 
     char *cursor = (char *)da.data;
     cursor[0] = 'a';
@@ -48,11 +48,11 @@ int main() {
     cursor[3] = '\0';
     printf("%s\n", (char *)da.data);
 
-    darray_destroy(&da);
+    array_destroy(&da);
 
     // float array
-    darray daf = {0};
-    darray_create(&daf, sizeof(float), 8);
+    array daf = {0};
+    array_create(&daf, sizeof(float), 8);
 
     float *fcursor = (float *)daf.data;
     fcursor[0] = 3.141592f;
@@ -60,11 +60,18 @@ int main() {
     fcursor[2] = 2.0f * 3.141592;
     fcursor[3] = 1.0f;
 
-    for (int n  = 0; n < daf.count; n++) {
+    for (int n  = 0; n < daf.length; n++) {
         printf("%f ", fcursor[n]);
     }
+    printf("\n");
 
-    darray_destroy(&daf);
+    array_resize(&daf, 16);
+    for (int n  = 0; n < daf.length; n++) {
+        printf("%f ", fcursor[n]);
+    }
+    printf("\n");
+
+    array_destroy(&daf);
 
 
     /*
