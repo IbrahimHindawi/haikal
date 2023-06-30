@@ -38,41 +38,57 @@ int main() {
     */
 
     // char array
-    array da = {0};
-    array_create(&da, sizeof(char), 8);
+    array array_of_bytes = {0};
+    array_create(&array_of_bytes, sizeof(char), 8);
+    char *bcursor = (char *)array_of_bytes.data;
 
-    char *cursor = (char *)da.data;
-    cursor[0] = 'a';
-    cursor[1] = 'b';
-    cursor[2] = 'c';
-    cursor[3] = '\0';
-    printf("%s\n", (char *)da.data);
+    bcursor[0] = 'a';
+    bcursor[1] = 'b';
+    bcursor[2] = 'c';
+    bcursor[3] = '\0';
+    printf("%s\n", (char *)array_of_bytes.data);
 
-    array_destroy(&da);
+    array_destroy(&array_of_bytes);
 
     // float array
-    array daf = {0};
-    array_create(&daf, sizeof(float), 8);
+    array array_of_floats = {0};
+    array_create(&array_of_floats, sizeof(float), 4);
+    float *fhandle = (float *)array_of_floats.data;
 
-    float *fcursor = (float *)daf.data;
-    fcursor[0] = 3.141592f;
-    fcursor[1] = 1.0f;
-    fcursor[2] = 2.0f * 3.141592;
-    fcursor[3] = 1.0f;
+    fhandle[0] = 3.141592f;
+    fhandle[1] = 1.0f;
+    fhandle[2] = 2.0f * 3.141592;
+    fhandle[3] = 13.6666f;
 
-    for (int n  = 0; n < daf.length; n++) {
-        printf("%f ", fcursor[n]);
+    for (int n  = 0; n < array_of_floats.length; n++) {
+        printf("%f ", fhandle[n]);
     }
     printf("\n");
 
-    array_resize(&daf, 16);
-    for (int n  = 0; n < daf.length; n++) {
-        printf("%f ", fcursor[n]);
+    array_resize(&array_of_floats, 6);
+    fhandle = (float *)array_of_floats.data;
+
+    for (int n  = 0; n < array_of_floats.length; n++) {
+        printf("%f ", fhandle[n]);
     }
     printf("\n");
 
-    array_destroy(&daf);
+    float *x = &(float){1.1911f};
 
+    array_insert(&array_of_floats, x);
+    array_insert(&array_of_floats, x);
+    array_insert(&array_of_floats, x);
+    array_insert(&array_of_floats, x);
+    fhandle = (float *)array_of_floats.data;
+
+    for (int n  = 0; n < array_of_floats.length; n++) {
+        printf("%f ", fhandle[n]);
+    }
+    printf("\n");
+
+    printf("Array Details: { data: %p, unit: %zu, length: %zu, border: %zu }\n", array_of_floats.data, array_of_floats.unit_size, array_of_floats.length, array_of_floats.border);
+
+    array_destroy(&array_of_floats);
 
     /*
     printf("string_t program.\n"); 
