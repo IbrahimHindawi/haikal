@@ -5,7 +5,7 @@
 
 #include "array.h"
 
-void array_create(array *arr, size_t unit_size, size_t length) {
+void *array_create(array *arr, size_t unit_size, size_t length) {
     arr->unit_size = unit_size;
     arr->length = length;
     arr->data = malloc(unit_size * length);
@@ -17,10 +17,11 @@ void array_create(array *arr, size_t unit_size, size_t length) {
     memset(arr->data, 0, unit_size * length);
     // #endif
     arr->border = length;
+    return arr->data;
 }
 
 // Resize border: Should be a private function.
-void array_resize(array *arr, size_t new_border) {
+void *array_resize(array *arr, size_t new_border) {
     size_t old_border = arr->border;
     arr->border = new_border;
     arr->data = realloc(arr->data, arr->unit_size * arr->border);
@@ -36,9 +37,10 @@ void array_resize(array *arr, size_t new_border) {
     }
     // #endif
     arr->border = new_border;
+    return arr->data;
 }
 
-void array_insert(array *arr, void *elem) {
+void *array_insert(array *arr, void *elem) {
     // If memory border has been reached -> must reallocate.
     if (arr->length == arr->border) {
         arr->border *= 2;
@@ -47,6 +49,7 @@ void array_insert(array *arr, void *elem) {
     arr->length += 1;
     char *cursor = arr->data;
     memcpy(cursor + ((arr->length - 1) * arr->unit_size), elem, arr->unit_size);
+    return arr->data;
     /*
     char *p = (char *)arr->data;
     if (arr->occupied < arr->border) {
@@ -67,11 +70,12 @@ void array_insert(array *arr, void *elem) {
     */
 }
 
-void array_destroy(array *arr) {
+void *array_destroy(array *arr) {
     arr->border = 0;
     arr->length = 0;
     arr->unit_size = 0;
     free(arr->data);
+    return arr->data;
 }
 
 /*

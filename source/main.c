@@ -39,8 +39,7 @@ int main() {
 
     // char array
     array array_of_bytes = {0};
-    array_create(&array_of_bytes, sizeof(char), 8);
-    char *bcursor = (char *)array_of_bytes.data;
+    char *bcursor = array_create(&array_of_bytes, sizeof(char), 8);
 
     bcursor[0] = 'a';
     bcursor[1] = 'b';
@@ -48,12 +47,11 @@ int main() {
     bcursor[3] = '\0';
     printf("%s\n", (char *)array_of_bytes.data);
 
-    array_destroy(&array_of_bytes);
+    bcursor = array_destroy(&array_of_bytes);
 
     // float array
     array array_of_floats = {0};
-    array_create(&array_of_floats, sizeof(float), 4);
-    float *fhandle = (float *)array_of_floats.data;
+    float *fhandle = array_create(&array_of_floats, sizeof(float), 4);
 
     fhandle[0] = 3.141592f;
     fhandle[1] = 1.0f;
@@ -65,8 +63,7 @@ int main() {
     }
     printf("\n");
 
-    array_resize(&array_of_floats, 6);
-    fhandle = (float *)array_of_floats.data;
+    fhandle = array_resize(&array_of_floats, 6);
 
     for (int n  = 0; n < array_of_floats.length; n++) {
         printf("%f ", fhandle[n]);
@@ -75,11 +72,13 @@ int main() {
 
     float *x = &(float){1.1911f};
 
-    array_insert(&array_of_floats, x);
-    array_insert(&array_of_floats, x);
-    array_insert(&array_of_floats, x);
-    array_insert(&array_of_floats, x);
-    fhandle = (float *)array_of_floats.data;
+    fhandle = array_insert(&array_of_floats, x);
+    fhandle = array_insert(&array_of_floats, x);
+    fhandle = array_insert(&array_of_floats, x);
+    fhandle = array_insert(&array_of_floats, x);
+    fhandle = array_insert(&array_of_floats, x);
+    fhandle = array_insert(&array_of_floats, x);
+    fhandle = array_insert(&array_of_floats, x);
 
     for (int n  = 0; n < array_of_floats.length; n++) {
         printf("%f ", fhandle[n]);
@@ -88,7 +87,7 @@ int main() {
 
     printf("Array Details: { data: %p, unit: %zu, length: %zu, border: %zu }\n", array_of_floats.data, array_of_floats.unit_size, array_of_floats.length, array_of_floats.border);
 
-    array_destroy(&array_of_floats);
+    fhandle = array_destroy(&array_of_floats);
 
     /*
     printf("string_t program.\n"); 
