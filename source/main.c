@@ -12,6 +12,11 @@ void ddestroy(void *data) {
 }
 */
 
+typedef struct vec3f {
+    float x, y, z;
+} vec3f;
+#define vec3ffmt(handle) "<%f, %f, %f>" ", ", (handle)[n].x, (handle)[n].y, (handle)[n].z
+
 #define N 256
 uint8_t buff[N];
 
@@ -79,6 +84,16 @@ int main() {
     array_print(array_of_floats, fhandle, "%f");
 
     fhandle = array_destroy(&array_of_floats);
+
+    Array vectors = {0};
+    vec3f *vhandle = array_create(&vectors, sizeof(vec3f), 3);
+
+    vhandle[0] = (vec3f){1.0f, 0.0f, 0.0f};
+    vhandle[1] = (vec3f){0.0f, 1.0f, 0.0f};
+    vhandle[2] = (vec3f){0.0f, 0.0f, 1.0f};
+    array_print_struct(vectors, vhandle, vec3ffmt(vhandle));
+
+    vhandle = array_destroy(&vectors);
 
     /*
     printf("string_t program.\n"); 

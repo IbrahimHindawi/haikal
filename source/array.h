@@ -25,4 +25,13 @@ void *array_destroy(Array *array);
     printf("\b\b}\n\n"); \
 } \
 
+#define array_print_struct(array, handle, fmt) { \
+    printf("Array Metadata: { data: %p, unit_size: %zu, length: %zu, border: %zu }\n", (array).data, (array).unit_size, (array).length, (array).border); \
+    printf("Array Components: {"); \
+    for (int n  = 0; n < (array).length; n++) { \
+        printf( fmt ); \
+    } \
+    printf("\b\b}\n\n"); \
+} \
+
 #endif
