@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "array.h"
+#include "Array.h"
 
-void *array_create(array *arr, size_t unit_size, size_t length) {
+void *array_create(Array *arr, size_t unit_size, size_t length) {
     arr->unit_size = unit_size;
     arr->length = length;
     arr->data = malloc(unit_size * length);
@@ -21,7 +21,7 @@ void *array_create(array *arr, size_t unit_size, size_t length) {
 }
 
 // Resize border: Should be a private function.
-void *array_resize(array *arr, size_t new_border) {
+void *array_resize(Array *arr, size_t new_border) {
     size_t old_border = arr->border;
     arr->border = new_border;
     arr->data = realloc(arr->data, arr->unit_size * arr->border);
@@ -40,7 +40,7 @@ void *array_resize(array *arr, size_t new_border) {
     return arr->data;
 }
 
-void *array_insert(array *arr, void *elem) {
+void *array_insert(Array *arr, void *elem) {
     // If memory border has been reached -> must reallocate.
     if (arr->length == arr->border) {
         arr->border *= 2;
@@ -70,7 +70,7 @@ void *array_insert(array *arr, void *elem) {
     */
 }
 
-void *array_destroy(array *arr) {
+void *array_destroy(Array *arr) {
     arr->border = 0;
     arr->length = 0;
     arr->unit_size = 0;
@@ -79,7 +79,7 @@ void *array_destroy(array *arr) {
 }
 
 /*
-void array_resize(array *arr, size_t new_length) {
+void array_resize(Array *arr, size_t new_length) {
     size_t old_length = arr->length;
     arr->length = new_length;
     arr->data = realloc(arr->data, arr->unit_size * arr->length);

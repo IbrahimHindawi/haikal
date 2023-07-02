@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 #include "list.h"
-#include "array.h"
+#include "Array.h"
 #include "xstring.h"
 
 /*
@@ -38,7 +38,7 @@ int main() {
     */
 
     // char array
-    array array_of_bytes = {0};
+    Array array_of_bytes = {0};
     char *bcursor = array_create(&array_of_bytes, sizeof(char), 8);
 
     bcursor[0] = 'a';
@@ -50,7 +50,7 @@ int main() {
     bcursor = array_destroy(&array_of_bytes);
 
     // float array
-    array array_of_floats = {0};
+    Array array_of_floats = {0};
     float *fhandle = array_create(&array_of_floats, sizeof(float), 4);
 
     fhandle[0] = 3.141592f;
