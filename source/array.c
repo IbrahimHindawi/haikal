@@ -42,7 +42,15 @@ void *array_resize(Array *array, size_t new_border) {
 
 void *array_append(Array *array, void *elem) {
     // If memory border has been reached -> must reallocate.
-    if (array->length == array->border) {
+    if (array->length == 0 && array->border == 0) { // Array is empty!
+        array->length += 1;
+        array->border += 1;
+        array_resize(array, array->border);
+        char *cursor = array->data;
+        memcpy((cursor), elem, array->unit_size);
+        return array->data;
+    }
+    if (array->length == array->border ) {
         array->border *= 2;
         array_resize(array, array->border);
     }

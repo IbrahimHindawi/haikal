@@ -106,6 +106,11 @@ int main() {
     {
         uint64_t *n = &(uint64_t){18183365};
         ints_handle = array_append(&ints, n);
+        ints_handle = array_append(&ints, n);
+        ints_handle = array_append(&ints, n);
+        ints_handle = array_append(&ints, n);
+        ints_handle = array_append(&ints, n);
+        ints_handle = array_append(&ints, n);
     }
     array_print(ints, ints_handle, "%lld");
 
