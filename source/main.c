@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <assert.h>
 
 #include "list.h"
 #include "Array.h"
@@ -15,32 +16,12 @@ void ddestroy(void *data) {
 typedef struct vec3f {
     float x, y, z;
 } vec3f;
-#define vec3ffmt(handle) "<%f, %f, %f>" ", ", (handle)[n].x, (handle)[n].y, (handle)[n].z
+#define vec3ffmt(handle) "<%f, %f, %f>" " ", (handle)[n].x, (handle)[n].y, (handle)[n].z
 
 #define N 256
 uint8_t buff[N];
 
 int main() {
-
-    /*
-    List *linked_list = NULL;
-    if ((linked_list = (List *)malloc(sizeof(List))) == NULL) {
-        return -1;
-    }
-    list_init(linked_list, ddestroy);
-    float *data = NULL;
-    for (uint32_t i = 0; i < 10; i += 1) {
-        data = malloc(sizeof(float));
-        *data = 3.141592653589;
-        list_ins_next(linked_list, NULL, data);
-    }
-    ListElmt *ielement = NULL;
-    for (uint32_t i = 0; i < 10; i += 1) {
-        data = list_head(linked_list)->data;
-        printf("%i : %f\n", i, *data);
-    }
-    list_destroy(linked_list);
-    */
 
     // char array
     Array bytes = {0};
@@ -59,7 +40,8 @@ int main() {
     // float array
     Array floats = {0};
     float *fhandle = array_create(&floats, sizeof(float), 4);
-    array_print(floats, fhandle, "%f");
+    array_print(
+    floats, fhandle, "%f");
 
     fhandle[0] = 3.141592f;
     fhandle[1] = 1.0f;
@@ -104,7 +86,7 @@ int main() {
     uint64_t *ints_handle = array_create(&ints, sizeof(uint64_t), 0);
     array_print(ints, ints_handle, "%lld");
     {
-        uint64_t *n = &(uint64_t){18183365};
+        uint64_t *n = &(uint64_t){1};
         ints_handle = array_append(&ints, n);
         ints_handle = array_append(&ints, n);
         ints_handle = array_append(&ints, n);
@@ -113,6 +95,33 @@ int main() {
         ints_handle = array_append(&ints, n);
     }
     array_print(ints, ints_handle, "%lld");
+
+    Array ints2 = {0};
+    uint64_t *ints2_handle = array_create(&ints2, sizeof(uint64_t), 0);
+    array_print(ints2, ints2_handle, "%lld");
+    {
+        uint64_t *n = &(uint64_t){-1};
+        ints2_handle = array_append(&ints2, n);
+        ints2_handle = array_append(&ints2, n);
+        ints2_handle = array_append(&ints2, n);
+        ints2_handle = array_append(&ints2, n);
+        ints2_handle = array_append(&ints2, n);
+        ints2_handle = array_append(&ints2, n);
+    }
+    array_print(ints2, ints2_handle, "%lld");
+
+    assert(ints.length == ints2.length);
+
+    Array intsresult = {0};
+    uint64_t *intsresult_handle = array_create(&intsresult, sizeof(uint64_t), ints.length);
+    for (int x = 0; x < ints.length; x++) {
+        intsresult_handle[x] = ints_handle[x] + ints2_handle[x];
+    }
+    array_print(intsresult, intsresult_handle, "%lld");
+
+    ints_handle = array_destroy(&ints);
+    ints2_handle = array_destroy(&ints2);
+    intsresult_handle = array_destroy(&intsresult);
 
     /*
     printf("string_t program.\n"); 
@@ -149,6 +158,26 @@ int main() {
     // string memory de-allocation
     free(s);
     s = NULL;
+    */
+
+    /*
+    List *linked_list = NULL;
+    if ((linked_list = (List *)malloc(sizeof(List))) == NULL) {
+        return -1;
+    }
+    list_init(linked_list, ddestroy);
+    float *data = NULL;
+    for (uint32_t i = 0; i < 10; i += 1) {
+        data = malloc(sizeof(float));
+        *data = 3.141592653589;
+        list_ins_next(linked_list, NULL, data);
+    }
+    ListElmt *ielement = NULL;
+    for (uint32_t i = 0; i < 10; i += 1) {
+        data = list_head(linked_list)->data;
+        printf("%i : %f\n", i, *data);
+    }
+    list_destroy(linked_list);
     */
 
     return 0;
