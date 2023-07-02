@@ -40,7 +40,7 @@ void *array_resize(Array *array, size_t new_border) {
     return array->data;
 }
 
-void *array_insert(Array *array, void *elem) {
+void *array_append(Array *array, void *elem) {
     // If memory border has been reached -> must reallocate.
     if (array->length == array->border) {
         array->border *= 2;

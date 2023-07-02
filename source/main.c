@@ -39,53 +39,44 @@ int main() {
 
     // char array
     Array array_of_bytes = {0};
-    char *bcursor = array_create(&array_of_bytes, sizeof(char), 8);
+    char *bhandle = array_create(&array_of_bytes, sizeof(char), 4);
+    array_print(array_of_bytes, bhandle, "%c");
 
-    bcursor[0] = 'a';
-    bcursor[1] = 'b';
-    bcursor[2] = 'c';
-    bcursor[3] = '\0';
+    bhandle[0] = 'a';
+    bhandle[1] = 'b';
+    bhandle[2] = 'c';
+    bhandle[3] = '\0';
     printf("%s\n", (char *)array_of_bytes.data);
+    array_print(array_of_bytes, bhandle, "%c");
 
-    bcursor = array_destroy(&array_of_bytes);
+    bhandle = array_destroy(&array_of_bytes);
 
     // float array
     Array array_of_floats = {0};
     float *fhandle = array_create(&array_of_floats, sizeof(float), 4);
+    array_print(array_of_floats, fhandle, "%f");
 
     fhandle[0] = 3.141592f;
     fhandle[1] = 1.0f;
     fhandle[2] = 2.0f * 3.141592;
     fhandle[3] = 13.6666f;
+    array_print(array_of_floats, fhandle, "%f");
 
-    for (int n  = 0; n < array_of_floats.length; n++) {
-        printf("%f ", fhandle[n]);
-    }
-    printf("\n");
 
     fhandle = array_resize(&array_of_floats, 6);
+    array_print(array_of_floats, fhandle, "%f");
 
-    for (int n  = 0; n < array_of_floats.length; n++) {
-        printf("%f ", fhandle[n]);
+    {
+        float *x = &(float){1.1911f};
+        fhandle = array_append(&array_of_floats, x);
+        fhandle = array_append(&array_of_floats, x);
+        fhandle = array_append(&array_of_floats, x);
+        fhandle = array_append(&array_of_floats, x);
+        fhandle = array_append(&array_of_floats, x);
+        fhandle = array_append(&array_of_floats, x);
+        fhandle = array_append(&array_of_floats, x);
     }
-    printf("\n");
-
-    float *x = &(float){1.1911f};
-
-    fhandle = array_insert(&array_of_floats, x);
-    fhandle = array_insert(&array_of_floats, x);
-    fhandle = array_insert(&array_of_floats, x);
-    fhandle = array_insert(&array_of_floats, x);
-    fhandle = array_insert(&array_of_floats, x);
-    fhandle = array_insert(&array_of_floats, x);
-    fhandle = array_insert(&array_of_floats, x);
-
-    for (int n  = 0; n < array_of_floats.length; n++) {
-        printf("%f ", fhandle[n]);
-    }
-    printf("\n");
-
-    printf("Array Details: { data: %p, unit: %zu, length: %zu, border: %zu }\n", array_of_floats.data, array_of_floats.unit_size, array_of_floats.length, array_of_floats.border);
+    array_print(array_of_floats, fhandle, "%f");
 
     fhandle = array_destroy(&array_of_floats);
 
