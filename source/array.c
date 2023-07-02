@@ -78,6 +78,10 @@ void *array_destroy(Array *array) {
     return array->data;
 }
 
+int array_is_empty(Array *array) {
+    return array->length == 0 ? 1 : 0;
+}
+
 /*
 void array_resize(Array *array, size_t new_length) {
     size_t old_length = array->length;

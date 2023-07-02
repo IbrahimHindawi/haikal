@@ -43,50 +43,55 @@ int main() {
     */
 
     // char array
-    Array array_of_bytes = {0};
-    char *bhandle = array_create(&array_of_bytes, sizeof(char), 4);
-    array_print(array_of_bytes, bhandle, "%c");
+    Array bytes = {0};
+    char *bhandle = array_create(&bytes, sizeof(char), 4);
+    array_print(bytes, bhandle, "%c");
 
     bhandle[0] = 'a';
     bhandle[1] = 'b';
     bhandle[2] = 'c';
     bhandle[3] = '\0';
-    printf("%s\n", (char *)array_of_bytes.data);
-    array_print(array_of_bytes, bhandle, "%c");
+    printf("%s\n", (char *)bytes.data);
+    array_print(bytes, bhandle, "%c");
 
-    bhandle = array_destroy(&array_of_bytes);
+    bhandle = array_destroy(&bytes);
 
     // float array
-    Array array_of_floats = {0};
-    float *fhandle = array_create(&array_of_floats, sizeof(float), 4);
-    array_print(array_of_floats, fhandle, "%f");
+    Array floats = {0};
+    float *fhandle = array_create(&floats, sizeof(float), 4);
+    array_print(floats, fhandle, "%f");
 
     fhandle[0] = 3.141592f;
     fhandle[1] = 1.0f;
     fhandle[2] = 2.0f * 3.141592;
     fhandle[3] = 13.6666f;
-    array_print(array_of_floats, fhandle, "%f");
+    array_print(floats, fhandle, "%f");
 
 
-    fhandle = array_resize(&array_of_floats, 6);
-    array_print(array_of_floats, fhandle, "%f");
+    fhandle = array_resize(&floats, 6);
+    array_print(floats, fhandle, "%f");
 
     {
         float *x = &(float){1.1911f};
-        fhandle = array_append(&array_of_floats, x);
-        fhandle = array_append(&array_of_floats, x);
-        fhandle = array_append(&array_of_floats, x);
-        fhandle = array_append(&array_of_floats, x);
-        fhandle = array_append(&array_of_floats, x);
-        fhandle = array_append(&array_of_floats, x);
-        fhandle = array_append(&array_of_floats, x);
+        fhandle = array_append(&floats, x);
+        fhandle = array_append(&floats, x);
+        fhandle = array_append(&floats, x);
+        fhandle = array_append(&floats, x);
+        fhandle = array_append(&floats, x);
+        fhandle = array_append(&floats, x);
+        fhandle = array_append(&floats, x);
     }
-    array_print(array_of_floats, fhandle, "%f");
+    array_print(floats, fhandle, "%f");
 
-    fhandle = array_destroy(&array_of_floats);
+    fhandle = array_destroy(&floats);
 
     Array vectors = {0};
     vec3f *vhandle = array_create(&vectors, sizeof(vec3f), 3);
+    if (array_is_empty(&vectors) == 1) {
+        printf("Array is empty.\n");
+    } else {
+        printf("Array is not empty.\n");
+    }
 
     vhandle[0] = (vec3f){1.0f, 0.0f, 0.0f};
     vhandle[1] = (vec3f){0.0f, 1.0f, 0.0f};
@@ -94,6 +99,15 @@ int main() {
     array_print_struct(vectors, vhandle, vec3ffmt(vhandle));
 
     vhandle = array_destroy(&vectors);
+
+    Array ints = {0};
+    uint64_t *ints_handle = array_create(&ints, sizeof(uint64_t), 0);
+    array_print(ints, ints_handle, "%lld");
+    {
+        uint64_t *n = &(uint64_t){18183365};
+        ints_handle = array_append(&ints, n);
+    }
+    array_print(ints, ints_handle, "%lld");
 
     /*
     printf("string_t program.\n"); 
