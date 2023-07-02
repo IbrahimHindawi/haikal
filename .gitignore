@@ -52,5 +52,6 @@ Mkfile.old
 dkms.conf
 
 *.swp
+*.swo
 vimsess
 /build
