@@ -8,12 +8,12 @@ typedef struct Array {
     size_t border;
 } Array;
 
-void *array_create(Array *arr, size_t unit_size, size_t length);
+void *array_create(Array *array, size_t unit_size, size_t length);
 
-void *array_resize(Array *arr, size_t new_length);
+void *array_resize(Array *array, size_t new_length);
 
-void *array_insert(Array *arr, void *elem);
+void *array_insert(Array *array, void *elem);
 
-void *array_destroy(Array *arr);
+void *array_destroy(Array *array);
 
 #endif
