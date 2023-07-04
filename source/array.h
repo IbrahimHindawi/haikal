@@ -32,6 +32,7 @@ void *array_append(Array *array, void *elem);
 
 int array_is_empty(Array *array);
 
+
 #define array_print(array, handle, fmt) { \
     printf("metadata: { data: %p, unit_size: %zu, length: %zu, border: %zu }\n", \
             (array).data, (array).unit_size, (array).length, (array).border); \
@@ -53,3 +54,5 @@ int array_is_empty(Array *array);
 } \
 
 #endif
+
+// void array_print_(Array *array, int iterator, const char *fmt, ...);

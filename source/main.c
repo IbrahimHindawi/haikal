@@ -1,22 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include <assert.h>
 
 #include "list.h"
 #include "Array.h"
 #include "xstring.h"
 
-/*
-void ddestroy(void *data) {
-    free(data);
-}
-*/
 
 typedef struct vec3f {
     float x, y, z;
 } vec3f;
 #define vec3ffmt(handle) "<%f, %f, %f>" " ", (handle)[n].x, (handle)[n].y, (handle)[n].z
+
 
 #define N 256
 uint8_t buff[N];
@@ -80,6 +77,8 @@ int main() {
     vhandle[2] = (vec3f){0.0f, 0.0f, 1.0f};
     array_print_struct(vectors, vhandle, vec3ffmt(vhandle));
 
+    // int n = 0; array_print_(&vectors, vectors.length, "<%f, %f, %f>" " ", vhandle[n].x, vhandle[n].y, vhandle[n].z);
+
     vhandle = array_destroy(&vectors);
 
     Array ints = {0};
@@ -118,6 +117,9 @@ int main() {
         intsresult_handle[x] = ints_handle[x] + ints2_handle[x];
     }
     array_print(intsresult, intsresult_handle, "%lld");
+
+    // printf("VarArgs Procedure Execute...\n");
+    // array_print__(intsresult, intsresult.length, " i:%d, y:%lld ", intsresult_handle);
 
     ints_handle = array_destroy(&ints);
     ints2_handle = array_destroy(&ints2);
