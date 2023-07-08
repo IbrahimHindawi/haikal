@@ -8,6 +8,7 @@
 #include "Array.h"
 #include "xstring.h"
 
+// check hackerrank videos
 
 typedef struct vec3f {
     float x, y, z;
