@@ -55,6 +55,5 @@ dkms.conf
 *.swo
 *.swn
 build/
-.cache/
 vimsess
 scripts/psClang
