@@ -57,4 +57,3 @@ dkms.conf
 build/
 .cache/
 vimsess
-scripts/psClang
