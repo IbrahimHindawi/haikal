@@ -4,9 +4,9 @@
 #include <stdint.h>
 #include <stdarg.h>
 
-#include "Array.h"
+#include "hkArray.h"
 
-void *array_create(Array *array, size_t unit_size, size_t length) {
+void *hkArrayCreate(hkArray *array, size_t unit_size, size_t length) {
     array->unit_size = unit_size;
     array->length = length;
     array->data = malloc(unit_size * length);
@@ -21,7 +21,7 @@ void *array_create(Array *array, size_t unit_size, size_t length) {
     return array->data;
 }
 
-void *array_destroy(Array *array) {
+void *hkArrayDestroy(hkArray *array) {
     array->border = 0;
     array->length = 0;
     array->unit_size = 0;
@@ -30,7 +30,7 @@ void *array_destroy(Array *array) {
 }
 
 // Resize border: Should be a private function.
-void *array_resize(Array *array, size_t new_border) {
+void *hkArrayResize(hkArray *array, size_t new_border) {
     size_t old_border = array->border;
     array->border = new_border;
     array->data = realloc(array->data, array->unit_size * array->border);
@@ -49,18 +49,18 @@ void *array_resize(Array *array, size_t new_border) {
     return array->data;
 }
 
-void *array_append(Array *array, void *elem) {
+void *hkArrayAppend(hkArray *array, void *elem) {
     if (array->length == 0 && array->border == 0) { 
         array->length += 1;
         array->border += 1;
-        array_resize(array, array->border);
+        hkArrayResize(array, array->border);
         char *cursor = array->data;
         memcpy(cursor, elem, array->unit_size);
         return array->data;
     }
     if (array->length == array->border ) {
         array->border *= 2;
-        array_resize(array, array->border);
+        hkArrayResize(array, array->border);
     }
     array->length += 1;
     char *cursor = array->data;
@@ -68,12 +68,12 @@ void *array_append(Array *array, void *elem) {
     return array->data;
 }
 
-int array_is_empty(Array *array) {
+int hkArrayIsEmpty(hkArray *array) {
     return array->length == 0 ? 1 : 0;
 }
 
 /*
-void array_print_(Array *array, int iterator, const char *fmt, ...) {
+void array_print_(hkArray *array, int iterator, const char *fmt, ...) {
     printf("metadata: { data: %p, unit_size: %zu, length: %zu, border: %zu }\n",
             array->data, array->unit_size, array->length, array->border);
     printf("components: { ");
@@ -100,7 +100,7 @@ void array_print_(Array *array, int iterator, const char *fmt, ...) {
 */
 
 /*
-void array_print__(Array *array, int length, const char *fmt, ...) {
+void array_print__(hkArray *array, int length, const char *fmt, ...) {
     printf("metadata: { data: %p, unit_size: %zu, length: %zu, border: %zu }\n",
             array->data, array->unit_size, array->length, array->border);
     printf("components: { ");

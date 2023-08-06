@@ -5,14 +5,14 @@
 #include <assert.h>
 
 #include "list.h"
-#include "Array.h"
+#include "hkArray.h"
 #include "xstring.h"
 
 // check hackerrank videos
 
-typedef struct vec3f {
+typedef struct vec3 {
     float x, y, z;
-} vec3f;
+} vec3;
 #define vec3ffmt(handle) "<%f, %f, %f>" " ", (handle)[n].x, (handle)[n].y, (handle)[n].z
 
 
@@ -22,109 +22,109 @@ uint8_t buff[N];
 int main() {
 
     // char array
-    Array bytes = {0};
-    char *bhandle = array_create(&bytes, sizeof(char), 4);
-    array_print(bytes, bhandle, "%c");
+    hkArray bytes = {0};
+    char *bhandle = hkArrayCreate(&bytes, sizeof(char), 4);
+    hkArrayPrint(bytes, bhandle, "%c");
 
     bhandle[0] = 'a';
     bhandle[1] = 'b';
     bhandle[2] = 'c';
     bhandle[3] = '\0';
     printf("%s\n", (char *)bytes.data);
-    array_print(bytes, bhandle, "%c");
+    hkArrayPrint(bytes, bhandle, "%c");
 
-    bhandle = array_destroy(&bytes);
+    bhandle = hkArrayDestroy(&bytes);
 
     // float array
-    Array floats = {0};
-    float *fhandle = array_create(&floats, sizeof(float), 4);
-    array_print(
+    hkArray floats = {0};
+    float *fhandle = hkArrayCreate(&floats, sizeof(float), 4);
+    hkArrayPrint(
     floats, fhandle, "%f");
 
     fhandle[0] = 3.141592f;
     fhandle[1] = 1.0f;
     fhandle[2] = 2.0f * 3.141592;
     fhandle[3] = 13.6666f;
-    array_print(floats, fhandle, "%f");
+    hkArrayPrint(floats, fhandle, "%f");
 
 
-    fhandle = array_resize(&floats, 6);
-    array_print(floats, fhandle, "%f");
+    fhandle = hkArrayResize(&floats, 6);
+    hkArrayPrint(floats, fhandle, "%f");
 
     {
         float *x = &(float){1.1911f};
-        fhandle = array_append(&floats, x);
-        fhandle = array_append(&floats, x);
-        fhandle = array_append(&floats, x);
-        fhandle = array_append(&floats, x);
-        fhandle = array_append(&floats, x);
-        fhandle = array_append(&floats, x);
-        fhandle = array_append(&floats, x);
+        fhandle = hkArrayAppend(&floats, x);
+        fhandle = hkArrayAppend(&floats, x);
+        fhandle = hkArrayAppend(&floats, x);
+        fhandle = hkArrayAppend(&floats, x);
+        fhandle = hkArrayAppend(&floats, x);
+        fhandle = hkArrayAppend(&floats, x);
+        fhandle = hkArrayAppend(&floats, x);
     }
-    array_print(floats, fhandle, "%f");
+    hkArrayPrint(floats, fhandle, "%f");
 
-    fhandle = array_destroy(&floats);
+    fhandle = hkArrayDestroy(&floats);
 
-    Array vectors = {0};
-    vec3f *vhandle = array_create(&vectors, sizeof(vec3f), 3);
-    if (array_is_empty(&vectors) == 1) {
-        printf("Array is empty.\n");
+    hkArray vectors = {0};
+    vec3 *vhandle = hkArrayCreate(&vectors, sizeof(vec3), 3);
+    if (hkArrayIsEmpty(&vectors) == 1) {
+        printf("hkArray is empty.\n");
     } else {
-        printf("Array is not empty.\n");
+        printf("hkArray is not empty.\n");
     }
 
-    vhandle[0] = (vec3f){1.0f, 0.0f, 0.0f};
-    vhandle[1] = (vec3f){0.0f, 1.0f, 0.0f};
-    vhandle[2] = (vec3f){0.0f, 0.0f, 1.0f};
-    array_print_struct(vectors, vhandle, vec3ffmt(vhandle));
+    vhandle[0] = (vec3){1.0f, 0.0f, 0.0f};
+    vhandle[1] = (vec3){0.0f, 1.0f, 0.0f};
+    vhandle[2] = (vec3){0.0f, 0.0f, 1.0f};
+    hkArrayPrintStruct(vectors, vhandle, vec3ffmt(vhandle));
 
-    // int n = 0; array_print_(&vectors, vectors.length, "<%f, %f, %f>" " ", vhandle[n].x, vhandle[n].y, vhandle[n].z);
+    // int n = 0; hkArrayPrint_(&vectors, vectors.length, "<%f, %f, %f>" " ", vhandle[n].x, vhandle[n].y, vhandle[n].z);
 
-    vhandle = array_destroy(&vectors);
+    vhandle = hkArrayDestroy(&vectors);
 
-    Array ints = {0};
-    uint64_t *ints_handle = array_create(&ints, sizeof(uint64_t), 0);
-    array_print(ints, ints_handle, "%lld");
+    hkArray ints = {0};
+    uint64_t *ints_handle = hkArrayCreate(&ints, sizeof(uint64_t), 0);
+    hkArrayPrint(ints, ints_handle, "%lld");
     {
         uint64_t *n = &(uint64_t){1};
-        ints_handle = array_append(&ints, n);
-        ints_handle = array_append(&ints, n);
-        ints_handle = array_append(&ints, n);
-        ints_handle = array_append(&ints, n);
-        ints_handle = array_append(&ints, n);
-        ints_handle = array_append(&ints, n);
+        ints_handle = hkArrayAppend(&ints, n);
+        ints_handle = hkArrayAppend(&ints, n);
+        ints_handle = hkArrayAppend(&ints, n);
+        ints_handle = hkArrayAppend(&ints, n);
+        ints_handle = hkArrayAppend(&ints, n);
+        ints_handle = hkArrayAppend(&ints, n);
     }
-    array_print(ints, ints_handle, "%lld");
+    hkArrayPrint(ints, ints_handle, "%lld");
 
-    Array ints2 = {0};
-    uint64_t *ints2_handle = array_create(&ints2, sizeof(uint64_t), 0);
-    array_print(ints2, ints2_handle, "%lld");
+    hkArray ints2 = {0};
+    uint64_t *ints2_handle = hkArrayCreate(&ints2, sizeof(uint64_t), 0);
+    hkArrayPrint(ints2, ints2_handle, "%lld");
     {
         uint64_t *n = &(uint64_t){-1};
-        ints2_handle = array_append(&ints2, n);
-        ints2_handle = array_append(&ints2, n);
-        ints2_handle = array_append(&ints2, n);
-        ints2_handle = array_append(&ints2, n);
-        ints2_handle = array_append(&ints2, n);
-        ints2_handle = array_append(&ints2, n);
+        ints2_handle = hkArrayAppend(&ints2, n);
+        ints2_handle = hkArrayAppend(&ints2, n);
+        ints2_handle = hkArrayAppend(&ints2, n);
+        ints2_handle = hkArrayAppend(&ints2, n);
+        ints2_handle = hkArrayAppend(&ints2, n);
+        ints2_handle = hkArrayAppend(&ints2, n);
     }
-    array_print(ints2, ints2_handle, "%lld");
+    hkArrayPrint(ints2, ints2_handle, "%lld");
 
     assert(ints.length == ints2.length);
 
-    Array intsresult = {0};
-    uint64_t *intsresult_handle = array_create(&intsresult, sizeof(uint64_t), ints.length);
+    hkArray intsresult = {0};
+    uint64_t *intsresult_handle = hkArrayCreate(&intsresult, sizeof(uint64_t), ints.length);
     for (int x = 0; x < ints.length; x++) {
         intsresult_handle[x] = ints_handle[x] + ints2_handle[x];
     }
-    array_print(intsresult, intsresult_handle, "%lld");
+    hkArrayPrint(intsresult, intsresult_handle, "%lld");
 
     // printf("VarArgs Procedure Execute...\n");
-    // array_print__(intsresult, intsresult.length, " i:%d, y:%lld ", intsresult_handle);
+    // hkArrayPrint__(intsresult, intsresult.length, " i:%d, y:%lld ", intsresult_handle);
 
-    ints_handle = array_destroy(&ints);
-    ints2_handle = array_destroy(&ints2);
-    intsresult_handle = array_destroy(&intsresult);
+    ints_handle = hkArrayDestroy(&ints);
+    ints2_handle = hkArrayDestroy(&ints2);
+    intsresult_handle = hkArrayDestroy(&intsresult);
 
     /*
     printf("string_t program.\n"); 
