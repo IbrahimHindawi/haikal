@@ -1,2 +1,4 @@
-# c-dsna  
-Data Structures & Algorithms in C
+# haikal
+Data Structures & Algorithms in C:  
+- hkArray
+- hkList
