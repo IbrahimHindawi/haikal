@@ -33,7 +33,7 @@ int main() {
     printf("%s\n", (char *)bytes.data);
     hkArrayPrint(bytes, bhandle, "%c");
 
-    bhandle = hkArrayDestroy(&bytes);
+    hkArrayDestroy(&bytes);
 
     // float array
     hkArray floats = hkArrayCreate(sizeof(float), 4);
@@ -63,7 +63,7 @@ int main() {
     }
     hkArrayPrint(floats, fhandle, "%f");
 
-    fhandle = hkArrayDestroy(&floats);
+    hkArrayDestroy(&floats);
 
     hkArray vectors = hkArrayCreate(sizeof(vec3), 3);
     vec3 *vhandle = vectors.data;
@@ -80,7 +80,7 @@ int main() {
 
     // int n = 0; hkArrayPrint_(&vectors, vectors.length, "<%f, %f, %f>" " ", vhandle[n].x, vhandle[n].y, vhandle[n].z);
 
-    vhandle = hkArrayDestroy(&vectors);
+    hkArrayDestroy(&vectors);
 
     hkArray ints = hkArrayCreate(sizeof(uint64_t), 0);
     uint64_t *ints_handle = ints.data;
@@ -122,9 +122,9 @@ int main() {
     // printf("VarArgs Procedure Execute...\n");
     // hkArrayPrint__(intsresult, intsresult.length, " i:%d, y:%lld ", intsresult_handle);
 
-    ints_handle = hkArrayDestroy(&ints);
-    ints2_handle = hkArrayDestroy(&ints2);
-    intsresult_handle = hkArrayDestroy(&intsresult);
+    hkArrayDestroy(&ints);
+    hkArrayDestroy(&ints2);
+    hkArrayDestroy(&intsresult);
 
     /*
     printf("string_t program.\n"); 

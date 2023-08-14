@@ -24,7 +24,7 @@ typedef struct hkArray {
 
 hkArray hkArrayCreate(size_t unit_size, size_t length);
 
-void *hkArrayDestroy(hkArray *array);
+void hkArrayDestroy(hkArray *array);
 
 void *hkArrayResize(hkArray *array, size_t new_length);
 

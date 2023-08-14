@@ -22,12 +22,11 @@ hkArray hkArrayCreate(size_t unit_size, size_t length) {
     return array;
 }
 
-void *hkArrayDestroy(hkArray *array) {
+void hkArrayDestroy(hkArray *array) {
     array->border = 0;
     array->length = 0;
     array->unit_size = 0;
     free(array->data);
-    return array->data;
 }
 
 // Resize border: Should be a private function.
