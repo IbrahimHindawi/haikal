@@ -22,8 +22,8 @@ uint8_t buff[N];
 int main() {
 
     // char array
-    hkArray bytes = {0};
-    char *bhandle = hkArrayCreate(&bytes, sizeof(char), 4);
+    hkArray bytes = hkArrayCreate(sizeof(char), 4);
+    char *bhandle = bytes.data;
     hkArrayPrint(bytes, bhandle, "%c");
 
     bhandle[0] = 'a';
@@ -36,8 +36,8 @@ int main() {
     bhandle = hkArrayDestroy(&bytes);
 
     // float array
-    hkArray floats = {0};
-    float *fhandle = hkArrayCreate(&floats, sizeof(float), 4);
+    hkArray floats = hkArrayCreate(sizeof(float), 4);
+    float *fhandle = floats.data;
     hkArrayPrint(
     floats, fhandle, "%f");
 
@@ -65,8 +65,8 @@ int main() {
 
     fhandle = hkArrayDestroy(&floats);
 
-    hkArray vectors = {0};
-    vec3 *vhandle = hkArrayCreate(&vectors, sizeof(vec3), 3);
+    hkArray vectors = hkArrayCreate(sizeof(vec3), 3);
+    vec3 *vhandle = vectors.data;
     if (hkArrayIsEmpty(&vectors) == 1) {
         printf("hkArray is empty.\n");
     } else {
@@ -82,8 +82,8 @@ int main() {
 
     vhandle = hkArrayDestroy(&vectors);
 
-    hkArray ints = {0};
-    uint64_t *ints_handle = hkArrayCreate(&ints, sizeof(uint64_t), 0);
+    hkArray ints = hkArrayCreate(sizeof(uint64_t), 0);
+    uint64_t *ints_handle = ints.data;
     hkArrayPrint(ints, ints_handle, "%lld");
     {
         uint64_t *n = &(uint64_t){1};
@@ -96,8 +96,8 @@ int main() {
     }
     hkArrayPrint(ints, ints_handle, "%lld");
 
-    hkArray ints2 = {0};
-    uint64_t *ints2_handle = hkArrayCreate(&ints2, sizeof(uint64_t), 0);
+    hkArray ints2  = hkArrayCreate(sizeof(uint64_t), 0);
+    uint64_t *ints2_handle = ints2.data;
     hkArrayPrint(ints2, ints2_handle, "%lld");
     {
         uint64_t *n = &(uint64_t){-1};
@@ -112,8 +112,8 @@ int main() {
 
     assert(ints.length == ints2.length);
 
-    hkArray intsresult = {0};
-    uint64_t *intsresult_handle = hkArrayCreate(&intsresult, sizeof(uint64_t), ints.length);
+    hkArray intsresult = hkArrayCreate(sizeof(uint64_t), ints.length);
+    uint64_t *intsresult_handle = intsresult.data;
     for (int x = 0; x < ints.length; x++) {
         intsresult_handle[x] = ints_handle[x] + ints2_handle[x];
     }

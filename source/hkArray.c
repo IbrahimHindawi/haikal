@@ -6,19 +6,20 @@
 
 #include "hkArray.h"
 
-void *hkArrayCreate(hkArray *array, size_t unit_size, size_t length) {
-    array->unit_size = unit_size;
-    array->length = length;
-    array->data = malloc(unit_size * length);
-    if (array->data == NULL) {
+hkArray hkArrayCreate(size_t unit_size, size_t length) {
+    hkArray array = {0};
+    array.unit_size = unit_size;
+    array.length = length;
+    array.data = malloc(unit_size * length);
+    if (array.data == NULL) {
         printf("Memory Allocation Failure!");
         exit(-1);
     }
     // #ifdef DEBUG
-    memset(array->data, 0, unit_size * length);
+    memset(array.data, 0, unit_size * length);
     // #endif
-    array->border = length;
-    return array->data;
+    array.border = length;
+    return array;
 }
 
 void *hkArrayDestroy(hkArray *array) {

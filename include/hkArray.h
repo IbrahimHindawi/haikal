@@ -22,7 +22,7 @@ typedef struct hkArray {
  * print: display data to console
 */
 
-void *hkArrayCreate(hkArray *array, size_t unit_size, size_t length);
+hkArray hkArrayCreate(size_t unit_size, size_t length);
 
 void *hkArrayDestroy(hkArray *array);
 
