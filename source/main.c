@@ -4,23 +4,81 @@
 #include <stdarg.h>
 #include <assert.h>
 
-#include "list.h"
 #include "hkArray.h"
-#include "xstring.h"
-
-// check hackerrank videos
 
 typedef struct vec3 {
     float x, y, z;
 } vec3;
 #define vec3ffmt(handle) "<%f, %f, %f>" " ", (handle)[n].x, (handle)[n].y, (handle)[n].z
 
-
 #define N 256
 uint8_t buff[N];
 
-int main() {
+void hkArrayTests();
 
+int main() {
+    hkArrayTests();
+    /*
+    printf("string_t program.\n"); 
+
+    buff[0] = 'a';
+    buff[1] = 'b';
+    buff[2] = 'c';
+    buff[3] = '\0';
+    printf("%s\n", buff);
+
+    // string memory allocation dynamic
+    string_t *s = NULL;
+    s = malloc(sizeof(string_t));
+    if (!s) {
+        printf("Memory Allocation Failure"); 
+    }
+    // string memory allocation static
+    // s = &buff;
+
+    string_init(s, N);
+
+    s->buffer[0] = 'a';
+    s->buffer[1] = 'b';
+    s->buffer[2] = 'c';
+    s->buffer[3] = '\0';
+    string_insert(s, "I like to program things in C.");
+    printf("%s\n", s->buffer);
+
+    string_insert(s, "I like C.");
+    printf("%s\n", s->buffer);
+
+    string_deinit(s);
+
+    // string memory de-allocation
+    free(s);
+    s = NULL;
+    */
+
+    /*
+    List *linked_list = NULL;
+    if ((linked_list = (List *)malloc(sizeof(List))) == NULL) {
+        return -1;
+    }
+    list_init(linked_list, ddestroy);
+    float *data = NULL;
+    for (uint32_t i = 0; i < 10; i += 1) {
+        data = malloc(sizeof(float));
+        *data = 3.141592653589;
+        list_ins_next(linked_list, NULL, data);
+    }
+    ListElmt *ielement = NULL;
+    for (uint32_t i = 0; i < 10; i += 1) {
+        data = list_head(linked_list)->data;
+        printf("%i : %f\n", i, *data);
+    }
+    list_destroy(linked_list);
+    */
+
+    return 0;
+}
+
+void hkArrayTests() {
     // char array
     hkArray bytes = hkArrayCreate(sizeof(char), 4);
     char *bhandle = bytes.data;
@@ -43,7 +101,7 @@ int main() {
 
     fhandle[0] = 3.141592f;
     fhandle[1] = 1.0f;
-    fhandle[2] = 2.0f * 3.141592;
+    fhandle[2] = 2.0f * 3.141592f;
     fhandle[3] = 13.6666f;
     hkArrayPrint(floats, fhandle, "%f");
 
@@ -126,62 +184,12 @@ int main() {
     hkArrayDestroy(&ints2);
     hkArrayDestroy(&intsresult);
 
-    /*
-    printf("string_t program.\n"); 
-
-    buff[0] = 'a';
-    buff[1] = 'b';
-    buff[2] = 'c';
-    buff[3] = '\0';
-    printf("%s\n", buff);
-
-    // string memory allocation dynamic
-    string_t *s = NULL;
-    s = malloc(sizeof(string_t));
-    if (!s) {
-        printf("Memory Allocation Failure"); 
+    hkArray farr = hkArrayCreate(sizeof(float), 8);
+    float *fs = farr.data;
+    for(int i = 0; i < farr.length; i++) {
+        fs[i] = (float)i;
+        // printf("%f\n", fs[i]);
     }
-    // string memory allocation static
-    // s = &buff;
-
-    string_init(s, N);
-
-    s->buffer[0] = 'a';
-    s->buffer[1] = 'b';
-    s->buffer[2] = 'c';
-    s->buffer[3] = '\0';
-    string_insert(s, "I like to program things in C.");
-    printf("%s\n", s->buffer);
-
-    string_insert(s, "I like C.");
-    printf("%s\n", s->buffer);
-
-    string_deinit(s);
-
-    // string memory de-allocation
-    free(s);
-    s = NULL;
-    */
-
-    /*
-    List *linked_list = NULL;
-    if ((linked_list = (List *)malloc(sizeof(List))) == NULL) {
-        return -1;
-    }
-    list_init(linked_list, ddestroy);
-    float *data = NULL;
-    for (uint32_t i = 0; i < 10; i += 1) {
-        data = malloc(sizeof(float));
-        *data = 3.141592653589;
-        list_ins_next(linked_list, NULL, data);
-    }
-    ListElmt *ielement = NULL;
-    for (uint32_t i = 0; i < 10; i += 1) {
-        data = list_head(linked_list)->data;
-        printf("%i : %f\n", i, *data);
-    }
-    list_destroy(linked_list);
-    */
-
-    return 0;
+    hkArrayPrint(farr, fs, "%f");
+    hkArrayDestroy(&farr);
 }
