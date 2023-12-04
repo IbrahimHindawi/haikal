@@ -7,6 +7,7 @@ add_library(${PROJECT_NAME}
     source/hkArray.c
     include/hkArray.h
     include/hkArrayT.h
+    include/hkArrayT-primitives.h
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC include/)
