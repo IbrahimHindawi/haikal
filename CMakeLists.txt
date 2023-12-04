@@ -6,6 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(${PROJECT_NAME}
     source/hkArray.c
     include/hkArray.h
+    include/hkArrayT.h
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC include/)
