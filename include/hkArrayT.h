@@ -43,7 +43,7 @@ typedef struct S {
 */
 
 #define Create CAT(S, Create)
-inline S Create(size_t length) {
+S Create(size_t length) {
     S array = {0};
     array.unit_size = sizeof(*array.data);
     array.length = length;
@@ -60,7 +60,7 @@ inline S Create(size_t length) {
 }
 
 #define Destroy CAT(S, Destroy)
-inline void Destroy(S *array) {
+void Destroy(S *array) {
     array->border = 0;
     array->length = 0;
     array->unit_size = 0;
@@ -69,7 +69,7 @@ inline void Destroy(S *array) {
 
 // Resize border: Should be a private function.
 #define Resize CAT(S, Resize)
-inline T *Resize(S *array, size_t new_border) {
+T *Resize(S *array, size_t new_border) {
     size_t old_border = array->border;
     array->border = new_border;
     array->data = realloc(array->data, array->unit_size * array->border);
@@ -89,7 +89,7 @@ inline T *Resize(S *array, size_t new_border) {
 }
 
 #define Append CAT(S, Append)
-inline T *Append(S *array, T *elem) {
+T *Append(S *array, T *elem) {
     if (array->length == 0 && array->border == 0) { 
         array->length += 1;
         array->border += 1;
@@ -109,7 +109,7 @@ inline T *Append(S *array, T *elem) {
 }
 
 #define IsEmpty CAT(S, IsEmpty)
-inline int IsEmpty(S *array) {
+int IsEmpty(S *array) {
     return array->length == 0 ? 1 : 0;
 }
 
