@@ -20,6 +20,5 @@ typedef size_t usize;
 typedef const char * str;
 typedef str * strptr;
 
-#define sizeofarray(array, type) (sizeof(array) / sizeof(array[0]))
-
+#define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
 #define structdef(structname) typedef struct structname structname; struct structname

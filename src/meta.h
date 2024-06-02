@@ -88,8 +88,10 @@ int metacore(const char *metaname) {
         "u64",
         "f32",
         "f64",
+        "str",
+        "strptr",
     };
-    const i8 coretypeslen = sizeofarray(coretypes, const char *);
+    const i8 coretypeslen = sizeofarray(coretypes);
 
 #ifdef _MSC_VER
     LPTSTR cwdstr = malloc(buffersize);

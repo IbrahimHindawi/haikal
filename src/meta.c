@@ -21,5 +21,9 @@ int main() {
     metagen("hkArray", "VkLayerProperties");
     metagen("hkArray", "VkExtensionProperties");
     metagen("hkArray", "VkExtensionProperties");
+    metagen("hkArray", "VkPhysicalDevice");
+    metagen("hkArray", "VkImage");
+    metagen("hkArray", "VkImageView");
+    metagen("hkArray", "VkQueueFamilyProperties");
     return 0;
 }
