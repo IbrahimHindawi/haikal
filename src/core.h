@@ -16,6 +16,8 @@ typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
 typedef size_t usize;
+typedef const char * str;
+typedef str * strptr;
 
 #define sizeofarray(array, type) (sizeof(array) / sizeof(array[0]))
 

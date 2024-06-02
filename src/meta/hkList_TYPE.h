@@ -1,6 +1,6 @@
 #pragma once
 /* hkList_TYPE */
-#include "../core.h"
+#include <core.h>
 #include <stdlib.h>
 
 #include "TYPE.h"

@@ -1,6 +1,6 @@
 #pragma once
 /* hkList_f32 */
-#include "../core.h"
+#include <core.h>
 #include <stdlib.h>
 
 

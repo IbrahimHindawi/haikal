@@ -1,6 +1,6 @@
 #pragma once
 /* hkQueue_i32 */
-#include "../core.h"
+#include <core.h>
 #include <stdlib.h>
 
 

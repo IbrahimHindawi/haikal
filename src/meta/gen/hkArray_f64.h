@@ -1,6 +1,6 @@
 #pragma once
 /* hkArray_f64 */
-#include "../core.h"
+#include <core.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

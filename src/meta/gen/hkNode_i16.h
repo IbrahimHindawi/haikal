@@ -1,6 +1,6 @@
 #pragma once
 /* hkNode_i16 */
-#include "../core.h"
+#include <core.h>
 
 
 

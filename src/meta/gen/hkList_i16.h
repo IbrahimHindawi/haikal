@@ -1,6 +1,6 @@
 #pragma once
 /* hkList_i16 */
-#include "../core.h"
+#include <core.h>
 #include <stdlib.h>
 
 

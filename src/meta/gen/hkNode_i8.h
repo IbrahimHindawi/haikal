@@ -1,6 +1,6 @@
 #pragma once
 /* hkNode_i8 */
-#include "../core.h"
+#include <core.h>
 
 
 

@@ -13,9 +13,13 @@
 #include "meta.h"
 
 int main() {
+    printf("Haikal code gen initiated...\n");
     metacore("hkNode");
     metacore("hkList");
     metacore("hkArray");
     metacore("hkQueue");
+    metagen("hkArray", "VkLayerProperties");
+    metagen("hkArray", "VkExtensionProperties");
+    metagen("hkArray", "VkExtensionProperties");
     return 0;
 }
