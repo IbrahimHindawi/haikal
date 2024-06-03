@@ -19,6 +19,8 @@ typedef int64_t i64;
 typedef size_t usize;
 typedef const char * str;
 typedef str * strptr;
+// typedef char * cstr;
+// typedef str * cstrptr;
 
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
 #define structdef(structname) typedef struct structname structname; struct structname
