@@ -16,6 +16,13 @@ structdef(hkArray_TYPE) {
 
 hkArray_TYPE hkarray_TYPE_create(size_t length) {
     hkArray_TYPE array = {0};
+    if (length == 0) {
+        array.unit_size = sizeof(TYPE);
+        array.length = length;
+        array.data = NULL;
+        array.border = 0;
+        return array;
+    }
     array.unit_size = sizeof(TYPE);
     array.length = length;
     array.data = malloc(array.unit_size * length);
@@ -38,7 +45,7 @@ void hkarray_TYPE_destroy(hkArray_TYPE *array) {
 }
 
 // Resize border: Should be a private function.
-void *hkarray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
+TYPE *hkarray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
     size_t old_border = array->border;
     array->border *= 2;
     // array->border = new_border;
@@ -59,13 +66,14 @@ void *hkarray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
     return array->data;
 }
 
-void *hkarray_TYPE_append(hkArray_TYPE *array, void *elem) {
+TYPE *hkarray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
     if (array->length == 0 && array->border == 0) { 
         array->length += 1;
         array->border += 1;
         hkarray_TYPE_resize(array, array->border);
-        char *cursor = (char *)array->data;
-        memcpy(cursor, elem, array->unit_size);
+        array->data[array->length - 1] = elem;
+        // char *cursor = (char *)array->data;
+        // memcpy(cursor, elem, array->unit_size);
         return array->data;
     }
     if (array->length == array->border ) {
@@ -74,26 +82,9 @@ void *hkarray_TYPE_append(hkArray_TYPE *array, void *elem) {
         hkarray_TYPE_resize(array, array->border);
     }
     array->length += 1;
-    char *cursor = (char *)array->data;
-    memcpy(cursor + ((array->length - 1) * array->unit_size), elem, array->unit_size);
-    return array->data;
-}
-
-void *hkarray_TYPE_append_ptr(hkArray_TYPE *array, void *elem) {
-    if (array->length == 0 && array->border == 0) { 
-        array->length += 1;
-        array->border += 1;
-        array->data = hkarray_TYPE_resize(array, array->border);
-        char *cursor = (char *)array->data;
-        memcpy(cursor, elem, array->unit_size);
-        return array->data;
-    }
-    if (array->length == array->border ) {
-        array->data = hkarray_TYPE_resize(array, array->border);
-    }
-    array->length += 1;
-    char *cursor = (char *)array->data;
-    memcpy(cursor + ((array->length - 1) * array->unit_size), &elem, array->unit_size);
+    array->data[array->length - 1] = elem;
+    // char *cursor = (char *)array->data;
+    // memcpy(cursor + ((array->length - 1) * array->unit_size), elem, array->unit_size);
     return array->data;
 }
 
