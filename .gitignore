@@ -58,3 +58,5 @@ build/
 .cache/
 vimsess
 scripts/psClang
+src/meta/gen/*
+!src/meta/gen/keepme.txt
