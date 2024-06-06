@@ -14,10 +14,11 @@
 
 int main() {
     printf("Haikal code gen initiated...\n");
-    metacore("hkNode");
-    metacore("hkList");
+    // metacore("hkNode");
+    // metacore("hkList");
+    // metacore("hkQueue");
+    metainit("hkArray");
     metacore("hkArray");
-    metacore("hkQueue");
     metagen("hkArray", "VkLayerProperties");
     metagen("hkArray", "VkExtensionProperties");
     metagen("hkArray", "VkExtensionProperties");
@@ -25,5 +26,10 @@ int main() {
     metagen("hkArray", "VkImage");
     metagen("hkArray", "VkImageView");
     metagen("hkArray", "VkQueueFamilyProperties");
+    metagen("hkArray", "VkDeviceQueueCreateInfo");
+    metagen("hkArray", "VkExtensionProperties");
+    metagen("hkArray", "VkSurfaceFormatKHR");
+    metagen("hkArray", "VkPresentModeKHR");
+
     return 0;
 }

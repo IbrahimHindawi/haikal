@@ -13,7 +13,39 @@
 
 const i32 buffersize = 256;
 
-int metagen(const char *metaname, const char*genname) {
+/*
+ * initialize main header:
+ * genpath/metaname.h
+ */
+void metainit(str metaname) {
+#ifdef _MSC_VER
+    LPTSTR cwdstr = malloc(buffersize);
+    i32 pathstrlen = GetCurrentDirectoryA(buffersize, cwdstr);
+#elif __linux__
+    char *cwdstr = malloc(buffersize);
+    getcwd(cwdstr, buffersize);
+#endif
+    bstring typecorepath = bfromcstr(cwdstr);
+    bcatcstr(typecorepath, "/src/meta/gen/");
+    bcatcstr(typecorepath, metaname);
+    bcatcstr(typecorepath, ".h");
+    printf("typecorepath: %s\n", bdata(typecorepath));
+    FILE *output = null;
+    if (null != (output = fopen(bdata(typecorepath), "w"))) {
+        bstring result = bfromcstr("#pragma once\n");
+        fputs(bdatae(result, "NULL"), output);
+        bdestroy(result);
+    } else {
+        printf("metainit::Unable to open type core file for initiation.");
+        exit(-1);
+    }
+}
+
+/*
+ * generate types and append to main header
+ * genpath/metaname.h <---append--- genpath/metaname_genname.h
+ */
+int metagen(str metaname, str genname) {
     FILE *input = null;
     FILE *output = null;
     struct bstrList *lines;
@@ -72,11 +104,28 @@ int metagen(const char *metaname, const char*genname) {
     } else {
         printf("metagen::Unable to open type core file.");
     }
+    bstring typecorepathtarget = bfromcstr(cwdstr);
+    bcatcstr(typecorepathtarget, "/src/meta/gen/");
+    bcatcstr(typecorepathtarget, metaname);
+    bcatcstr(typecorepathtarget, ".h");
+    // printf("typecorepathtarget: %s\n", bdata(typecorepathtarget));
+    if (null != (output = fopen(bdata(typecorepathtarget), "a"))) {
+        bstring result = bfromcstr("#include \"");
+        bstring typename = bfromcstr(metaname);
+        bconcat(result, typename);
+        bcatcstr(result, "_");
+        bcatcstr(result, genname);
+        bcatcstr(result, ".h\"\n");
+        fputs(bdatae(result, "NULL"), output);
+        bdestroy(result);
+    } else {
+        printf("metainit::Unable to open type core file for initiation.");
+    }
+    bdestroy(typecorepathtarget);
     return 0;
 }
 
-int metacore(const char *metaname) {
-    FILE *output = null;
+int metacore(str metaname) {
     const char *coretypes[] = {
         "i8",
         "i16",
@@ -92,38 +141,8 @@ int metacore(const char *metaname) {
         "strptr",
     };
     const i8 coretypeslen = sizeofarray(coretypes);
-
-#ifdef _MSC_VER
-    LPTSTR cwdstr = malloc(buffersize);
-    i32 pathstrlen = GetCurrentDirectoryA(buffersize, cwdstr);
-#elif __linux__
-    char *cwdstr = malloc(buffersize);
-    getcwd(cwdstr, buffersize);
-#endif
-
-    bstring typecorepath = bfromcstr(cwdstr);
-    bcatcstr(typecorepath, "/src/meta/gen/");
-    bstring typecore = bfromcstr(metaname);
-    bconcat(typecorepath, typecore);
-    bcatcstr(typecorepath, "_core.h");
-    // printf("typecorepath: %s\n", bdata(typecorepath));
-    if (null != (output = fopen(bdata(typecorepath), "w"))) {
-        for (int i = 0; i < coretypeslen; ++i) {
-            metagen(metaname, coretypes[i]);
-            bstring result = bfromcstr("#pragma once\n#include \"");
-            bstring typename = bfromcstr(metaname);
-            bconcat(result, typename);
-            bcatcstr(result, "_");
-            bstring corename = bfromcstr(coretypes[i]);
-            bcatcstr(result, bdata(corename));
-            bcatcstr(result, ".h\"\n");
-            fputs(bdatae(result, "NULL"), output);
-            bdestroy(result);
-        }
-    } else {
-        printf("metacore::Unable to open type core file.");
+    for (int i = 0; i < coretypeslen; ++i) {
+        metagen(metaname, coretypes[i]);
     }
-    fclose(output);
-    
     return 0;
 }

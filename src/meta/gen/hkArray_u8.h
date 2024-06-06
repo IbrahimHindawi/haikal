@@ -16,6 +16,13 @@ structdef(hkArray_u8) {
 
 hkArray_u8 hkarray_u8_create(size_t length) {
     hkArray_u8 array = {0};
+    if (length == 0) {
+        array.unit_size = sizeof(u8);
+        array.length = length;
+        array.data = NULL;
+        array.border = 0;
+        return array;
+    }
     array.unit_size = sizeof(u8);
     array.length = length;
     array.data = malloc(array.unit_size * length);
@@ -38,9 +45,11 @@ void hkarray_u8_destroy(hkArray_u8 *array) {
 }
 
 // Resize border: Should be a private function.
-void *hkarray_u8_resize(hkArray_u8 *array, size_t new_border) {
+u8 *hkarray_u8_resize(hkArray_u8 *array, size_t new_border) {
     size_t old_border = array->border;
-    array->border = new_border;
+    array->border *= 2;
+    // array->border = new_border;
+    new_border = array->border;
     array->data = realloc(array->data, array->unit_size * array->border);
     if (array->data == NULL) {
         printf("Memory Reallocation Failure!");
@@ -57,22 +66,25 @@ void *hkarray_u8_resize(hkArray_u8 *array, size_t new_border) {
     return array->data;
 }
 
-void *hkarray_u8_append(hkArray_u8 *array, void *elem) {
+u8 *hkarray_u8_append(hkArray_u8 *array, u8 elem) {
     if (array->length == 0 && array->border == 0) { 
         array->length += 1;
         array->border += 1;
         hkarray_u8_resize(array, array->border);
-        char *cursor = (char *)array->data;
-        memcpy(cursor, elem, array->unit_size);
+        array->data[array->length - 1] = elem;
+        // char *cursor = (char *)array->data;
+        // memcpy(cursor, elem, array->unit_size);
         return array->data;
     }
     if (array->length == array->border ) {
         array->border *= 2;
+        // TODO: check if it zeroes out properly
         hkarray_u8_resize(array, array->border);
     }
     array->length += 1;
-    char *cursor = (char *)array->data;
-    memcpy(cursor + ((array->length - 1) * array->unit_size), elem, array->unit_size);
+    array->data[array->length - 1] = elem;
+    // char *cursor = (char *)array->data;
+    // memcpy(cursor + ((array->length - 1) * array->unit_size), elem, array->unit_size);
     return array->data;
 }
 

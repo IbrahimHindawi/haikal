@@ -1,5 +1,5 @@
 #pragma once
-/* hkArray_i32 */
+/* hkArray_VkImage */
 #include <core.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,23 +7,23 @@
 
 
 
-structdef(hkArray_i32) {
-    i32 *data;
+structdef(hkArray_VkImage) {
+    VkImage *data;
     size_t unit_size;
     size_t length;
     size_t border;
 };
 
-hkArray_i32 hkarray_i32_create(size_t length) {
-    hkArray_i32 array = {0};
+hkArray_VkImage hkarray_VkImage_create(size_t length) {
+    hkArray_VkImage array = {0};
     if (length == 0) {
-        array.unit_size = sizeof(i32);
+        array.unit_size = sizeof(VkImage);
         array.length = length;
         array.data = NULL;
         array.border = 0;
         return array;
     }
-    array.unit_size = sizeof(i32);
+    array.unit_size = sizeof(VkImage);
     array.length = length;
     array.data = malloc(array.unit_size * length);
     if (array.data == NULL) {
@@ -37,7 +37,7 @@ hkArray_i32 hkarray_i32_create(size_t length) {
     return array;
 }
 
-void hkarray_i32_destroy(hkArray_i32 *array) {
+void hkarray_VkImage_destroy(hkArray_VkImage *array) {
     array->border = 0;
     array->length = 0;
     array->unit_size = 0;
@@ -45,7 +45,7 @@ void hkarray_i32_destroy(hkArray_i32 *array) {
 }
 
 // Resize border: Should be a private function.
-i32 *hkarray_i32_resize(hkArray_i32 *array, size_t new_border) {
+VkImage *hkarray_VkImage_resize(hkArray_VkImage *array, size_t new_border) {
     size_t old_border = array->border;
     array->border *= 2;
     // array->border = new_border;
@@ -66,11 +66,11 @@ i32 *hkarray_i32_resize(hkArray_i32 *array, size_t new_border) {
     return array->data;
 }
 
-i32 *hkarray_i32_append(hkArray_i32 *array, i32 elem) {
+VkImage *hkarray_VkImage_append(hkArray_VkImage *array, VkImage elem) {
     if (array->length == 0 && array->border == 0) { 
         array->length += 1;
         array->border += 1;
-        hkarray_i32_resize(array, array->border);
+        hkarray_VkImage_resize(array, array->border);
         array->data[array->length - 1] = elem;
         // char *cursor = (char *)array->data;
         // memcpy(cursor, elem, array->unit_size);
@@ -79,7 +79,7 @@ i32 *hkarray_i32_append(hkArray_i32 *array, i32 elem) {
     if (array->length == array->border ) {
         array->border *= 2;
         // TODO: check if it zeroes out properly
-        hkarray_i32_resize(array, array->border);
+        hkarray_VkImage_resize(array, array->border);
     }
     array->length += 1;
     array->data[array->length - 1] = elem;
@@ -88,7 +88,7 @@ i32 *hkarray_i32_append(hkArray_i32 *array, i32 elem) {
     return array->data;
 }
 
-int hkarray_i32_is_empty(hkArray_i32 *array) {
+int hkarray_VkImage_is_empty(hkArray_VkImage *array) {
     return array->length == 0 ? 1 : 0;
 }
 
