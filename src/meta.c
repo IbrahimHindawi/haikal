@@ -13,7 +13,7 @@
 #include "meta.h"
 
 int main() {
-    printf("Haikal code gen initiated...\n");
+    printf("Haikal::CodeGen::Initialize.\n");
     // metacore("hkNode");
     // metacore("hkList");
     // metacore("hkQueue");
@@ -30,6 +30,7 @@ int main() {
     metagen("hkArray", "VkExtensionProperties");
     metagen("hkArray", "VkSurfaceFormatKHR");
     metagen("hkArray", "VkPresentModeKHR");
+    printf("Haikal::CodeGen::Finalize.\n");
 
     return 0;
 }

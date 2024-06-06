@@ -29,7 +29,7 @@ void metainit(str metaname) {
     bcatcstr(typecorepath, "/src/meta/gen/");
     bcatcstr(typecorepath, metaname);
     bcatcstr(typecorepath, ".h");
-    printf("typecorepath: %s\n", bdata(typecorepath));
+    // printf("typecorepath: %s\n", bdata(typecorepath));
     FILE *output = null;
     if (null != (output = fopen(bdata(typecorepath), "w"))) {
         bstring result = bfromcstr("#pragma once\n");
