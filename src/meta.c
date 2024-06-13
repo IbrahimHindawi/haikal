@@ -14,23 +14,20 @@
 
 int main() {
     printf("Haikal::CodeGen::Initialize.\n");
-    // metacore("hkNode");
-    // metacore("hkList");
-    // metacore("hkQueue");
+
+    metainit("hkNode");
+    metacore("hkNode");
+
+    metainit("hkList");
+    metacore("hkList");
+
+    metainit("hkQueue");
+    metacore("hkQueue");
+
     metainit("hkArray");
     metacore("hkArray");
-    metagen("hkArray", "VkLayerProperties");
-    metagen("hkArray", "VkExtensionProperties");
-    metagen("hkArray", "VkExtensionProperties");
-    metagen("hkArray", "VkPhysicalDevice");
-    metagen("hkArray", "VkImage");
-    metagen("hkArray", "VkImageView");
-    metagen("hkArray", "VkQueueFamilyProperties");
-    metagen("hkArray", "VkDeviceQueueCreateInfo");
-    metagen("hkArray", "VkExtensionProperties");
-    metagen("hkArray", "VkSurfaceFormatKHR");
-    metagen("hkArray", "VkPresentModeKHR");
-    printf("Haikal::CodeGen::Finalize.\n");
+    // metagen("hkArray", "CustomType");
 
+    printf("Haikal::CodeGen::Finalize.\n");
     return 0;
 }
