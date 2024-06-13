@@ -7,12 +7,13 @@
  *      `#include "custom.h"`
  *      `#include "hkType_custom.h"`
  */
+
 #ifdef _MSC_VER
 #   define _CRT_SECURE_NO_WARNINGS
 #endif
-#include "meta.h"
+#include <meta.h>
 
-int main() {
+int main(int argc, char *argv[]) {
     printf("Haikal::CodeGen::Initialize.\n");
 
     metainit("hkNode");

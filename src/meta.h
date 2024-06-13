@@ -9,7 +9,7 @@
 #else
 #   error "Unknown Platform"
 #endif
-#include "core.h"
+#include <core.h>
 
 const i32 buffersize = 256;
 
