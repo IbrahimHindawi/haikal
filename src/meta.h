@@ -35,6 +35,7 @@ void metainit(str metaname) {
         bstring result = bfromcstr("#pragma once\n");
         fputs(bdatae(result, "NULL"), output);
         bdestroy(result);
+        fclose(output);
     } else {
         printf("metainit::Unable to open type core file for initiation.");
         exit(-1);
@@ -116,8 +117,10 @@ int metagen(str metaname, str genname) {
         bcatcstr(result, "_");
         bcatcstr(result, genname);
         bcatcstr(result, ".h\"\n");
+        // printf("final header name: %s\n", bdata(result));
         fputs(bdatae(result, "NULL"), output);
         bdestroy(result);
+        fclose(output);
     } else {
         printf("metainit::Unable to open type core file for initiation.");
     }
