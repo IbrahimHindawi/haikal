@@ -1,4 +1,5 @@
-hkArray = [
-    "VkQueue",
-    "VkImage"
-]
+[meta]
+hkArray = [ "SomeType" ]
+hkNode = []
+hkQueue = []
+hkList = []

@@ -1,3 +1,10 @@
+#include <core.h>
+
+structdef(SomeType) {
+    str name;
+    i32 val;
+};
+
 #include <hkNode.h>
 #include <hkList.h>
 #include <hkArray.h>

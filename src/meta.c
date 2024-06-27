@@ -19,6 +19,7 @@
 
 #include <core.h>
 #include <bstrlib.h>
+#include <toml-c.h>
 
 char *getCurrentWorkingDirectory() {
     const i32 buffersize = 256;
@@ -162,19 +163,65 @@ int metacore(str metaname) {
 int main(int argc, char *argv[]) {
     printf("Haikal::CodeGen::Initialize.\n");
 
-    metainit("hkNode");
-    metacore("hkNode");
+    // metainit("hkNode");
+    // metacore("hkNode");
 
-    metainit("hkList");
-    metacore("hkList");
+    // metainit("hkList");
+    // metacore("hkList");
 
-    metainit("hkQueue");
-    metacore("hkQueue");
+    // metainit("hkQueue");
+    // metacore("hkQueue");
 
-    metainit("hkArray");
-    metacore("hkArray");
+    // metainit("hkArray");
+    // metacore("hkArray");
     // metagen("hkArray", "CustomType");
 
+    char *cwdstr = getCurrentWorkingDirectory();
+    bstring docpath = bfromcstr(cwdstr);
+    bstring docname = bfromcstr("/haikal.toml");
+    bconcat(docpath, docname);
+    FILE *input = fopen(bdata(docpath), "r");
+    if (!input) {
+        printf("Haikal::Failed to open config haikal.toml\n");
+    }
+    char buffer[256];
+    usize ret;
+    ret = fread(buffer, sizeof(*buffer), sizeofarray(buffer), input);
+    // printf("%s\n", buffer);
+    // printf("ret = %lu, sizeofarray(buffer) = %ld\n", ret, sizeofarray(buffer));
+    // if (ret != sizeofarray(buffer)) { fprintf(stderr, "fread() failed: %zu\n", ret); exit(EXIT_FAILURE); }
+    fclose(input);
+
+	char errbuf[200];
+	toml_table_t *tbl = toml_parse(buffer, errbuf, sizeof(errbuf));
+	if (!tbl) {
+		fprintf(stderr, "ERROR: %s\n", errbuf);
+		exit(1);
+	}
+
+
+	toml_table_t *sub_tbl = toml_table_table(tbl, "meta");
+	if (sub_tbl) {
+		// Loop over all keys in a table.
+		int l = toml_table_len(sub_tbl);
+		for (int i = 0; i < l; i++) {
+			int keylen;
+			const char *key = toml_table_key(sub_tbl, i, &keylen);
+			printf("Haikal::metainit::key #%d: %s\n", i, key);
+            metainit(key);
+            metacore(key);
+
+            toml_array_t *arr = toml_table_array(sub_tbl, key);
+            if (arr) {
+                int l = toml_array_len(arr);
+                for (int i = 0; i < l; i++) {
+                    printf("  Haikal::metagen::index %d = %s\n", i, toml_array_string(arr, i).u.s);
+                    metagen(key, toml_array_string(arr, i).u.s);
+                }
+                printf("\n");
+            }
+        }
+	}
     printf("Haikal::CodeGen::Finalize.\n");
     return 0;
 }
