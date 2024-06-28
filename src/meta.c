@@ -22,6 +22,8 @@
 #include <bstrlib.h>
 #include <toml-c.h>
 
+const char *metapath = NULL;
+
 char *getCurrentWorkingDirectory() {
     const i32 buffersize = 256;
     char *cwdstr = malloc(buffersize);
@@ -43,20 +45,21 @@ char *getCurrentWorkingDirectory() {
  * genpath/metaname.h
  */
 void metainit(str metaname) {
-    char *cwdstr = getCurrentWorkingDirectory();
-    bstring typecorepath = bfromcstr(cwdstr);
-    bcatcstr(typecorepath, "/src/meta/gen/");
+    // char *cwdstr = getCurrentWorkingDirectory();
+    // bstring typecorepath = bfromcstr(cwdstr);
+    bstring typecorepath = bfromcstr(metapath);
+    bcatcstr(typecorepath, "gen/");
     bcatcstr(typecorepath, metaname);
     bcatcstr(typecorepath, ".h");
     // printf("typecorepath: %s\n", bdata(typecorepath));
-    FILE *output = null;
+    FILE *output = NULL;
     if (null != (output = fopen(bdata(typecorepath), "w"))) {
         bstring result = bfromcstr("#pragma once\n");
         fputs(bdatae(result, "NULL"), output);
         bdestroy(result);
         fclose(output);
     } else {
-        printf("metainit::Unable to open type core file for initiation.\n");
+        printf("metainit::Unable to open type core gen file for initiation.\n");
         exit(-1);
     }
 }
@@ -73,9 +76,9 @@ int metagen(str metaname, str genname) {
     bstring stubinclude = bfromcstr("#include \"TYPE.h\"");
     bstring emptystr = bfromcstr("");
 
-    char *cwdstr = getCurrentWorkingDirectory();
-    bstring typecorepath = bfromcstr(cwdstr);
-    bcatcstr(typecorepath, "/src/meta/");
+    // char *cwdstr = getCurrentWorkingDirectory();
+    bstring typecorepath = bfromcstr(metapath);
+    // bcatcstr(typecorepath, "/src/meta/");
     bstring typecore = bfromcstr(metaname);
     bstring typestr = bfromcstr("TYPE");
     bconcat(typecorepath, typecore);
@@ -84,8 +87,8 @@ int metagen(str metaname, str genname) {
     bcatcstr(typecorepath, ".h");
     // printf("typecorepath: %s\n", bdata(typecorepath));
 
-    bstring typemetapath = bfromcstr(cwdstr);
-    bcatcstr(typemetapath, "/src/meta/gen/");
+    bstring typemetapath = bfromcstr(metapath);
+    bcatcstr(typemetapath, "gen/");
     bstring typemetastr = bfromcstr(genname);
     bconcat(typemetapath, typecore);
     bcatcstr(typemetapath, "_");
@@ -117,8 +120,8 @@ int metagen(str metaname, str genname) {
     } else {
         printf("metagen::Unable to open type core file.");
     }
-    bstring typecorepathtarget = bfromcstr(cwdstr);
-    bcatcstr(typecorepathtarget, "/src/meta/gen/");
+    bstring typecorepathtarget = bfromcstr(metapath);
+    bcatcstr(typecorepathtarget, "gen/");
     bcatcstr(typecorepathtarget, metaname);
     bcatcstr(typecorepathtarget, ".h");
     // printf("typecorepathtarget: %s\n", bdata(typecorepathtarget));
@@ -179,7 +182,7 @@ int main(int argc, char *argv[]) {
     // metagen("hkArray", "CustomType");
 
     char *cwdstr = getCurrentWorkingDirectory();
-    printf("%s\n", cwdstr);
+    printf("Haikal::main::cwd::%s\n", cwdstr);
     // char* cwdstr = malloc(256);
     // cwdstr = getcwd(cwdstr, 256);
     bstring docpath = bfromcstr(cwdstr);
@@ -188,7 +191,7 @@ int main(int argc, char *argv[]) {
     FILE *input = fopen(bdata(docpath), "r");
     if (!input) {
         printf("Haikal::Failed to open config haikal.toml\n");
-        return -1;
+		exit(1);
     }
     char buffer[256];
     usize ret;
@@ -206,23 +209,37 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-
-	toml_table_t *sub_tbl = toml_table_table(tbl, "meta");
-	if (sub_tbl) {
-		// Loop over all keys in a table.
-		int l = toml_table_len(sub_tbl);
+	toml_table_t *core_tbl = toml_table_table(tbl, "core");
+    if (core_tbl) {
+        int l = toml_table_len(core_tbl);
 		for (int i = 0; i < l; i++) {
 			int keylen;
-			const char *key = toml_table_key(sub_tbl, i, &keylen);
-			printf("Haikal::metainit::key #%d: %s\n", i, key);
+			const char *key = toml_table_key(core_tbl, i, &keylen);
+			printf("Haikal::core::key[%d]::%s\n", i, key);
+            // theres only one key so no need to check...
+            toml_value_t metapath_value = toml_table_string(core_tbl, "metapath");
+            metapath = metapath_value.u.s;
+        }
+    }
+    printf("Haikal::core::metapath::%s\n", metapath);
+    printf("\n");
+
+	toml_table_t *meta_tbl = toml_table_table(tbl, "meta");
+	if (meta_tbl) {
+		// Loop over all keys in a table.
+		int l = toml_table_len(meta_tbl);
+		for (int i = 0; i < l; i++) {
+			int keylen;
+			const char *key = toml_table_key(meta_tbl, i, &keylen);
+			printf("Haikal::metainit::key[%d]: %s\n", i, key);
             metainit(key);
             metacore(key);
 
-            toml_array_t *arr = toml_table_array(sub_tbl, key);
+            toml_array_t *arr = toml_table_array(meta_tbl, key);
             if (arr) {
                 int l = toml_array_len(arr);
                 for (int i = 0; i < l; i++) {
-                    printf("  Haikal::metagen::index %d = %s\n", i, toml_array_string(arr, i).u.s);
+                    printf("  Haikal::metagen::index[%d]: %s\n", i, toml_array_string(arr, i).u.s);
                     metagen(key, toml_array_string(arr, i).u.s);
                 }
                 printf("\n");

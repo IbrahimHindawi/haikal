@@ -1,3 +1,5 @@
+[core]
+metapath = "src/meta/"
 [meta]
 hkArray = [ "SomeType" ]
 hkNode = []
