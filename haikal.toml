@@ -1,5 +1,5 @@
 [core]
-metapath = "extern/haikal/src/meta/"
+metapath = "src/meta/"
 [meta]
 hkArray = []
 hkNode = []

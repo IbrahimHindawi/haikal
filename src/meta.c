@@ -166,7 +166,7 @@ int metacore(str metaname) {
 }
 
 int main(int argc, char *argv[]) {
-    printf("Haikal::CodeGen::Initialize.\n");
+    printf("haikal::CodeGen::Initialize.\n");
 
     // metainit("hkNode");
     // metacore("hkNode");
@@ -182,21 +182,29 @@ int main(int argc, char *argv[]) {
     // metagen("hkArray", "CustomType");
 
     char *cwdstr = getCurrentWorkingDirectory();
-    printf("Haikal::main::cwd::%s\n", cwdstr);
+    printf("haikal::main::cwd::%s\n", cwdstr);
     // char* cwdstr = malloc(256);
     // cwdstr = getcwd(cwdstr, 256);
     bstring docpath = bfromcstr(cwdstr);
     bstring docname = bfromcstr("/haikal.toml");
     bconcat(docpath, docname);
+    printf("haikal::main::docpath::%s\n", bdata(docpath));
     FILE *input = fopen(bdata(docpath), "r");
     if (!input) {
-        printf("Haikal::Failed to open config haikal.toml\n");
+        printf("haikal::Failed to open config haikal.toml\n");
 		exit(1);
     }
-    char buffer[256];
+    fseek(input, 0L, SEEK_END);
+    usize file_size = ftell(input);
+    // fseek(input, 0L, SEEK_SET);
+    rewind(input);
+    char *buffer = malloc(file_size);
+    if (!buffer) {
+        printf("failed to allocate memory for input toml.\n");
+    }
     usize ret;
-    ret = fread(buffer, sizeof(*buffer), sizeofarray(buffer), input);
-    // printf("%s\n", buffer);
+    ret = fread(buffer, sizeof(*buffer), file_size, input);
+    printf("%s\n", buffer);
     // printf("ret = %lu, sizeofarray(buffer) = %ld\n", ret, sizeofarray(buffer));
     // if (ret != sizeofarray(buffer)) { fprintf(stderr, "fread() failed: %zu\n", ret); exit(EXIT_FAILURE); }
     buffer[ret] = '\0';
@@ -215,13 +223,13 @@ int main(int argc, char *argv[]) {
 		for (int i = 0; i < l; i++) {
 			int keylen;
 			const char *key = toml_table_key(core_tbl, i, &keylen);
-			printf("Haikal::core::key[%d]::%s\n", i, key);
+			printf("haikal::core::key[%d]::%s\n", i, key);
             // theres only one key so no need to check...
             toml_value_t metapath_value = toml_table_string(core_tbl, "metapath");
             metapath = metapath_value.u.s;
         }
     }
-    printf("Haikal::core::metapath::%s\n", metapath);
+    printf("haikal::core::metapath::%s\n", metapath);
     printf("\n");
 
 	toml_table_t *meta_tbl = toml_table_table(tbl, "meta");
@@ -231,7 +239,7 @@ int main(int argc, char *argv[]) {
 		for (int i = 0; i < l; i++) {
 			int keylen;
 			const char *key = toml_table_key(meta_tbl, i, &keylen);
-			printf("Haikal::metainit::key[%d]: %s\n", i, key);
+			printf("haikal::metainit::key[%d]: %s\n", i, key);
             metainit(key);
             metacore(key);
 
@@ -239,13 +247,13 @@ int main(int argc, char *argv[]) {
             if (arr) {
                 int l = toml_array_len(arr);
                 for (int i = 0; i < l; i++) {
-                    printf("  Haikal::metagen::index[%d]: %s\n", i, toml_array_string(arr, i).u.s);
+                    printf("  haikal::metagen::index[%d]: %s\n", i, toml_array_string(arr, i).u.s);
                     metagen(key, toml_array_string(arr, i).u.s);
                 }
                 printf("\n");
             }
         }
 	}
-    printf("Haikal::CodeGen::Finalize.\n");
+    printf("haikal::CodeGen::Finalize.\n");
     return 0;
 }
