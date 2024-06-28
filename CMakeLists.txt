@@ -10,10 +10,10 @@ include_directories(src/)
 include_directories(bstring/bstring)
 # set(CMAKE_FOLDER include)
 
+include_directories(src/meta/gen)
 add_executable(test
     src/test.c
 )
-include_directories(src/meta/gen)
 # add_library(${PROJECT_NAME}
 #     source/hkArray.c
 #     include/hkArray.h
