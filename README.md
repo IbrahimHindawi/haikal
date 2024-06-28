@@ -31,3 +31,6 @@ hkList = ["Vector"]
 - hkArray: growable heap allocated array.
 - hkList/hkNode: singly linked list.
 - hkQueue: queue
+## Limitations:
+Cannot add pointer types to `[meta]` unless `typedef`ed. Could automate the process by detecting the pointer and auto `typedef`ing it.  
+For example: `const char *` will become `typedef int *intptr` and then you can generate `hkArray_intptr`.  
