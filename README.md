@@ -22,7 +22,7 @@ Haikal uses toml for configuration. For example:
 [core]
 metapath = "extern/haikal/src/meta/" # where to generate files to
 [meta]
-hkArray = ["Vector"] # generate hkArray_Vector + functions
+hkArray = ["SomeType"] # generate hkArray_SomeType + functions
 hkNode = ["Vector"]
 hkQueue = []
 hkList = ["Vector"]
