@@ -196,6 +196,7 @@ int main(int argc, char *argv[]) {
     }
     fseek(input, 0L, SEEK_END);
     usize file_size = ftell(input);
+    // printf("haikal::toml::file::size::%llu\n", file_size);
     // fseek(input, 0L, SEEK_SET);
     rewind(input);
     char *buffer = malloc(file_size);
@@ -204,10 +205,10 @@ int main(int argc, char *argv[]) {
     }
     usize ret;
     ret = fread(buffer, sizeof(*buffer), file_size, input);
-    printf("%s\n", buffer);
+    buffer[ret] = '\0';
+    // printf("%s\n", buffer);
     // printf("ret = %lu, sizeofarray(buffer) = %ld\n", ret, sizeofarray(buffer));
     // if (ret != sizeofarray(buffer)) { fprintf(stderr, "fread() failed: %zu\n", ret); exit(EXIT_FAILURE); }
-    buffer[ret] = '\0';
     fclose(input);
 
 	char errbuf[200];
