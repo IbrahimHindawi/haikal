@@ -11,6 +11,7 @@
 #ifdef _MSC_VER
 #   define _CRT_SECURE_NO_WARNINGS
 #   include <windows.h>
+#   include <direct.h>
 #elif __linux__
 #   include <unistd.h>
 #else
@@ -29,7 +30,8 @@ char *getCurrentWorkingDirectory() {
         return NULL;
     }
 #ifdef _MSC_VER
-    i32 pathstrlen = GetCurrentDirectoryA(buffersize, cwdstr);
+    // i32 pathstrlen = GetCurrentDirectoryA(buffersize, cwdstr);
+    _getcwd(cwdstr, buffersize);
 #elif __linux__
     getcwd(cwdstr, buffersize);
 #endif
@@ -177,12 +179,16 @@ int main(int argc, char *argv[]) {
     // metagen("hkArray", "CustomType");
 
     char *cwdstr = getCurrentWorkingDirectory();
+    printf("%s\n", cwdstr);
+    // char* cwdstr = malloc(256);
+    // cwdstr = getcwd(cwdstr, 256);
     bstring docpath = bfromcstr(cwdstr);
     bstring docname = bfromcstr("/haikal.toml");
     bconcat(docpath, docname);
     FILE *input = fopen(bdata(docpath), "r");
     if (!input) {
         printf("Haikal::Failed to open config haikal.toml\n");
+        return -1;
     }
     char buffer[256];
     usize ret;
@@ -190,6 +196,7 @@ int main(int argc, char *argv[]) {
     // printf("%s\n", buffer);
     // printf("ret = %lu, sizeofarray(buffer) = %ld\n", ret, sizeofarray(buffer));
     // if (ret != sizeofarray(buffer)) { fprintf(stderr, "fread() failed: %zu\n", ret); exit(EXIT_FAILURE); }
+    buffer[ret] = '\0';
     fclose(input);
 
 	char errbuf[200];
