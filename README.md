@@ -7,7 +7,8 @@ Code should be easy to debug & works great with LSPs.
 - example: [c-init](https://github.com/IbrahimHindawi/c-init)
 ## Usage:
 - To generate the files to `metapath`, build and invoke the `haikal` program from the your root directory.  
-- To add custom types, edit the `[meta]` section & simply include the headers before including the data structure.  
+- To add custom types, edit the `[meta]` section & simply include the headers before including the data structure.
+- `#include <hkArray.h>` to include all generated `hkArray` types.
 ## Code example:  
 The `i32` in this instance could be any data type:  
 ```c
