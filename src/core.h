@@ -4,10 +4,12 @@
 #   define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #define null NULL
 
 typedef float f32;
@@ -26,5 +28,7 @@ typedef str * strptr;
 // typedef char * cstr;
 // typedef str * cstrptr;
 
+#define stringify(s) #s
+#define pi 3.141592f
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
 #define structdef(structname) typedef struct structname structname; struct structname
