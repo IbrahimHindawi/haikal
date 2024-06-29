@@ -18,7 +18,7 @@
 #   error "Unknown Platform"
 #endif
 
-#include <core.h>
+#include "core.h"
 #include <bstrlib.h>
 #include <toml-c.h>
 
