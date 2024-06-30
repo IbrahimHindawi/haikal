@@ -1,7 +1,6 @@
 #pragma once
 /* hkList_TYPE */
 #include <core.h>
-#include <stdlib.h>
 
 #include "TYPE.h"
 #include "hkNode_TYPE.h"
@@ -11,6 +10,12 @@ structdef(hkList_TYPE) {
     hkNode_TYPE *tail;
     usize length;
 };
+
+hkList_TYPE *hklist_TYPE_create();
+void hklist_TYPE_append(hkList_TYPE *list, TYPE data);
+void hklist_TYPE_destroy(hkList_TYPE **list);
+
+#ifdef HK_LIST_IMPL
 
 hkList_TYPE *hklist_TYPE_create() {
     hkList_TYPE *list = malloc(sizeof(hkList_TYPE));
@@ -42,3 +47,5 @@ void hklist_TYPE_destroy(hkList_TYPE **list) {
     free(*list);
     *list = null;
 }
+
+#endif

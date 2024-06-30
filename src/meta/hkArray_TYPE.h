@@ -1,9 +1,6 @@
 #pragma once
 /* hkArray_TYPE */
 #include <core.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "TYPE.h"
 
@@ -13,6 +10,14 @@ structdef(hkArray_TYPE) {
     size_t length;
     size_t border;
 };
+
+hkArray_TYPE hkarray_TYPE_create(size_t length);
+void hkarray_TYPE_destroy(hkArray_TYPE *array);
+TYPE *hkarray_TYPE_resize(hkArray_TYPE *array, size_t new_border);
+TYPE *hkarray_TYPE_append(hkArray_TYPE *array, TYPE elem);
+int hkarray_TYPE_is_empty(hkArray_TYPE *array);
+
+#ifdef HKARRAY_IMPL
 
 hkArray_TYPE hkarray_TYPE_create(size_t length) {
     hkArray_TYPE array = {0};
@@ -92,45 +97,4 @@ int hkarray_TYPE_is_empty(hkArray_TYPE *array) {
     return array->length == 0 ? 1 : 0;
 }
 
-/*
-void array_print_(hkArray *array, int iterator, const char *fmt, ...) {
-    printf("metadata: { data: %p, unit_size: %zu, length: %zu, border: %zu }\n",
-            array->data, array->unit_size, array->length, array->border);
-    printf("components: { ");
-
-    va_list args;
-    va_start(args, iterator);
-
-    for (iterator  = 0; iterator < array->length; iterator++) {
-        // printf("%d, ", *iterator);
-        // va_list args;
-        // vec3f vector = va_arg(args, iterator);
-        // va_start(args, *iterator);
-        // vprintf(fmt, args);
-        // va_end(args);
-    }
-//    va_list args;
-//    va_start(args, 0);
-//    while(arg = va_arg(args, int) < array->length) {
-//        vprintf(fmt, arg)
-//    }
-//    va_end(args);
-    printf("\b\b}\n\n");
-}
-*/
-
-/*
-void array_print__(hkArray *array, int length, const char *fmt, ...) {
-    printf("metadata: { data: %p, unit_size: %zu, length: %zu, border: %zu }\n",
-            array->data, array->unit_size, array->length, array->border);
-    printf("components: { ");
-    va_list args;
-    va_start(args, array);
-    for (int i  = 0; i < length; i++) {
-        int value = va_arg(args, int);
-        printf(fmt, i, value);
-    }
-    va_end(args);
-    printf("\b\b}\n\n");
-}
-*/
+#endif

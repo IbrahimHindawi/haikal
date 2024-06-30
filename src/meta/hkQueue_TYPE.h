@@ -1,7 +1,6 @@
 #pragma once
 /* hkQueue_TYPE */
 #include <core.h>
-#include <stdlib.h>
 
 #include "TYPE.h"
 #include "hkNode_TYPE.h"
@@ -11,6 +10,14 @@ structdef(hkQueue_TYPE) {
     hkNode_TYPE *tail;
     usize length;
 };
+
+hkQueue_TYPE *hkqueue_TYPE_create();
+void hkqueue_TYPE_enqueue(hkQueue_TYPE *queue, TYPE data);
+hkNode_TYPE *hkqueue_TYPE_dequeue(hkQueue_TYPE *queue);
+hkNode_TYPE *hkqueue_TYPE_peek(hkQueue_TYPE *queue);
+void hkqueue_TYPE_destroy(hkQueue_TYPE **queue);
+
+#ifdef HKQUEUE_IMPL
 
 hkQueue_TYPE *hkqueue_TYPE_create() {
     hkQueue_TYPE *queue = malloc(sizeof(hkQueue_TYPE));
@@ -56,3 +63,5 @@ void hkqueue_TYPE_destroy(hkQueue_TYPE **queue) {
     free(*queue);
     *queue = NULL;
 }
+
+#endif
