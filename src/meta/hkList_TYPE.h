@@ -2,50 +2,83 @@
 /* hkList_TYPE */
 #include <core.h>
 
-#include "TYPE.h"
-#include "hkNode_TYPE.h"
+typedef struct hkList_S {
+    void *data;
+    struct hkList_S *next;
+}   hkList_TYPE; 
 
-structdef(hkList_TYPE) {
-    hkNode_TYPE *head;
-    hkNode_TYPE *tail;
-    usize length;
-};
-
-hkList_TYPE *hklist_TYPE_create();
-void hklist_TYPE_append(hkList_TYPE *list, TYPE data);
-void hklist_TYPE_destroy(hkList_TYPE **list);
+hkList_TYPE	*hklist_TYPE_new(void *content);
+usize	hklist_TYPE_size(hkList_TYPE *lst);
+hkList_TYPE	*hklist_TYPE_last(hkList_TYPE *lst);
+void	hklist_TYPE_iter(hkList_TYPE *lst, void (*f)(void *));
+void	hklist_TYPE_add_front(hkList_TYPE **lst, hkList_TYPE *new);
+void	hklist_TYPE_add_back(hkList_TYPE **lst, hkList_TYPE *new);
 
 #ifdef HK_LIST_IMPL
+hkList_TYPE	*hklist_TYPE_new(void *content)
+{
+	hkList_TYPE	*new;
 
-hkList_TYPE *hklist_TYPE_create() {
-    hkList_TYPE *list = malloc(sizeof(hkList_TYPE));
-    list->head = null;
-    list->tail = null;
-    list->length = 0;
-    return list;
+	new = (hkList_TYPE *)malloc(sizeof(hkList_TYPE));
+	if (!new)
+		return (NULL);
+	new->data = content;
+	new->next = NULL;
+	return (new);
 }
+usize	hklist_TYPE_size(hkList_TYPE *lst)
+{
+	usize	res;
 
-void hklist_TYPE_append(hkList_TYPE *list, TYPE data) {
-    if (!list->head) {
-        list->head = hknode_TYPE_create(data);
-        list->length += 1;
-        return;
-    }
-    if (!list->tail) {
-        list->tail = hknode_TYPE_create(data);
-        list->head->next = list->tail;
-        list->length += 1;
-        return;
-    }
-    hkNode_TYPE *temp = hknode_TYPE_create(data);
-    list->tail->next = temp; 
-    list->tail = temp;
-    list->length += 1;
+	res = 0;
+	while (lst)
+	{
+		lst = lst->next;
+		res++;
+	}
+	return (res);
 }
+hkList_TYPE	*hklist_TYPE_last(hkList_TYPE *lst)
+{
+	while (lst && lst->next)
+		lst = lst->next;
+	return (lst);
+}
+void	hklist_TYPE_iter(hkList_TYPE *lst, void (*f)(void *))
+{
+	hkList_TYPE	*temp;
 
-void hklist_TYPE_destroy(hkList_TYPE **list) {
-    free(*list);
-    *list = null;
+	if (!lst || !f)
+		return ;
+	temp = lst;
+	while (temp)
+	{
+		f(temp->content);
+		temp = temp->next;
+	}
+}
+void	hklist_TYPE_add_front(hkList_TYPE **lst, hkList_TYPE *new)
+{
+	if (!lst || !new)
+		return ;
+	new->next = *lst;
+	*lst = new;
+}
+void	hklist_TYPE_add_back(hkList_TYPE **lst, hkList_TYPE *new)
+{
+	hkList_TYPE	*traversep;
+
+	if (!lst || !new)
+		return ;
+	if (!*lst)
+	{
+		*lst = new;
+		return ;
+	}
+	traversep = *lst;
+	while (traversep->next)
+		traversep = traversep->next;
+	traversep->next = new;
 }
 
 #endif
