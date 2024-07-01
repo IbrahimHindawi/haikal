@@ -11,13 +11,13 @@ structdef(hkList_TYPE) {
     usize length;
 };
 
-hkList_TYPE *hklist_TYPE_create();
-void hklist_TYPE_append(hkList_TYPE *list, TYPE data);
-void hklist_TYPE_destroy(hkList_TYPE **list);
+hkList_TYPE *hkList_TYPE_create();
+void hkList_TYPE_append(hkList_TYPE *list, TYPE data);
+void hkList_TYPE_destroy(hkList_TYPE **list);
 
 #ifdef HK_LIST_IMPL
 
-hkList_TYPE *hklist_TYPE_create() {
+hkList_TYPE *hkList_TYPE_create() {
     hkList_TYPE *list = malloc(sizeof(hkList_TYPE));
     list->head = null;
     list->tail = null;
@@ -25,7 +25,7 @@ hkList_TYPE *hklist_TYPE_create() {
     return list;
 }
 
-void hklist_TYPE_append(hkList_TYPE *list, TYPE data) {
+void hkList_TYPE_append(hkList_TYPE *list, TYPE data) {
     if (!list->head) {
         list->head = hknode_TYPE_create(data);
         list->length += 1;
@@ -43,7 +43,7 @@ void hklist_TYPE_append(hkList_TYPE *list, TYPE data) {
     list->length += 1;
 }
 
-void hklist_TYPE_destroy(hkList_TYPE **list) {
+void hkList_TYPE_destroy(hkList_TYPE **list) {
     free(*list);
     *list = null;
 }

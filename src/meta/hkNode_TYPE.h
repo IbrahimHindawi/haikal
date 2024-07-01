@@ -9,11 +9,11 @@ structdef(hkNode_TYPE) {
     TYPE data;
 };
 
-hkNode_TYPE *hknode_TYPE_create(TYPE data);
-void hknode_TYPE_destroy(hkNode_TYPE **node);
+hkNode_TYPE *hkNode_TYPE_create(TYPE data);
+void hkNode_TYPE_destroy(hkNode_TYPE **node);
 
 #ifdef HKNODE_IMPL
-hkNode_TYPE *hknode_TYPE_create(TYPE data) {
+hkNode_TYPE *hkNode_TYPE_create(TYPE data) {
     hkNode_TYPE *node = malloc(sizeof(hkNode_TYPE));
     if (node) {
         node->next = NULL;
@@ -22,7 +22,7 @@ hkNode_TYPE *hknode_TYPE_create(TYPE data) {
     return node;
 }
 
-void hknode_TYPE_destroy(hkNode_TYPE **node) {
+void hkNode_TYPE_destroy(hkNode_TYPE **node) {
     free(*node);
     *node = NULL;
 }

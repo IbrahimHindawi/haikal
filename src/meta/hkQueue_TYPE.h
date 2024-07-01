@@ -11,15 +11,15 @@ structdef(hkQueue_TYPE) {
     usize length;
 };
 
-hkQueue_TYPE *hkqueue_TYPE_create();
-void hkqueue_TYPE_enqueue(hkQueue_TYPE *queue, TYPE data);
-hkNode_TYPE *hkqueue_TYPE_dequeue(hkQueue_TYPE *queue);
-hkNode_TYPE *hkqueue_TYPE_peek(hkQueue_TYPE *queue);
-void hkqueue_TYPE_destroy(hkQueue_TYPE **queue);
+hkQueue_TYPE *hkQueue_TYPE_create();
+void hkQueue_TYPE_enqueue(hkQueue_TYPE *queue, TYPE data);
+hkNode_TYPE *hkQueue_TYPE_dequeue(hkQueue_TYPE *queue);
+hkNode_TYPE *hkQueue_TYPE_peek(hkQueue_TYPE *queue);
+void hkQueue_TYPE_destroy(hkQueue_TYPE **queue);
 
 #ifdef HKQUEUE_IMPL
 
-hkQueue_TYPE *hkqueue_TYPE_create() {
+hkQueue_TYPE *hkQueue_TYPE_create() {
     hkQueue_TYPE *queue = malloc(sizeof(hkQueue_TYPE));
     queue->head = NULL;
     queue->tail = NULL;
@@ -27,7 +27,7 @@ hkQueue_TYPE *hkqueue_TYPE_create() {
     return queue;
 }
 
-void hkqueue_TYPE_enqueue(hkQueue_TYPE *queue, TYPE data) {
+void hkQueue_TYPE_enqueue(hkQueue_TYPE *queue, TYPE data) {
     if (!queue->head) {
         queue->head = hknode_TYPE_create(data);
         queue->length += 1;
@@ -45,7 +45,7 @@ void hkqueue_TYPE_enqueue(hkQueue_TYPE *queue, TYPE data) {
     queue->length += 1;
 }
 
-hkNode_TYPE *hkqueue_TYPE_dequeue(hkQueue_TYPE *queue) {
+hkNode_TYPE *hkQueue_TYPE_dequeue(hkQueue_TYPE *queue) {
     if (!queue->head) {
         return NULL;
     }
@@ -55,11 +55,11 @@ hkNode_TYPE *hkqueue_TYPE_dequeue(hkQueue_TYPE *queue) {
     return temp_head;
 }
 
-hkNode_TYPE *hkqueue_TYPE_peek(hkQueue_TYPE *queue) { 
+hkNode_TYPE *hkQueue_TYPE_peek(hkQueue_TYPE *queue) { 
     return queue->head; 
 }
 
-void hkqueue_TYPE_destroy(hkQueue_TYPE **queue) {
+void hkQueue_TYPE_destroy(hkQueue_TYPE **queue) {
     free(*queue);
     *queue = NULL;
 }

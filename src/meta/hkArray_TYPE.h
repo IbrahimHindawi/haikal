@@ -11,15 +11,15 @@ structdef(hkArray_TYPE) {
     size_t border;
 };
 
-hkArray_TYPE hkarray_TYPE_create(size_t length);
-void hkarray_TYPE_destroy(hkArray_TYPE *array);
-TYPE *hkarray_TYPE_resize(hkArray_TYPE *array, size_t new_border);
-TYPE *hkarray_TYPE_append(hkArray_TYPE *array, TYPE elem);
-int hkarray_TYPE_is_empty(hkArray_TYPE *array);
+hkArray_TYPE hkArray_TYPE_create(size_t length);
+void hkArray_TYPE_destroy(hkArray_TYPE *array);
+TYPE *hkArray_TYPE_resize(hkArray_TYPE *array, size_t new_border);
+TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem);
+int hkArray_TYPE_is_empty(hkArray_TYPE *array);
 
 #ifdef HKARRAY_IMPL
 
-hkArray_TYPE hkarray_TYPE_create(size_t length) {
+hkArray_TYPE hkArray_TYPE_create(size_t length) {
     hkArray_TYPE array = {0};
     if (length == 0) {
         array.unit_size = sizeof(TYPE);
@@ -42,7 +42,7 @@ hkArray_TYPE hkarray_TYPE_create(size_t length) {
     return array;
 }
 
-void hkarray_TYPE_destroy(hkArray_TYPE *array) {
+void hkArray_TYPE_destroy(hkArray_TYPE *array) {
     array->border = 0;
     array->length = 0;
     array->unit_size = 0;
@@ -50,7 +50,7 @@ void hkarray_TYPE_destroy(hkArray_TYPE *array) {
 }
 
 // Resize border: Should be a private function.
-TYPE *hkarray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
+TYPE *hkArray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
     size_t old_border = array->border;
     array->border *= 2;
     // array->border = new_border;
@@ -71,11 +71,11 @@ TYPE *hkarray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
     return array->data;
 }
 
-TYPE *hkarray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
+TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
     if (array->length == 0 && array->border == 0) { 
         array->length += 1;
         array->border += 1;
-        hkarray_TYPE_resize(array, array->border);
+        hkArray_TYPE_resize(array, array->border);
         array->data[array->length - 1] = elem;
         // char *cursor = (char *)array->data;
         // memcpy(cursor, elem, array->unit_size);
@@ -84,7 +84,7 @@ TYPE *hkarray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
     if (array->length == array->border ) {
         array->border *= 2;
         // TODO: check if it zeroes out properly
-        hkarray_TYPE_resize(array, array->border);
+        hkArray_TYPE_resize(array, array->border);
     }
     array->length += 1;
     array->data[array->length - 1] = elem;
@@ -93,7 +93,7 @@ TYPE *hkarray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
     return array->data;
 }
 
-int hkarray_TYPE_is_empty(hkArray_TYPE *array) {
+int hkArray_TYPE_is_empty(hkArray_TYPE *array) {
     return array->length == 0 ? 1 : 0;
 }
 
