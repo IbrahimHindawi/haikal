@@ -303,7 +303,7 @@ int main(int argc, char *argv[]) {
 
     struct bstrList *lines;
     Node_bstring *head = NULL;
-    bstring hktag = bfromcstr("//haikal@");
+    bstring hktag = bfromcstr("haikal@");
 
     if (NULL != (input = fopen(bdata(cpath), "r"))) {
         bstring b = bread((bNread) fread, input);
@@ -316,11 +316,11 @@ int main(int argc, char *argv[]) {
                 // printf("%04d: %s\n", i, bdatae(lines->entry[i], "NULL"));
                 int found = binstr(lines->entry[i], 0, hktag);
                 if (found != BSTR_ERR) {
-                    printf("haikal tag detected in main.c: %s\n", bdata(lines->entry[i]));
+                    printf("haikal tag detected in main.c: '%s'\n", bdata(lines->entry[i]));
                     // printf("%s\n", bdata(iter->data));
                     if (head == NULL) {
                         head = Node_bstring_create(lines->entry[i], found);
-                        printf("head initalized with: %s\n", bdata(head->data));
+                        printf("head initalized with: '%s'\n", bdata(head->data));
                     }
                     Node_bstring *iter = head;
                     while (iter->next != NULL) {
@@ -334,25 +334,25 @@ int main(int argc, char *argv[]) {
             if (head != NULL) {
                 printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(head->data), head->foundat, head->next);
                 iter = head;
-                while (iter->next != NULL) {
+                while (iter != NULL) {
                     bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
                     struct bstrList *hkCommand = bsplit(result, ':');
                     printf("hkCommand[0] = %s\n", bdata(hkCommand->entry[0]));
                     printf("haikal::metainit::%s\n", bdata(hkCommand->entry[0]));
                     metainit(bdata(hkCommand->entry[0]));
-                    iter = iter->next;
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
+                    iter = iter->next;
                 }
                 iter = head;
-                while (iter->next != NULL) {
+                while (iter != NULL) {
                     bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
                     // printf("result = %s\n", bdata(result));
                     struct bstrList *hkCommand = bsplit(result, ':');
                     printf("haikal::metagen::%s\n", bdata(hkCommand->entry[0]));
                     printf("hkCommand[1] = %s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]));
                     metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]));
-                    iter = iter->next;
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
+                    iter = iter->next;
                 }
             } else {
                 printf("metagen::main::error::linkedlist is empty!\n");
