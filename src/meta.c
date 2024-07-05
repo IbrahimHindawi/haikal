@@ -306,7 +306,6 @@ int main(int argc, char *argv[]) {
     struct bstrList *lines;
     Node_bstring *head = NULL;
     bstring hktag = bfromcstr("haikal@");
-
     if (NULL != (input = fopen(bdata(cpath), "r"))) {
         bstring b = bread((bNread) fread, input);
         fclose(input);
