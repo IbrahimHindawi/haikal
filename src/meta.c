@@ -40,6 +40,8 @@ Node_bstring *Node_bstring_create(bstring input, i32 foundat) {
 }
 
 void Node_bstring_destroy(Node_bstring *node) {
+    Node_bstring *destroyer = node;
+    // while (node->
     bdestroy(node->data);
     // node->next = 
 }
@@ -310,9 +312,6 @@ int main(int argc, char *argv[]) {
         fclose(input);
         if (NULL != (lines = bsplit(b, '\n'))) {
             for (int i = 0; i < lines->qty; ++i) {
-                // bfindreplace(lines->entry[i], stubinclude, emptystr, 0);
-                // bfindreplace(lines->entry[i], typestr, typemetastr, 0);
-                // binsert(lines->entry[i], blength(lines->entry[i]), &postfix, '?');
                 // printf("%04d: %s\n", i, bdatae(lines->entry[i], "NULL"));
                 int found = binstr(lines->entry[i], 0, hktag);
                 if (found != BSTR_ERR) {
@@ -321,39 +320,40 @@ int main(int argc, char *argv[]) {
                     if (head == NULL) {
                         head = Node_bstring_create(lines->entry[i], found);
                         printf("head initalized with: '%s'\n", bdata(head->data));
+                    } else {
+                        Node_bstring *iter = head;
+                        while (iter->next != NULL) {
+                            iter = iter->next;
+                        }
+                        iter->next = Node_bstring_create(lines->entry[i], found);
                     }
-                    Node_bstring *iter = head;
-                    while (iter->next != NULL) {
-                        iter = iter->next;
-                    }
-                    // bug: head is initalized so append happens twice!
-                    iter->next = Node_bstring_create(lines->entry[i], found);
                 }
             }
             Node_bstring *iter = head;
             if (head != NULL) {
-                printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(head->data), head->foundat, head->next);
                 iter = head;
                 while (iter != NULL) {
                     bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
                     struct bstrList *hkCommand = bsplit(result, ':');
-                    printf("hkCommand[0] = %s\n", bdata(hkCommand->entry[0]));
                     printf("haikal::metainit::%s\n", bdata(hkCommand->entry[0]));
+                    printf("\thkCommand[0] = %s\n", bdata(hkCommand->entry[0]));
                     metainit(bdata(hkCommand->entry[0]));
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
                     iter = iter->next;
                 }
+                printf("haikal::metainit::complete.\n\n");
                 iter = head;
                 while (iter != NULL) {
                     bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
                     // printf("result = %s\n", bdata(result));
                     struct bstrList *hkCommand = bsplit(result, ':');
                     printf("haikal::metagen::%s\n", bdata(hkCommand->entry[0]));
-                    printf("hkCommand[1] = %s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]));
+                    printf("\thkCommand[1] = %s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]));
                     metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]));
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
                     iter = iter->next;
                 }
+                printf("haikal::metagen::complete.\n\n");
             } else {
                 printf("metagen::main::error::linkedlist is empty!\n");
             }
