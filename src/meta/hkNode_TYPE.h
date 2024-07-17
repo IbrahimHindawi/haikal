@@ -27,3 +27,4 @@ void hkNode_TYPE_destroy(hkNode_TYPE **node) {
     *node = NULL;
 }
 #endif
+#undef HKNODE_IMPL
