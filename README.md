@@ -7,11 +7,12 @@ Code should be easy to debug & works great with LSPs.
 - example: [c-init](https://github.com/IbrahimHindawi/c-init)
 ## Usage:
 - To generate the files to `metapath`, build and invoke the `haikal` program from the your root directory.  
-- To add custom types, edit the `[meta]` section & simply include the headers before including the data structure.
+- To generate custom types, add a `//haikal@container:type` in your code & simply include the headers.
 - `#include <hkArray.h>` to include all generated `hkArray` types.
 ## Code example:  
 The `i32` in this instance could be any data type:  
 ```c
+//haikal@hkArray:i32
 hkArray_i32 array = hkarray_i32_create(12);
 array.data[0] = 0x19;
 hkarray_i32_destroy(&array);
@@ -21,11 +22,6 @@ Haikal uses toml for configuration. For example:
 ```toml
 [core]
 metapath = "extern/haikal/src/meta/" # where to generate files to
-[meta]
-hkArray = ["SomeType"] # generate hkArray_SomeType + functions
-hkNode = ["Vector"]
-hkQueue = []
-hkList = ["Vector"]
 ```
 ## Data Structures:  
 - hkArray: growable heap allocated array.
