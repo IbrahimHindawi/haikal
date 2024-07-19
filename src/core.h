@@ -30,6 +30,40 @@ typedef str * strptr;
 // typedef str * cstrptr;
 
 #define stringify(s) #s
+#define concat(a, b) a##b
 #define pi 3.141592f
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
 #define structdef(structname) typedef struct structname structname; struct structname
+
+#define def_eq_prot(t) bool t##_eq(t a, t b);
+#define def_eq_body(t) bool t##_eq(t a, t b) { return a == b; }
+
+def_eq_prot(f32);
+def_eq_prot(f64);
+def_eq_prot(u8);
+def_eq_prot(u16);
+def_eq_prot(u32);
+def_eq_prot(u64);
+def_eq_prot(i8);
+def_eq_prot(i16);
+def_eq_prot(i32);
+def_eq_prot(i64);
+def_eq_prot(usize);
+def_eq_prot(str);
+def_eq_prot(strptr);
+
+#ifdef CORE_IMPL
+def_eq_body(f32);
+def_eq_body(f64);
+def_eq_body(u8);
+def_eq_body(u16);
+def_eq_body(u32);
+def_eq_body(u64);
+def_eq_body(i8);
+def_eq_body(i16);
+def_eq_body(i32);
+def_eq_body(i64);
+def_eq_body(usize);
+def_eq_body(str);
+def_eq_body(strptr);
+#endif
