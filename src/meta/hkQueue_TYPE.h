@@ -55,6 +55,10 @@ hkNode_TYPE *hkQueue_TYPE_dequeue(hkQueue_TYPE *queue) {
     hkNode_TYPE *result = queue->head;
     queue->head = queue->head->next;
     result->next = NULL;
+
+    if (queue->length == 0) {
+        queue->tail = NULL;
+    }
     return result;
 }
 
