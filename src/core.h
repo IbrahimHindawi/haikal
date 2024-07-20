@@ -35,8 +35,8 @@ typedef str * strptr;
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
 #define structdef(structname) typedef struct structname structname; struct structname
 
-#define def_eq_prot(t) bool t##_eq(t a, t b);
-#define def_eq_body(t) bool t##_eq(t a, t b) { return a == b; }
+#define def_eq_prot(T) bool T##_eq(T a, T b);
+#define def_eq_body(T) bool T##_eq(T a, T b) { return a == b; }
 
 def_eq_prot(f32);
 def_eq_prot(f64);

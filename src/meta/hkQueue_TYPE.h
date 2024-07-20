@@ -16,7 +16,9 @@ void hkQueue_TYPE_enqueue(hkQueue_TYPE *queue, TYPE data);
 hkNode_TYPE *hkQueue_TYPE_dequeue(hkQueue_TYPE *queue);
 hkNode_TYPE *hkQueue_TYPE_peek(hkQueue_TYPE *queue);
 void hkQueue_TYPE_destroy(hkQueue_TYPE **queue);
+void hkQueue_TYPE_print(hkQueue_TYPE *queue);
 
+// #define HKQUEUE_IMPL 1
 #ifdef HKQUEUE_IMPL
 
 hkQueue_TYPE *hkQueue_TYPE_create() {
@@ -29,30 +31,31 @@ hkQueue_TYPE *hkQueue_TYPE_create() {
 
 void hkQueue_TYPE_enqueue(hkQueue_TYPE *queue, TYPE data) {
     if (!queue->head) {
-        queue->head = hknode_TYPE_create(data);
+        queue->head = hkNode_TYPE_create(data);
         queue->length += 1;
         return;
     }
     if (!queue->tail) {
-        queue->tail = hknode_TYPE_create(data);
+        queue->tail = hkNode_TYPE_create(data);
         queue->head->next = queue->tail;
         queue->length += 1;
         return;
     }
-    hkNode_TYPE *temp = hknode_TYPE_create(data);
-    queue->tail->next = temp; 
-    queue->tail = temp;
     queue->length += 1;
+    hkNode_TYPE *node = hkNode_TYPE_create(data);
+    queue->tail->next = node; 
+    queue->tail = node;
 }
 
 hkNode_TYPE *hkQueue_TYPE_dequeue(hkQueue_TYPE *queue) {
     if (!queue->head) {
         return NULL;
     }
-    hkNode_TYPE *temp_head = queue->head;
-    queue->head = queue->head->next;
     queue->length -= 1;
-    return temp_head;
+    hkNode_TYPE *result = queue->head;
+    queue->head = queue->head->next;
+    result->next = NULL;
+    return result;
 }
 
 hkNode_TYPE *hkQueue_TYPE_peek(hkQueue_TYPE *queue) { 
@@ -62,6 +65,16 @@ hkNode_TYPE *hkQueue_TYPE_peek(hkQueue_TYPE *queue) {
 void hkQueue_TYPE_destroy(hkQueue_TYPE **queue) {
     free(*queue);
     *queue = NULL;
+}
+
+void hkQueue_TYPE_print(hkQueue_TYPE *queue) { 
+    hkNode_TYPE *iter = queue->head; 
+    printf("Queue length = %d\n", queue->length);
+    while (iter) { 
+        printf("queue: {%d, %p}\n", iter->data, iter->next); 
+        iter = iter->next; 
+    }
+    // printf("\n");
 }
 
 #endif
