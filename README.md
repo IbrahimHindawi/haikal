@@ -1,5 +1,6 @@
 # haikal هيكل
 Haikal uses metaprogramming to generate C code as a pre-build step.  
+Haikal monomorphises C files and writes them to be included.  
 Code should be easy to debug & works great with LSPs.  
 ## Installation:
 - Add `haikal` as a git submodule to your project and build the program.  
@@ -26,6 +27,8 @@ metapath = "extern/haikal/src/meta/" # where to generate files to
 ## Data Structures:  
 - hkArray: growable heap allocated array.
 - hkList/hkNode: singly linked list.
+- hkDList/hkBiNode: doubly linked list.
+- hkStack/hkNode: stack.
 - hkQueue: queue
 ## Limitations:
 Cannot add pointer types to `[meta]` unless `typedef`ed. Could automate the process by detecting the pointer and auto `typedef`ing it.  
