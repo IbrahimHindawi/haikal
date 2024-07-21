@@ -7,7 +7,6 @@
 
 structdef(hkList_TYPE) {
     hkNode_TYPE *head;
-    hkNode_TYPE *tail;
     usize length;
 };
 
@@ -22,12 +21,11 @@ hkNode_TYPE *hkList_TYPE_get_at(hkList_TYPE *list, i32 index);
 void hkList_TYPE_destroy(hkList_TYPE **list);
 void hkList_TYPE_print(hkList_TYPE *list);
 
-// #define HKLIST_IMPL 1
+#define HKLIST_IMPL
 #ifdef HKLIST_IMPL
 hkList_TYPE *hkList_TYPE_create() {
     hkList_TYPE *list = malloc(sizeof(hkList_TYPE));
     list->head = NULL;
-    list->tail = NULL;
     list->length = 0;
     return list;
 }
@@ -40,7 +38,12 @@ void hkList_TYPE_insert_at(hkList_TYPE *list, TYPE item, i32 index) {
     if (index > list->length - 1 || index < 0) {
         printf("invalid index\n");
         return;
+    } else if (list->length == index) {
+        hkList_TYPE_append(list, item);
+    } else if (index == 0) {
+        hkList_TYPE_prepend(list, item);
     }
+    list->length += 1;
     hkNode_TYPE *iter = list->head;
     i32 count = 0;
     while (iter) {
@@ -67,25 +70,19 @@ void hkList_TYPE_append(hkList_TYPE *list, TYPE item) {
         list->length += 1;
         return;
     }
-    if (!list->tail) {
-        list->tail = hkNode_TYPE_create(item);
-        list->head->next = list->tail;
-        list->length += 1;
-        return;
-    }
     hkNode_TYPE *temp = hkNode_TYPE_create(item);
-    list->tail->next = temp; 
-    list->tail = temp;
     list->length += 1;
 }
 
 void hkList_TYPE_prepend(hkList_TYPE *list, TYPE item) {
-    hkNode_TYPE *prependnode = hkNode_TYPE_create(item);
+    hkNode_TYPE *prepend_node = hkNode_TYPE_create(item);
     list->length += 1;
     if (!list->head) {
-        list->head = prependnode;
+        list->head = prepend_node;
         return;
     }
+    prepend_node->next = list->head;
+    list->head = prepend_node;
 }
 
 usize hkList_TYPE_get_length(hkList_TYPE *list) {
