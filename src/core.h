@@ -24,16 +24,17 @@ typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
 typedef size_t usize;
-typedef const char * str;
-typedef str * strptr;
-// typedef char * cstr;
-// typedef str * cstrptr;
+
+typedef void *voidptr;
+typedef i8 *str;
+typedef const str *cstr;
 
 #define stringify(s) #s
 #define concat(a, b) a##b
 #define pi 3.141592f
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
 #define structdef(structname) typedef struct structname structname; struct structname
+#define cast(T, V) (T)(V)
 
 #define def_eq_prot(T) bool T##_eq(T a, T b);
 #define def_eq_body(T) bool T##_eq(T a, T b) { return a == b; }
@@ -49,8 +50,6 @@ def_eq_prot(i16);
 def_eq_prot(i32);
 def_eq_prot(i64);
 def_eq_prot(usize);
-def_eq_prot(str);
-def_eq_prot(strptr);
 
 #ifdef CORE_IMPL
 def_eq_body(f32);
@@ -64,6 +63,4 @@ def_eq_body(i16);
 def_eq_body(i32);
 def_eq_body(i64);
 def_eq_body(usize);
-def_eq_body(str);
-def_eq_body(strptr);
 #endif

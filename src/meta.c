@@ -165,43 +165,37 @@ int metagen(str metaname, str genname) {
     return 0;
 }
 
-int metacore(str metaname) {
+void metacore(str metaname) {
     const char *coretypes[] = {
-        "i8",
-        "i16",
-        "i32",
-        "i64",
-        "u8",
-        "u16",
-        "u32",
-        "u64",
-        "f32",
-        "f64",
-        "str",
-        "strptr",
+        "i8", "i16", "i32", "i64",
+        "u8", "u16", "u32", "u64",
+        "f32", "f64",
+        "str", "cstr",
     };
     const i8 coretypeslen = sizeofarray(coretypes);
     for (int i = 0; i < coretypeslen; ++i) {
+        metainit(metaname);
+    }
+    for (int i = 0; i < coretypeslen; ++i) {
         metagen(metaname, coretypes[i]);
     }
-    return 0;
+}
+
+void metapayload() {
+    const char *coretypes[] = {
+        "hkArray",
+        "hkList", "hkNode",
+        "hkDList", "hkBiNode",
+        "hkQueue", "hkStack",
+    };
+    const i8 coretypeslen = sizeofarray(coretypes);
+    for (int i = 0; i < coretypeslen; ++i) {
+        metacore(coretypes[i]);
+    }
 }
 
 int main(int argc, char *argv[]) {
     printf("haikal::CodeGen::Initialize.\n");
-
-    // metainit("hkNode");
-    // metacore("hkNode");
-
-    // metainit("hkList");
-    // metacore("hkList");
-
-    // metainit("hkQueue");
-    // metacore("hkQueue");
-
-    // metainit("hkArray");
-    // metacore("hkArray");
-    // metagen("hkArray", "CustomType");
 
     char *cwdstr = getCurrentWorkingDirectory();
     printf("haikal::main::cwd::%s\n", cwdstr);
@@ -365,6 +359,8 @@ int main(int argc, char *argv[]) {
     } else {
         printf("metagen::main::error::Unable to open main.c file.\n");
     }
+
+    // metapayload();
 
     printf("haikal::CodeGen::Finalize.\n");
     return 0;
