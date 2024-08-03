@@ -29,6 +29,10 @@ typedef void *voidptr;
 typedef i8 *str;
 typedef const str *cstr;
 
+#define internal static
+#define global static
+#define localpersist static
+
 #define stringify(s) #s
 #define concat(a, b) a##b
 #define pi 3.141592f

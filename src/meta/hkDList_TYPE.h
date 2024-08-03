@@ -23,7 +23,7 @@ hkBiNode_TYPE *hkDList_TYPE_get_at(hkDList_TYPE *list, i32 index);
 void hkDList_TYPE_destroy(hkDList_TYPE **list);
 void hkDList_TYPE_print(hkDList_TYPE *list);
 
-#define HKDLIST_IMPL
+// #define HKDLIST_IMPL
 #ifdef HKDLIST_IMPL
 hkDList_TYPE *hkDList_TYPE_create() {
     hkDList_TYPE *list = malloc(sizeof(hkDList_TYPE));
