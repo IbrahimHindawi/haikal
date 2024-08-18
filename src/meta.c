@@ -19,7 +19,8 @@
 #endif
 
 #include "core.h"
-#include <bstrlib.h>
+#include "jsmn.h"
+#include "bstring/bstring/bstrlib.h"
 #include <toml-c.h>
 
 const char *metapath = NULL;
@@ -267,36 +268,17 @@ int main(int argc, char *argv[]) {
                     // printf("  haikal::metagen::index[%d]: %s\n", i, toml_array_string(arr, i).u.s);
                     // metagen(key, toml_array_string(arr, i).u.s);
                 }
-                printf("\n");
+                // printf("\n");
             }
         }
 	}
 
     bstring cpath = bfromcstr(cwdstr);
+    // get this main path from toml
+    // TODO(ibrahim): parse files with main recursively to find hktags
     bstring cmainpath = bfromcstr("/src/main.c");
     bconcat(cpath, cmainpath);
     printf("haikal::main::cpath::%s\n", bdata(cpath));
-    // input = fopen(bdata(cpath), "r");
-    // if (!input) {
-    //     printf("haikal::Failed to open main.c\n");
-	// 	exit(1);
-    // }
-    // fseek(input, 0L, SEEK_END);
-    // file_size = ftell(input);
-    // // printf("haikal::toml::file::size::%llu\n", file_size);
-    // // fseek(input, 0L, SEEK_SET);
-    // rewind(input);
-    // buffer = malloc(file_size);
-    // if (!buffer) {
-    //     printf("failed to allocate memory for input c file.\n");
-    // }
-    // ret = fread(buffer, sizeof(*buffer), file_size, input);
-    // buffer[ret] = '\0';
-    // printf("%s\n", buffer);
-    // // printf("ret = %lu, sizeofarray(buffer) = %ld\n", ret, sizeofarray(buffer));
-    // // if (ret != sizeofarray(buffer)) { fprintf(stderr, "fread() failed: %zu\n", ret); exit(EXIT_FAILURE); }
-    // fclose(input);
-
     struct bstrList *lines;
     Node_bstring *head = NULL;
     bstring hktag = bfromcstr("haikal@");
