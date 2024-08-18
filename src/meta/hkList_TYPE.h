@@ -21,7 +21,7 @@ hkNode_TYPE *hkList_TYPE_get_at(hkList_TYPE *list, i32 index);
 void hkList_TYPE_destroy(hkList_TYPE **list);
 void hkList_TYPE_print(hkList_TYPE *list);
 
-#define HKLIST_IMPL
+// #define HKLIST_IMPL
 #ifdef HKLIST_IMPL
 hkList_TYPE *hkList_TYPE_create() {
     hkList_TYPE *list = malloc(sizeof(hkList_TYPE));
