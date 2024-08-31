@@ -33,9 +33,13 @@ typedef const str *cstr;
 #define global static
 #define localpersist static
 
+#define Kilobytes(N) ((u64)(N) * 1024)
+#define Megabytes(N) ((u64)Kilobytes(N) * 1024)
+#define Gigabytes(N) ((u64)Megabytes(N) * 1024)
+
 #define stringify(s) #s
 #define concat(a, b) a##b
-#define pi 3.141592f
+#define Pi 3.141592f
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
 #define structdef(structname) typedef struct structname structname; struct structname
 #define cast(T, V) (T)(V)
