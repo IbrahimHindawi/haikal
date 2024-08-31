@@ -19,7 +19,7 @@
 #endif
 
 #include "core.h"
-#include "jsmn.h"
+// #include "jsmn.h"
 #include "bstring/bstring/bstrlib.h"
 #include <toml-c.h>
 
@@ -276,7 +276,8 @@ int main(int argc, char *argv[]) {
     bstring cpath = bfromcstr(cwdstr);
     // get this main path from toml
     // TODO(ibrahim): parse files with main recursively to find hktags
-    bstring cmainpath = bfromcstr("/src/main.c");
+    // bstring cmainpath = bfromcstr("/src/main.c");
+    bstring cmainpath = bfromcstr("/src/win32_njin.c");
     bconcat(cpath, cmainpath);
     printf("haikal::main::cpath::%s\n", bdata(cpath));
     struct bstrList *lines;
