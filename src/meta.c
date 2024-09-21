@@ -277,7 +277,7 @@ int main(int argc, char *argv[]) {
     // get this main path from toml
     // TODO(ibrahim): parse files with main recursively to find hktags
     // bstring cmainpath = bfromcstr("/src/main.c");
-    bstring cmainpath = bfromcstr("/src/win32_njin.c");
+    bstring cmainpath = bfromcstr("/src/main.c");
     bconcat(cpath, cmainpath);
     printf("haikal::main::cpath::%s\n", bdata(cpath));
     struct bstrList *lines;
