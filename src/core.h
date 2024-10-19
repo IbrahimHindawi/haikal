@@ -41,6 +41,7 @@ typedef const str *cstr;
 #define concat(a, b) a##b
 #define Pi 3.141592f
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
+#define structdecl(structname) typedef struct structname structname
 #define structdef(structname) typedef struct structname structname; struct structname
 #define cast(T, V) (T)(V)
 

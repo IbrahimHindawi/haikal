@@ -97,7 +97,10 @@ int metagen(str metaname, str genname) {
     struct bstrList *lines;
     struct tagbstring postfix = bsStatic("\n");
     bstring stubinclude = bfromcstr("#include \"TYPE.h\"");
-    bstring emptystr = bfromcstr("");
+    bstring targetstr = bfromcstr("");
+    // bstring targetstr = bfromcstr("structdecl(");
+    // bconcat(targetstr, bfromcstr(genname));
+    // bconcat(targetstr, bfromcstr(");"));
 
     // char *cwdstr = getCurrentWorkingDirectory();
     bstring typecorepath = bfromcstr(metapath);
@@ -124,7 +127,7 @@ int metagen(str metaname, str genname) {
         fclose(input);
         if (NULL != (lines = bsplit(b, '\n'))) {
             for (int i = 0; i < lines->qty; ++i) {
-                bfindreplace(lines->entry[i], stubinclude, emptystr, 0);
+                bfindreplace(lines->entry[i], stubinclude, targetstr, 0);
                 bfindreplace(lines->entry[i], typestr, typemetastr, 0);
                 binsert(lines->entry[i], blength(lines->entry[i]), &postfix, '?');
                 // printf("%04d: %s\n", i, bdatae(lines->entry[i], "NULL"));
