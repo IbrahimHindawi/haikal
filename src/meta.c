@@ -158,7 +158,8 @@ int metagen(char *metaname, char *genname, char *forwarddeclparam) {
         bconcat(result, typename);
         bcatcstr(result, "_");
         bcatcstr(result, genname);
-        bcatcstr(result, ".h\"\n");
+        bcatcstr(result, ".h");
+        bcatcstr(result, "\"\n");
         // printf("final header name: %s\n", bdata(result));
         fputs(bdatae(result, "NULL"), output);
         bdestroy(result);
@@ -316,8 +317,10 @@ int main(int argc, char *argv[]) {
                     bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
                     struct bstrList *hkCommand = bsplit(result, ':');
                     printf("haikal::metainit::%s\n", bdata(hkCommand->entry[0]));
+
                     printf("\thkCommand[0] = %s\n", bdata(hkCommand->entry[0]));
-                    metainit(bdata(hkCommand->entry[0]));
+                    metainit(bdata(hkCommand->entry[0]), ".h");
+                    metainit(bdata(hkCommand->entry[0]), ".c");
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
                     iter = iter->next;
                 }
