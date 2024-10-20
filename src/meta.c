@@ -67,7 +67,7 @@ char *getCurrentWorkingDirectory() {
  * initialize main header:
  * genpath/metaname.h
  */
-void metainit(str metaname) {
+void metainit(char *metaname) {
     // char *cwdstr = getCurrentWorkingDirectory();
     // bstring typecorepath = bfromcstr(cwdstr);
     bstring typecorepath = bfromcstr(metapath);
@@ -91,48 +91,49 @@ void metainit(str metaname) {
  * generate types and append to main header
  * genpath/metaname.h <---append--- genpath/metaname_genname.h
  */
-int metagen(str metaname, str genname) {
+int metagen(char *metaname, char *genname, char *forwarddeclparam) {
     FILE *input = NULL;
     FILE *output = NULL;
     struct bstrList *lines;
     struct tagbstring postfix = bsStatic("\n");
     bstring stubinclude = bfromcstr("#include \"TYPE.h\"");
-    bstring targetstr = bfromcstr("");
-    // bstring targetstr = bfromcstr("structdecl(");
-    // bconcat(targetstr, bfromcstr(genname));
-    // bconcat(targetstr, bfromcstr(");"));
+    // bstring forwarddecl = bfromcstr("");
+    bstring forwarddecl = bfromcstr(forwarddeclparam);
+    bconcat(forwarddecl, bfromcstr("("));
+    bconcat(forwarddecl, bfromcstr(genname));
+    bconcat(forwarddecl, bfromcstr(");"));
 
     // char *cwdstr = getCurrentWorkingDirectory();
-    bstring typecorepath = bfromcstr(metapath);
-    // bcatcstr(typecorepath, "/src/meta/");
-    bstring typecore = bfromcstr(metaname);
-    bstring typestr = bfromcstr("TYPE");
-    bconcat(typecorepath, typecore);
-    bcatcstr(typecorepath, "_");
-    bconcat(typecorepath, typestr);
-    bcatcstr(typecorepath, ".h");
-    // printf("typecorepath: %s\n", bdata(typecorepath));
-
     bstring typemetapath = bfromcstr(metapath);
-    bcatcstr(typemetapath, "gen/");
-    bstring typemetastr = bfromcstr(genname);
-    bconcat(typemetapath, typecore);
+    // bcatcstr(typemetapath, "/src/meta/");
+    bstring typemeta = bfromcstr(metaname);
+    bstring typestr = bfromcstr("TYPE");
+    bconcat(typemetapath, typemeta);
     bcatcstr(typemetapath, "_");
-    bconcat(typemetapath, typemetastr);
+    bconcat(typemetapath, typestr);
     bcatcstr(typemetapath, ".h");
     // printf("typemetapath: %s\n", bdata(typemetapath));
 
-    if (NULL != (input = fopen(bdata(typecorepath), "r"))) {
+    bstring outpath = bfromcstr(metapath);
+    bcatcstr(outpath, "gen/");
+    bstring outstr = bfromcstr(genname);
+    bconcat(outpath, typemeta);
+    bcatcstr(outpath, "_");
+    bconcat(outpath, outstr);
+    bcatcstr(outpath, ".h");
+    // printf("outpath: %s\n", bdata(outpath));
+
+    if (NULL != (input = fopen(bdata(typemetapath), "r"))) {
         bstring b = bread((bNread) fread, input);
         fclose(input);
         if (NULL != (lines = bsplit(b, '\n'))) {
             for (int i = 0; i < lines->qty; ++i) {
-                bfindreplace(lines->entry[i], stubinclude, targetstr, 0);
-                bfindreplace(lines->entry[i], typestr, typemetastr, 0);
+                bfindreplace(lines->entry[i], stubinclude, forwarddecl, 0);
+                bfindreplace(lines->entry[i], typestr, outstr, 0);
                 binsert(lines->entry[i], blength(lines->entry[i]), &postfix, '?');
                 // printf("%04d: %s\n", i, bdatae(lines->entry[i], "NULL"));
             }
-            if (NULL != (output = fopen(bdata(typemetapath), "w"))) {
+            if (NULL != (output = fopen(bdata(outpath), "w"))) {
                 for (int i = 0; i < lines->qty; ++i) {
                     fputs(bdatae(lines->entry[i], "NULL"), output);
                 }
@@ -169,24 +170,24 @@ int metagen(str metaname, str genname) {
     return 0;
 }
 
-void metacore(str metaname) {
-    const char *coretypes[] = {
+void metacore(char *metaname) {
+    char *coretypes[] = {
         "i8", "i16", "i32", "i64",
         "u8", "u16", "u32", "u64",
         "f32", "f64",
         "str", "cstr",
     };
-    const i8 coretypeslen = sizeofarray(coretypes);
+    i8 coretypeslen = sizeofarray(coretypes);
     for (int i = 0; i < coretypeslen; ++i) {
         metainit(metaname);
     }
     for (int i = 0; i < coretypeslen; ++i) {
-        metagen(metaname, coretypes[i]);
+        metagen(metaname, coretypes[i], "structdecl");
     }
 }
 
 void metapayload() {
-    const char *coretypes[] = {
+    char *coretypes[] = {
         "hkArray",
         "hkList", "hkNode",
         "hkDList", "hkBiNode",
@@ -280,7 +281,7 @@ int main(int argc, char *argv[]) {
     // get this main path from toml
     // TODO(ibrahim): parse files with main recursively to find hktags
     // bstring cmainpath = bfromcstr("/src/main.c");
-    bstring cmainpath = bfromcstr("/src/main.c");
+    bstring cmainpath = bfromcstr("/src/win32_njin.c");
     bconcat(cpath, cmainpath);
     printf("haikal::main::cpath::%s\n", bdata(cpath));
     struct bstrList *lines;
@@ -327,8 +328,14 @@ int main(int argc, char *argv[]) {
                     // printf("result = %s\n", bdata(result));
                     struct bstrList *hkCommand = bsplit(result, ':');
                     printf("haikal::metagen::%s\n", bdata(hkCommand->entry[0]));
-                    printf("\thkCommand[1] = %s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]));
-                    metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]));
+                    printf("\thkCommand[1] = %s:%s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), bdata(hkCommand->entry[2]));
+                    if (strcmp(bdata(hkCommand->entry[2]), "s") == 0) {
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl");
+                    } else if (strcmp(bdata(hkCommand->entry[2]), "u") == 0) {
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "uniondecl");
+                    } else if (strcmp(bdata(hkCommand->entry[2]), "p") == 0) {
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl");
+                    }
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
                     iter = iter->next;
                 }
