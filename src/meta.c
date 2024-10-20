@@ -19,7 +19,7 @@
 #endif
 
 #include "core.h"
-#include "jsmn.h"
+// #include "jsmn.h"
 #include "bstring/bstring/bstrlib.h"
 #include <toml-c.h>
 
@@ -67,13 +67,13 @@ char *getCurrentWorkingDirectory() {
  * initialize main header:
  * genpath/metaname.h
  */
-void metainit(str metaname) {
+void metainit(char *metaname, const char *fmt) {
     // char *cwdstr = getCurrentWorkingDirectory();
     // bstring typecorepath = bfromcstr(cwdstr);
     bstring typecorepath = bfromcstr(metapath);
     bcatcstr(typecorepath, "gen/");
     bcatcstr(typecorepath, metaname);
-    bcatcstr(typecorepath, ".h");
+    bcatcstr(typecorepath, fmt);
     // printf("typecorepath: %s\n", bdata(typecorepath));
     FILE *output = NULL;
     if (NULL != (output = fopen(bdata(typecorepath), "w"))) {
@@ -91,7 +91,7 @@ void metainit(str metaname) {
  * generate types and append to main header
  * genpath/metaname.h <---append--- genpath/metaname_genname.h
  */
-int metagen(str metaname, str genname) {
+int metagen(char *metaname, char *genname, char *fmt) {
     FILE *input = NULL;
     FILE *output = NULL;
     struct bstrList *lines;
@@ -107,8 +107,8 @@ int metagen(str metaname, str genname) {
     bconcat(typecorepath, typecore);
     bcatcstr(typecorepath, "_");
     bconcat(typecorepath, typestr);
-    bcatcstr(typecorepath, ".h");
-    // printf("typecorepath: %s\n", bdata(typecorepath));
+    bcatcstr(typecorepath, fmt);
+    printf("typecorepath: %s\n", bdata(typecorepath));
 
     bstring typemetapath = bfromcstr(metapath);
     bcatcstr(typemetapath, "gen/");
@@ -116,7 +116,7 @@ int metagen(str metaname, str genname) {
     bconcat(typemetapath, typecore);
     bcatcstr(typemetapath, "_");
     bconcat(typemetapath, typemetastr);
-    bcatcstr(typemetapath, ".h");
+    bcatcstr(typemetapath, fmt);
     // printf("typemetapath: %s\n", bdata(typemetapath));
 
     if (NULL != (input = fopen(bdata(typecorepath), "r"))) {
@@ -146,7 +146,7 @@ int metagen(str metaname, str genname) {
     bstring typecorepathtarget = bfromcstr(metapath);
     bcatcstr(typecorepathtarget, "gen/");
     bcatcstr(typecorepathtarget, metaname);
-    bcatcstr(typecorepathtarget, ".h");
+    bcatcstr(typecorepathtarget, fmt);
     // printf("typecorepathtarget: %s\n", bdata(typecorepathtarget));
     if (NULL != (output = fopen(bdata(typecorepathtarget), "a"))) {
         bstring result = bfromcstr("#include \"");
@@ -154,7 +154,8 @@ int metagen(str metaname, str genname) {
         bconcat(result, typename);
         bcatcstr(result, "_");
         bcatcstr(result, genname);
-        bcatcstr(result, ".h\"\n");
+        bcatcstr(result, fmt);
+        bcatcstr(result, "\"\n");
         // printf("final header name: %s\n", bdata(result));
         fputs(bdatae(result, "NULL"), output);
         bdestroy(result);
@@ -166,8 +167,8 @@ int metagen(str metaname, str genname) {
     return 0;
 }
 
-void metacore(str metaname) {
-    const char *coretypes[] = {
+void metacore(char *metaname) {
+    char *coretypes[] = {
         "i8", "i16", "i32", "i64",
         "u8", "u16", "u32", "u64",
         "f32", "f64",
@@ -175,15 +176,15 @@ void metacore(str metaname) {
     };
     const i8 coretypeslen = sizeofarray(coretypes);
     for (int i = 0; i < coretypeslen; ++i) {
-        metainit(metaname);
+        metainit(metaname, ".h");
     }
     for (int i = 0; i < coretypeslen; ++i) {
-        metagen(metaname, coretypes[i]);
+        metagen(metaname, coretypes[i], ".h");
     }
 }
 
 void metapayload() {
-    const char *coretypes[] = {
+    char *coretypes[] = {
         "hkArray",
         "hkList", "hkNode",
         "hkDList", "hkBiNode",
@@ -311,8 +312,10 @@ int main(int argc, char *argv[]) {
                     bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
                     struct bstrList *hkCommand = bsplit(result, ':');
                     printf("haikal::metainit::%s\n", bdata(hkCommand->entry[0]));
+
                     printf("\thkCommand[0] = %s\n", bdata(hkCommand->entry[0]));
-                    metainit(bdata(hkCommand->entry[0]));
+                    metainit(bdata(hkCommand->entry[0]), ".h");
+                    metainit(bdata(hkCommand->entry[0]), ".c");
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
                     iter = iter->next;
                 }
@@ -324,7 +327,8 @@ int main(int argc, char *argv[]) {
                     struct bstrList *hkCommand = bsplit(result, ':');
                     printf("haikal::metagen::%s\n", bdata(hkCommand->entry[0]));
                     printf("\thkCommand[1] = %s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]));
-                    metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]));
+                    metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), ".h");
+                    metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), ".c");
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
                     iter = iter->next;
                 }
