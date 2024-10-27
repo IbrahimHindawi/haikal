@@ -319,8 +319,9 @@ int main(int argc, char *argv[]) {
                     printf("haikal::metainit::%s\n", bdata(hkCommand->entry[0]));
 
                     printf("\thkCommand[0] = %s\n", bdata(hkCommand->entry[0]));
-                    metainit(bdata(hkCommand->entry[0]), ".h");
-                    metainit(bdata(hkCommand->entry[0]), ".c");
+                    metainit(bdata(hkCommand->entry[0]));
+                    // metainit(bdata(hkCommand->entry[0]), ".h");
+                    // metainit(bdata(hkCommand->entry[0]), ".c");
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
                     iter = iter->next;
                 }
