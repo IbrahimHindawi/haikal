@@ -24,6 +24,7 @@
 #include <toml-c.h>
 
 const char *metapath = NULL;
+const char *mainpath = NULL;
 
 structdef(Node_bstring) {
     bstring data;
@@ -82,7 +83,7 @@ void metainit(char *metaname) {
         bdestroy(result);
         fclose(output);
     } else {
-        printf("metainit::Unable to open type core gen file for initiation.\n");
+        printf("metainit::Unable to open type core gen file: '%s' for initiation.\n", bdata(typecorepath));
         exit(-1);
     }
 }
@@ -249,7 +250,15 @@ int main(int argc, char *argv[]) {
 			printf("haikal::core::key[%d]::%s\n", i, key);
             // theres only one key so no need to check...
             toml_value_t metapath_value = toml_table_string(core_tbl, "metapath");
+            if (!metapath_value.ok) {
+                printf("haikal::core::haikal.toml missing metapath attribute.\n");
+            }
             metapath = metapath_value.u.s;
+            toml_value_t mainpath_value = toml_table_string(core_tbl, "mainpath");
+            if (!mainpath_value.ok) {
+                printf("haikal::core::haikal.toml missing mainpath attribute.\n");
+            }
+            mainpath = mainpath_value.u.s;
         }
     }
     printf("haikal::core::metapath::%s\n", metapath);
@@ -278,12 +287,12 @@ int main(int argc, char *argv[]) {
         }
 	}
 
-    bstring cpath = bfromcstr(cwdstr);
-    // get this main path from toml
     // TODO(ibrahim): parse files with main recursively to find hktags
-    // bstring cmainpath = bfromcstr("/src/main.c");
-    bstring cmainpath = bfromcstr("/src/win32_njin.c");
-    bconcat(cpath, cmainpath);
+    bstring cpath;
+    // cpath = bfromcstr(cwdstr);
+    // bconchar(cpath, '/');
+    cpath = bfromcstr("");
+    bconcat(cpath, cstr2bstr(mainpath));
     printf("haikal::main::cpath::%s\n", bdata(cpath));
     struct bstrList *lines;
     Node_bstring *head = NULL;
@@ -331,7 +340,14 @@ int main(int argc, char *argv[]) {
                     bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
                     // printf("result = %s\n", bdata(result));
                     struct bstrList *hkCommand = bsplit(result, ':');
-                    printf("haikal::metagen::%s\n", bdata(hkCommand->entry[0]));
+                    // printf("haikal::metagen::%s\n", bdata(hkCommand->entry[0]));
+                    // printf("haikal::metagen::%s\n", bdata(hkCommand->entry[1]));
+                    // printf("haikal::metagen::%s\n", bdata(hkCommand->entry[2]));
+                    printf("haikal::metagen::%d\n", hkCommand->qty);
+                    if (hkCommand->qty != 3) {
+                        printf("haikal::metagen::error::entry '%s' is missing type specifier.\n", bdata(result));
+                        exit(-1);
+                    }
                     printf("\thkCommand[1] = %s:%s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), bdata(hkCommand->entry[2]));
                     if (strcmp(bdata(hkCommand->entry[2]), "s") == 0) {
                         metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl");
