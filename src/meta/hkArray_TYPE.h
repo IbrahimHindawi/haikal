@@ -6,7 +6,6 @@
 
 structdef(hkArray_TYPE) {
     TYPE *data;
-    size_t unit_size;
     size_t length;
     size_t border;
 };
@@ -17,26 +16,25 @@ TYPE *hkArray_TYPE_resize(hkArray_TYPE *array, size_t new_border);
 TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem);
 int hkArray_TYPE_is_empty(hkArray_TYPE *array);
 
+#define HKARRAY_IMPL
 #ifdef HKARRAY_IMPL
 
 hkArray_TYPE hkArray_TYPE_create(size_t length) {
     hkArray_TYPE array = {0};
     if (length == 0) {
-        array.unit_size = sizeof(TYPE);
         array.length = length;
         array.data = NULL;
         array.border = 0;
         return array;
     }
-    array.unit_size = sizeof(TYPE);
     array.length = length;
-    array.data = malloc(array.unit_size * length);
+    array.data = malloc(sizeof(TYPE) * length);
     if (array.data == NULL) {
         printf("Memory Allocation Failure!");
         exit(-1);
     }
     // #ifdef DEBUG
-    memset(array.data, 0, array.unit_size * length);
+    memset(array.data, 0, sizeof(TYPE) * length);
     // #endif
     array.border = length;
     return array;
@@ -45,17 +43,15 @@ hkArray_TYPE hkArray_TYPE_create(size_t length) {
 void hkArray_TYPE_destroy(hkArray_TYPE *array) {
     array->border = 0;
     array->length = 0;
-    array->unit_size = 0;
     free(array->data);
 }
 
-// Resize border: Should be a private function.
 TYPE *hkArray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
     size_t old_border = array->border;
     array->border *= 2;
     // array->border = new_border;
     new_border = array->border;
-    array->data = realloc(array->data, array->unit_size * array->border);
+    array->data = realloc(array->data, sizeof(TYPE) * array->border);
     if (array->data == NULL) {
         printf("Memory Reallocation Failure!");
         exit(-1);
@@ -64,7 +60,7 @@ TYPE *hkArray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
     if (new_border > old_border) {
         size_t border_difference = new_border - old_border;
         char *cursor = (char *)array->data;
-        memset(cursor + (array->unit_size * old_border), 0, array->unit_size * border_difference);
+        memset(cursor + (sizeof(TYPE) * old_border), 0, sizeof(TYPE) * border_difference);
     }
     // #endif
     array->border = new_border;
@@ -75,7 +71,8 @@ TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
     if (array->length == 0 && array->border == 0) { 
         array->length += 1;
         array->border += 1;
-        hkArray_TYPE_resize(array, array->border);
+        // hkArray_TYPE_resize(array, array->border);
+        array->data = realloc(NULL, sizeof(TYPE) * array->border);
         array->data[array->length - 1] = elem;
         // char *cursor = (char *)array->data;
         // memcpy(cursor, elem, array->unit_size);
