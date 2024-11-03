@@ -22,9 +22,9 @@ int hkArray_TYPE_is_empty(hkArray_TYPE *array);
 hkArray_TYPE hkArray_TYPE_create(size_t length) {
     hkArray_TYPE array = {0};
     if (length == 0) {
-        array.length = length;
-        array.data = NULL;
+        array.length = 0;
         array.border = 0;
+        array.data = NULL;
         return array;
     }
     array.length = length;
