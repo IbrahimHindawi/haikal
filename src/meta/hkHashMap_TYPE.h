@@ -6,7 +6,7 @@
 
 structdef(hkHashMapEntry_TYPE) {
     const char *key;
-    TYPE *val;
+    TYPE val;
 };
 
 structdef(hkHashMap_TYPE) {
@@ -17,18 +17,18 @@ structdef(hkHashMap_TYPE) {
 
 structdef(hkHashMapIterator_TYPE) {
     const char *key;
-    TYPE *val;
+    TYPE val;
     hkHashMap_TYPE *_hashmap;
     usize _index;
 };
 
-static uint64_t hash_key(const char* key);
+static u64 hkHashMap_TYPE_hash_key(const char* key);
 static bool hkHashMap_TYPE_expand(hkHashMap_TYPE* hashmap);
-static const char *hkHashMap_TYPE_set_entry(hkHashMapEntry_TYPE *entries, usize border, const char *key, TYPE *val, usize *plength);
+static const char *hkHashMap_TYPE_set_entry(hkHashMapEntry_TYPE *entries, usize border, const char *key, TYPE val, usize *plength);
 hkHashMap_TYPE *hkHashMap_TYPE_create();
 void hkHashMap_TYPE_destroy(hkHashMap_TYPE *hashmap);
 TYPE *hkHashMap_TYPE_get(hkHashMap_TYPE *hashmap, const char *key);
-const char *hkHashMap_TYPE_set(hkHashMap_TYPE *hashmap, const char *key, TYPE *value);
+const char *hkHashMap_TYPE_set(hkHashMap_TYPE *hashmap, const char *key, TYPE val);
 usize hkHashMap_TYPE_length(hkHashMap_TYPE *hashmap);
 hkHashMapIterator_TYPE hkHashMapIterator_TYPE_create(hkHashMap_TYPE* hashmap);
 bool hkHashMapIterator_TYPE_next(hkHashMapIterator_TYPE* it);
@@ -38,10 +38,10 @@ bool hkHashMapIterator_TYPE_next(hkHashMapIterator_TYPE* it);
 
 // Return 64-bit FNV-1a hash for key (NUL-terminated). See description:
 // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
-static uint64_t hash_key(const char* key) {
-    uint64_t hash = FNV_OFFSET;
+static u64 hkHashMap_TYPE_hash_key(const char* key) {
+    u64 hash = FNV_OFFSET;
     for (const char* p = key; *p; p++) {
-        hash ^= (uint64_t)(unsigned char)(*p);
+        hash ^= (u64)(unsigned char)(*p);
         hash *= FNV_PRIME;
     }
     return hash;
@@ -73,8 +73,8 @@ static bool hkHashMap_TYPE_expand(hkHashMap_TYPE* hashmap) {
     return true;
 }
 
-static const char *hkHashMap_TYPE_set_entry(hkHashMapEntry_TYPE *entries, usize border, const char *key, TYPE *val, usize *plength) {
-    u64 hash = hash_key(key);
+static const char *hkHashMap_TYPE_set_entry(hkHashMapEntry_TYPE *entries, usize border, const char *key, TYPE val, usize *plength) {
+    u64 hash = hkHashMap_TYPE_hash_key(key);
     usize index = (usize)(hash & (u64)(border - 1));
     while (entries[index].key) {
         if (strcmp(key, entries[index].key) == 0) {
@@ -118,19 +118,19 @@ hkHashMap_TYPE *hkHashMap_TYPE_create() {
 }
 
 void hkHashMap_TYPE_destroy(hkHashMap_TYPE *hashmap) {
-    for (i32 i = 0; i < hashmap->border; i++) {
-        free((void *)hashmap->entries[i].key);
-    }
+    // for (i32 i = 0; i < hashmap->border; i++) {
+    //     free((void *)hashmap->entries[i].key);
+    // }
     free(hashmap->entries);
     free(hashmap);
 }
 
 TYPE *hkHashMap_TYPE_get(hkHashMap_TYPE *hashmap, const char *key) {
-    u64 hash = hash_key(key);
+    u64 hash = hkHashMap_TYPE_hash_key(key);
     usize index = (usize)(hash & (u64)(hashmap->border - 1));
     while (hashmap->entries[index].key != NULL) {
         if (strcmp(key, hashmap->entries[index].key) == 0) {
-            return hashmap->entries[index].val;
+            return &hashmap->entries[index].val;
         }
         index += 1;
         if (index >= hashmap->border) {
@@ -140,17 +140,17 @@ TYPE *hkHashMap_TYPE_get(hkHashMap_TYPE *hashmap, const char *key) {
     return NULL;
 }
 
-const char *hkHashMap_TYPE_set(hkHashMap_TYPE *hashmap, const char *key, TYPE *value) {
-    assert(value != NULL);
-    if (!value) {
-        return NULL;
-    }
+const char *hkHashMap_TYPE_set(hkHashMap_TYPE *hashmap, const char *key, TYPE val) {
+    // assert(val != NULL);
+    // if (!val) {
+    //     return NULL;
+    // }
     if (hashmap->length >= hashmap->border / 2) {
         if(!hkHashMap_TYPE_expand(hashmap)) {
             return NULL;
         }
     }
-    return hkHashMap_TYPE_set_entry(hashmap->entries, hashmap->border, key, value, &hashmap->length);
+    return hkHashMap_TYPE_set_entry(hashmap->entries, hashmap->border, key, val, &hashmap->length);
 }
 
 usize hkHashMap_TYPE_length(hkHashMap_TYPE *hashmap) {
@@ -171,7 +171,7 @@ bool hkHashMapIterator_TYPE_next(hkHashMapIterator_TYPE* it) {
         size_t i = it->_index;
         it->_index++;
         if (hashmap->entries[i].key != NULL) {
-            // Found next non-empty item, update iterator key and value.
+            // Found next non-empty item, update iterator key and val.
             hkHashMapEntry_TYPE entry = hashmap->entries[i];
             it->key = entry.key;
             it->val = entry.val;
