@@ -86,7 +86,7 @@ static const char *hkHashMap_TYPE_set_entry(hkHashMapEntry_TYPE *entries, usize 
             index = 0;
         }
     }
-    if (!plength) {
+    if (plength) {
         key = _strdup(key);
         if (!key) {
             return NULL;
@@ -128,7 +128,7 @@ void hkHashMap_TYPE_destroy(hkHashMap_TYPE *hashmap) {
 TYPE *hkHashMap_TYPE_get(hkHashMap_TYPE *hashmap, const char *key) {
     u64 hash = hkHashMap_TYPE_hash_key(key);
     usize index = (usize)(hash & (u64)(hashmap->border - 1));
-    while (hashmap->entries[index].key != NULL) {
+    while (hashmap->entries[index].key) {
         if (strcmp(key, hashmap->entries[index].key) == 0) {
             return &hashmap->entries[index].val;
         }
