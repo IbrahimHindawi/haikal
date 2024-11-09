@@ -33,3 +33,20 @@ metapath = "extern/haikal/src/meta/" # where to generate files to
 ## Limitations:
 Cannot add pointer types to `[meta]` unless `typedef`ed. Could automate the process by detecting the pointer and auto `typedef`ing it.  
 For example: `int *` will become `typedef int *intptr` and then you can generate `hkArray_intptr`.  
+## Monomorphization Codegen Limitations:
+TODO: Automate header placement:  
+
+For containers that have value types eg `T`:
+- the type must be included before the generated header.
+- this is because the container expects to know the type in it's struct.
+- Warning: cannot be recursive type
+
+For containers that have pointer types eg `T *`:
+- the type can be included before or after the generated header.
+- this is because the container has `T` forward declared.
+- Warning: can be recursive type
+
+For types that include a container of themselves eg `struct T { hkArray_T arr; };`:
+- the type must be included after the generated header.
+- this is because the type needs to know the container definition.
+- Warning: can be recursive type with `T *` but not `T`
