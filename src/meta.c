@@ -361,6 +361,9 @@ int main(int argc, char *argv[]) {
                     } else if (strcmp(bdata(hkCommand->entry[2]), "p") == 0) {
                         metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".h");
                         metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".c");
+                    } else if (strcmp(bdata(hkCommand->entry[2]), "e") == 0) {
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".h");
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".c");
                     }
                     printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
                     iter = iter->next;
