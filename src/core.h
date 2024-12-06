@@ -26,8 +26,10 @@ typedef int64_t i64;
 typedef size_t usize;
 
 typedef void *voidptr;
-typedef i8 *str;
-typedef const str *cstr;
+// typedef i8 *str;
+// typedef const str *cstr;
+typedef const char *str;
+typedef str *strptr;
 
 #define internal static
 #define global static
