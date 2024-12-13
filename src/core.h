@@ -26,8 +26,10 @@ typedef int64_t i64;
 typedef size_t usize;
 
 typedef void *voidptr;
-typedef i8 *str;
-typedef const str *cstr;
+// typedef i8 *str;
+// typedef const str *cstr;
+typedef const char *str;
+typedef str *strptr;
 
 #define internal static
 #define global static
@@ -41,11 +43,15 @@ typedef const str *cstr;
 #define concat(a, b) a##b
 #define Pi 3.141592f
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
-#define structdef(structname) typedef struct structname structname; struct structname
-#define structdecl(structname) typedef struct structname structname
-#define uniondecl(unionname) typedef union unionname unionname
-#define primdecl(primname)
 #define cast(T, V) (T)(V)
+
+#define primdecl(primname)
+#define enumdecl(enumname) typedef enum enumname enumname
+#define enumdef(enumname) typedef enum enumname enumname; enum enumname
+#define uniondecl(unionname) typedef union unionname unionname
+#define uniondef(unionname) typedef union unionname unionname; union unionname
+#define structdecl(structname) typedef struct structname structname
+#define structdef(structname) typedef struct structname structname; struct structname
 
 #define def_eq_prot(T) bool T##_eq(T a, T b);
 #define def_eq_body(T) bool T##_eq(T a, T b) { return a == b; }
