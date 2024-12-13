@@ -10,8 +10,9 @@ structdef(hkArray_TYPE) {
     size_t border;
 };
 
-hkArray_TYPE hkArray_TYPE_create(size_t length);
-void hkArray_TYPE_destroy(hkArray_TYPE *array);
+hkArray_TYPE *hkArray_TYPE_create();
+void hkArray_TYPE_reserve(hkArray_TYPE *array, size_t length);
 TYPE *hkArray_TYPE_resize(hkArray_TYPE *array, size_t new_border);
 TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem);
 int hkArray_TYPE_is_empty(hkArray_TYPE *array);
+void hkArray_TYPE_destroy(hkArray_TYPE *array);
