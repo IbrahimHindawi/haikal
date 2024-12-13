@@ -2,39 +2,31 @@
 
 #include "hkArray_TYPE.h"
 
-hkArray_TYPE *hkArray_TYPE_create() {
-    hkArray_TYPE *result = malloc(sizeof(hkArray_TYPE));
-    if (!result) {
-        printf("Memory Allocation Failure!");
-        return NULL;
-        exit(-1);
-    }
-    result->data = NULL;
-    result->border = 0;
-    result->length = 0;
-    return result;
-}
-
-void hkArray_TYPE_reserve(hkArray_TYPE *array, size_t length) {
+hkArray_TYPE hkArray_TYPE_create(size_t length) {
+    hkArray_TYPE array = {0};
     if (length == 0) {
-        array->length = 0;
-        array->border = 0;
-        if (array->data) {
-            free(array->data);
-        }
-        array->data = NULL;
-        return;
+        array.length = 0;
+        array.border = 0;
+        array.data = NULL;
+        return array;
     }
-    array->length = length;
-    array->data = realloc(array->data, sizeof(TYPE) * length);
-    if (array->data == NULL) {
+    array.length = length;
+    array.data = malloc(sizeof(TYPE) * length);
+    if (array.data == NULL) {
         printf("Memory Allocation Failure!");
         exit(-1);
     }
     // #ifdef DEBUG
-    // memset(array->data, 0, sizeof(TYPE) * length);
+    memset(array.data, 0, sizeof(TYPE) * length);
     // #endif
-    array->border = length;
+    array.border = length;
+    return array;
+}
+
+void hkArray_TYPE_destroy(hkArray_TYPE *array) {
+    array->border = 0;
+    array->length = 0;
+    free(array->data);
 }
 
 TYPE *hkArray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
@@ -83,10 +75,4 @@ TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
 
 int hkArray_TYPE_is_empty(hkArray_TYPE *array) {
     return array->length == 0 ? 1 : 0;
-}
-
-void hkArray_TYPE_destroy(hkArray_TYPE *array) {
-    array->border = 0;
-    array->length = 0;
-    free(array->data);
 }
