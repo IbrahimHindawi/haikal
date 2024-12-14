@@ -6,12 +6,12 @@
 
 structdef(hkArray_TYPE) {
     TYPE *data;
-    size_t length;
-    size_t border;
+    u64 length;
+    u64 border;
 };
 
-hkArray_TYPE hkArray_TYPE_create(size_t length);
+hkArray_TYPE hkArray_TYPE_create(u64 length);
 void hkArray_TYPE_destroy(hkArray_TYPE *array);
-TYPE *hkArray_TYPE_resize(hkArray_TYPE *array, size_t new_border);
+TYPE *hkArray_TYPE_resize(hkArray_TYPE *array);
 TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem);
 int hkArray_TYPE_is_empty(hkArray_TYPE *array);
