@@ -27,6 +27,7 @@ void hkArray_TYPE_destroy(hkArray_TYPE *array) {
     array->border = 0;
     array->length = 0;
     free(array->data);
+    array->data = NULL;
 }
 
 TYPE *hkArray_TYPE_resize(hkArray_TYPE *array, size_t new_border) {
