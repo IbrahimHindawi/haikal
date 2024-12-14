@@ -70,7 +70,7 @@ TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
     array->data[array->length - 1] = elem;
     // char *cursor = (char *)array->data;
     // memcpy(cursor + ((array->length - 1) * array->unit_size), elem, array->unit_size);
-    return array->data;
+    return &array->data[array->length - 1];
 }
 
 int hkArray_TYPE_is_empty(hkArray_TYPE *array) {
