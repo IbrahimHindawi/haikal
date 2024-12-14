@@ -20,18 +20,6 @@ hkArray_TYPE hkArray_TYPE_create(u64 length) {
     return array;
 }
 
-// Function to calculate the next power of two
-unsigned int nextPowerOfTwo(unsigned int n) {
-    if (n == 0) return 1;  // Special case for 0
-    n--;                   // Decrement n to handle cases where n is already a power of two
-    n |= n >> 1;
-    n |= n >> 2;
-    n |= n >> 4;
-    n |= n >> 8;
-    n |= n >> 16;
-    return n + 1;          // Add 1 to get the next power of two
-}
-
 void hkArray_TYPE_destroy(hkArray_TYPE *array) {
     array->border = 0;
     array->length = 0;
@@ -82,3 +70,16 @@ TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
 int hkArray_TYPE_is_empty(hkArray_TYPE *array) {
     return array->length == 0 ? 1 : 0;
 }
+
+// // Function to calculate the next power of two
+// unsigned int nextPowerOfTwo(unsigned int n) {
+//     if (n == 0) return 1;  // Special case for 0
+//     n--;                   // Decrement n to handle cases where n is already a power of two
+//     n |= n >> 1;
+//     n |= n >> 2;
+//     n |= n >> 4;
+//     n |= n >> 8;
+//     n |= n >> 16;
+//     return n + 1;          // Add 1 to get the next power of two
+// }
+
