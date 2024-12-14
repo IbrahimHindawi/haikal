@@ -124,9 +124,11 @@ usize hkHashMap_TYPE_length(hkHashMap_TYPE *hashmap) {
 }
 
 hkHashMapIterator_TYPE hkHashMapIterator_TYPE_create(hkHashMap_TYPE* hashmap) {
-    hkHashMapIterator_TYPE it;
-    it._hashmap = hashmap;
-    it._index = 0;
+    hkHashMapIterator_TYPE it = {0};
+    if (hashmap) {
+        it._hashmap = hashmap;
+        it._index = 0;
+    }
     return it;
 }
 
