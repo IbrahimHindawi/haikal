@@ -1,4 +1,3 @@
-#pragma once
 /* hkNode_TYPE */
 #include <core.h>
 

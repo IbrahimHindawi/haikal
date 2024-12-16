@@ -54,7 +54,7 @@ void hkQueue_TYPE_destroy(hkQueue_TYPE **queue) {
 
 void hkQueue_TYPE_print(hkQueue_TYPE *queue) { 
     hkNode_TYPE *iter = queue->head; 
-    printf("Queue length = %d\n", queue->length);
+    printf("Queue length = %llu\n", queue->length);
     while (iter) { 
         printf("queue: {%d, %p}\n", iter->data, iter->next); 
         iter = iter->next; 

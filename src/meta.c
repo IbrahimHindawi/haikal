@@ -204,7 +204,7 @@ void metapayload() {
 }
 
 int main(int argc, char *argv[]) {
-    printf("haikal::CodeGen::Initialize.\n");
+    printf("haikal::codegen::initialize.\n");
 
     char *cwdstr = getCurrentWorkingDirectory();
     printf("haikal::main::cwd::%s\n", cwdstr);
@@ -213,6 +213,7 @@ int main(int argc, char *argv[]) {
     bstring docpath = bfromcstr(cwdstr);
     bstring docname = bfromcstr("/haikal.toml");
     bconcat(docpath, docname);
+    bool verbose = false;
     printf("haikal::main::docpath::%s\n", bdata(docpath));
     FILE *input = fopen(bdata(docpath), "r");
     if (!input) {
@@ -226,7 +227,7 @@ int main(int argc, char *argv[]) {
     rewind(input);
     char *buffer = malloc(file_size);
     if (!buffer) {
-        printf("failed to allocate memory for input toml.\n");
+        printf("haikal::failed to allocate memory for input toml.\n");
     }
     usize ret;
     ret = fread(buffer, sizeof(*buffer), file_size, input);
@@ -249,7 +250,9 @@ int main(int argc, char *argv[]) {
 		for (int i = 0; i < l; i++) {
 			int keylen;
 			const char *key = toml_table_key(core_tbl, i, &keylen);
-			printf("haikal::core::key[%d]::%s\n", i, key);
+            if (verbose) {
+                printf("haikal::core::key[%d]::%s\n", i, key);
+            }
             // theres only one key so no need to check...
             toml_value_t metapath_value = toml_table_string(core_tbl, "metapath");
             if (!metapath_value.ok) {
@@ -264,7 +267,6 @@ int main(int argc, char *argv[]) {
         }
     }
     printf("haikal::core::metapath::%s\n", metapath);
-    printf("\n");
 
 	toml_table_t *meta_tbl = toml_table_table(tbl, "meta");
 	if (meta_tbl) {
@@ -307,11 +309,13 @@ int main(int argc, char *argv[]) {
                 // printf("%04d: %s\n", i, bdatae(lines->entry[i], "NULL"));
                 int found = binstr(lines->entry[i], 0, hktag);
                 if (found != BSTR_ERR) {
-                    printf("haikal tag detected in main.c: '%s'\n", bdata(lines->entry[i]));
+                    printf("haikal::tag detected in main.c: '%s'\n", bdata(lines->entry[i]));
                     // printf("%s\n", bdata(iter->data));
                     if (head == NULL) {
                         head = Node_bstring_create(lines->entry[i], found);
-                        printf("head initalized with: '%s'\n", bdata(head->data));
+                        if (verbose) {
+                            printf("haikal::head initalized with: '%s'\n", bdata(head->data));
+                        }
                     } else {
                         Node_bstring *iter = head;
                         while (iter->next != NULL) {
@@ -327,17 +331,20 @@ int main(int argc, char *argv[]) {
                 while (iter != NULL) {
                     bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
                     struct bstrList *hkCommand = bsplit(result, ':');
-                    printf("haikal::metainit::%s\n", bdata(hkCommand->entry[0]));
-
-                    printf("\thkCommand[0] = %s\n", bdata(hkCommand->entry[0]));
+                    if (verbose) {
+                        printf("haikal::metainit::%s\n", bdata(hkCommand->entry[0]));
+                        printf("haikal::\thkCommand[0] = %s\n", bdata(hkCommand->entry[0]));
+                    }
                     metainit(bdata(hkCommand->entry[0]), ".h");
                     metainit(bdata(hkCommand->entry[0]), ".c");
                     // metainit(bdata(hkCommand->entry[0]), ".h");
                     // metainit(bdata(hkCommand->entry[0]), ".c");
-                    printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
+                    // printf("haikal::linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
                     iter = iter->next;
                 }
-                printf("haikal::metainit::complete.\n\n");
+                if (verbose) {
+                    printf("haikal::metainit::complete.\n\n");
+                }
                 iter = head;
                 while (iter != NULL) {
                     bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
@@ -346,12 +353,16 @@ int main(int argc, char *argv[]) {
                     // printf("haikal::metagen::%s\n", bdata(hkCommand->entry[0]));
                     // printf("haikal::metagen::%s\n", bdata(hkCommand->entry[1]));
                     // printf("haikal::metagen::%s\n", bdata(hkCommand->entry[2]));
-                    printf("haikal::metagen::%d\n", hkCommand->qty);
+                    if (verbose) {
+                        printf("haikal::metagen::%d\n", hkCommand->qty);
+                    }
                     if (hkCommand->qty != 3) {
                         printf("haikal::metagen::error::entry '%s' is missing type specifier.\n", bdata(result));
                         exit(-1);
                     }
-                    printf("\thkCommand[1] = %s:%s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), bdata(hkCommand->entry[2]));
+                    if (verbose) {
+                        printf("haikal::\thkCommand[1] = %s:%s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), bdata(hkCommand->entry[2]));
+                    }
                     if (strcmp(bdata(hkCommand->entry[2]), "s") == 0) {
                         metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".h");
                         metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".c");
@@ -365,10 +376,14 @@ int main(int argc, char *argv[]) {
                         metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".h");
                         metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".c");
                     }
-                    printf("linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
+                    if (verbose) {
+                        printf("haikal::linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
+                    }
                     iter = iter->next;
                 }
-                printf("haikal::metagen::complete.\n\n");
+                if (verbose) {
+                    printf("haikal::metagen::complete.\n\n");
+                }
             } else {
                 printf("metagen::main::error::linkedlist is empty!\n");
             }

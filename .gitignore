@@ -59,4 +59,4 @@ build/
 vimsess
 scripts/psClang
 src/meta/gen/*
-!src/meta/gen/keepme.txt
+!src/meta/gen/core.h
