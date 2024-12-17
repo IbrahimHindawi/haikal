@@ -47,7 +47,7 @@ void hkStack_TYPE_destroy(hkStack_TYPE **stack) {
 
 void hkStack_TYPE_print(hkStack_TYPE *stack) { 
     hkNode_TYPE *iter = stack->head; 
-    printf("Queue length = %llu\n", stack->length);
+    printf("Stack length = %llu\n", stack->length);
     while (iter) { 
         printf("stack: {%d, %p}\n", iter->data, iter->next); 
         iter = iter->next; 

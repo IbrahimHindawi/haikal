@@ -17,13 +17,22 @@ void hkNode_TYPE_destroy(hkNode_TYPE **node) {
     *node = NULL;
 }
 
-TYPE hkNode_TYPE_value(hkNode_TYPE *node) {
-    TYPE result;
-    if (node) { 
-        result = node->data; 
-    } else {  
-        printf("hkNode_TYPE is NULL.\n"); 
-        exit(1);
-    };
-    return result;
+// no optional types, handled at callsite.
+// maybe add a macro?
+TYPE *hkNode_TYPE_value(hkNode_TYPE *node) {
+    // TYPE result;
+    // if (node) {
+    //     result = node->data;
+    // } else {
+    //     printf("hkNode_TYPE is NULL.\n");
+    //     exit(1);
+    // };
+    // return result;
+    // if (!node) {
+    //     return node->data;
+    // } else {
+    //     printf("node was null!\n");
+    // }
+    // return NULL;
+    return NULL;
 }
