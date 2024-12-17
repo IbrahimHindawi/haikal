@@ -42,11 +42,18 @@ mainpath = "src/main.c"
 - hkQueue: queue.
 - hkHashMap: hashtable.
 ## Current Limitations:
-Problem 1: Cannot instantiate pointer types to `metatype`s unless `typedef`ed.
-Possible Solution: Could automate the process by detecting the pointer and auto `typedef`ing it.  
-For example: `int *` will become `typedef int *intptr` and then you can generate `hkArray_intptr`.  
-Problem 2: In the instatiation declaration, you must hint to `haikal` the type you want to instantiate: `s` for struct, `e` for enum, `p` for primitives or pointers, `u` for union.
-Possible Solution: Detect the type being instantiated, this is non trivial unless we include the compiler to help us!
+1. Cannot instantiate pointer types to `metatype`s unless `typedef`ed.  
+  For example:  
+  `int *` will become `typedef int *intptr` and then you can generate `hkArray_intptr`.  
+  Possible Solution:  
+  Could automate the process by detecting the pointer and auto `typedef`ing it.  
+3. In the instatiation declaration, you must hint to `haikal` the type you want to instantiate:
+  - `s` for struct
+  - `e` for enum
+  - `p` for primitives or pointers
+  - `u` for union.  
+  Possible Solution:  
+  Detect the type being instantiated, this is non trivial unless we include the compiler to get type information.
 ## Include Order Rules:
 For containers that have value types eg `T`:
 - the type must be included before the generated header.
