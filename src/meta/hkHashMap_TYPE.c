@@ -1,10 +1,11 @@
 #include <core.h>
 
 #include "hkHashMap_TYPE.h"
+#include "hkHashMap_TYPE_internal.h"
 
 // Return 64-bit FNV-1a hash for key (NUL-terminated). See description:
 // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
-static u64 hkHashMap_TYPE_hash_key(const char* key) {
+u64 hkHashMap_TYPE_hash_key(const char* key) {
     u64 hash = FNV_OFFSET;
     for (const char* p = key; *p; p++) {
         hash ^= (u64)(unsigned char)(*p);
@@ -13,7 +14,7 @@ static u64 hkHashMap_TYPE_hash_key(const char* key) {
     return hash;
 }
 
-static bool hkHashMap_TYPE_expand(hkHashMap_TYPE* hashmap) {
+bool hkHashMap_TYPE_expand(hkHashMap_TYPE* hashmap) {
     // Allocate new entries array.
     size_t new_capacity = hashmap->border * 2;
     if (new_capacity < hashmap->border) {
@@ -39,7 +40,7 @@ static bool hkHashMap_TYPE_expand(hkHashMap_TYPE* hashmap) {
     return true;
 }
 
-static const char *hkHashMap_TYPE_set_entry(hkHashMapEntry_TYPE *entries, usize border, const char *key, TYPE val, usize *plength) {
+const char *hkHashMap_TYPE_set_entry(hkHashMapEntry_TYPE *entries, usize border, const char *key, TYPE val, usize *plength) {
     u64 hash = hkHashMap_TYPE_hash_key(key);
     usize index = (usize)(hash & (u64)(border - 1));
     while (entries[index].key) {

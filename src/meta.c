@@ -25,6 +25,7 @@
 
 const char *metapath = NULL;
 const char *mainpath = NULL;
+const char *typestr = "TYPE";
 
 structdef(Node_bstring) {
     bstring data;
@@ -88,49 +89,23 @@ void metainit(char *metaname, char *ext) {
     }
 }
 
-/*
- * generate types and append to main header
- * genpath/metaname.h <---append--- genpath/metaname_genname.h
- */
-int metagen(char *metaname, char *genname, char *forwarddeclparam, char *ext) {
+void metareplace(bstring metatypepath, const char *metaarg, bstring forwarddecl, const char *typestr, bstring outpath) {
+    bstring bmetaarg = bfromcstr(metaarg);
     FILE *input = NULL;
     FILE *output = NULL;
-    struct bstrList *lines;
     struct tagbstring postfix = bsStatic("\n");
-    bstring stubinclude = bfromcstr("#include \"TYPE.h\"");
-    // bstring forwarddecl = bfromcstr("");
-    bstring forwarddecl = bfromcstr(forwarddeclparam);
-    bconcat(forwarddecl, bfromcstr("("));
-    bconcat(forwarddecl, bfromcstr(genname));
-    bconcat(forwarddecl, bfromcstr(");"));
-
-    // char *cwdstr = getCurrentWorkingDirectory();
-    bstring typemetapath = bfromcstr(metapath);
-    // bcatcstr(typemetapath, "/src/meta/");
-    bstring typemeta = bfromcstr(metaname);
-    bstring typestr = bfromcstr("TYPE");
-    bconcat(typemetapath, typemeta);
-    bcatcstr(typemetapath, "_");
-    bconcat(typemetapath, typestr);
-    bcatcstr(typemetapath, ext);
-    // printf("typemetapath: %s\n", bdata(typemetapath));
-
-    bstring outpath = bfromcstr(metapath);
-    bcatcstr(outpath, "gen/");
-    bstring outstr = bfromcstr(genname);
-    bconcat(outpath, typemeta);
-    bcatcstr(outpath, "_");
-    bconcat(outpath, outstr);
-    bcatcstr(outpath, ext);
-    // printf("outpath: %s\n", bdata(outpath));
-
-    if (NULL != (input = fopen(bdata(typemetapath), "r"))) {
-        bstring b = bread((bNread) fread, input);
+    bstring btypestr = bfromcstr(typestr);
+    bstring stubinclude = bfromcstr("#include \"");
+    bcatcstr(stubinclude, typestr);
+    bcatcstr(stubinclude, ".h\"");
+    if (NULL != (input = fopen(bdata(metatypepath), "r"))) {
+        bstring filestringdata = bread((bNread) fread, input);
+        struct bstrList *lines;
         fclose(input);
-        if (NULL != (lines = bsplit(b, '\n'))) {
+        if (NULL != (lines = bsplit(filestringdata, '\n'))) {
             for (int i = 0; i < lines->qty; ++i) {
                 bfindreplace(lines->entry[i], stubinclude, forwarddecl, 0);
-                bfindreplace(lines->entry[i], typestr, outstr, 0);
+                bfindreplace(lines->entry[i], btypestr, bmetaarg, 0);
                 binsert(lines->entry[i], blength(lines->entry[i]), &postfix, '?');
                 // printf("%04d: %s\n", i, bdatae(lines->entry[i], "NULL"));
             }
@@ -138,16 +113,50 @@ int metagen(char *metaname, char *genname, char *forwarddeclparam, char *ext) {
                 for (int i = 0; i < lines->qty; ++i) {
                     fputs(bdatae(lines->entry[i], "NULL"), output);
                 }
+                fclose(output);
             }
             else {
-                printf("Failed to open file.");
+                printf("haikal::metagen::error::Failed to open file: %s.\n", bdata(outpath));
             }
             bstrListDestroy(lines);
         }
-        bdestroy(b);
+        bdestroy(filestringdata);
     } else {
-        printf("metagen::Unable to open type core file.");
+        printf("haikal::metagen::error::Unable to open type core file: %s.\n", bdata(metatypepath));
     }
+}
+
+/*
+ * generate types and `#include "hk<metaname>_<metaarg>.h"` append to main header
+ * genpath/metaname.h <---append--- genpath/metaname_metaarg.h
+ */
+void metagen(char *metaname, char *metaarg, char *forwarddeclparam, char *ext, const char *typestr) {
+    // FILE *input = NULL;
+    FILE *output = NULL;
+    bstring forwarddecl = bfromcstr(forwarddeclparam);
+    bcatcstr(forwarddecl, "(");
+    bcatcstr(forwarddecl, metaarg);
+    bcatcstr(forwarddecl, ");");
+
+    bstring metatypepath = bfromcstr(metapath);
+    bcatcstr(metatypepath, metaname);
+    bcatcstr(metatypepath, "_");
+    bcatcstr(metatypepath, typestr);
+    bcatcstr(metatypepath, ext);
+    // printf("metatypepath: %s\n", bdata(metatypepath));
+
+    bstring outpath = bfromcstr(metapath);
+    bcatcstr(outpath, "gen/");
+    bcatcstr(outpath, metaname);
+    bcatcstr(outpath, "_");
+    bcatcstr(outpath, metaarg);
+    bcatcstr(outpath, ext);
+    // printf("outpath: %s\n", bdata(outpath));
+
+    metareplace(metatypepath, metaarg, forwarddecl, typestr, outpath);
+    bdestroy(metatypepath);
+    bdestroy(outpath);
+
     bstring typecorepathtarget = bfromcstr(metapath);
     bcatcstr(typecorepathtarget, "gen/");
     bcatcstr(typecorepathtarget, metaname);
@@ -155,10 +164,9 @@ int metagen(char *metaname, char *genname, char *forwarddeclparam, char *ext) {
     // printf("typecorepathtarget: %s\n", bdata(typecorepathtarget));
     if (NULL != (output = fopen(bdata(typecorepathtarget), "a"))) {
         bstring result = bfromcstr("#include \"");
-        bstring typename = bfromcstr(metaname);
-        bconcat(result, typename);
+        bcatcstr(result, metaname);
         bcatcstr(result, "_");
-        bcatcstr(result, genname);
+        bcatcstr(result, metaarg);
         bcatcstr(result, ext);
         bcatcstr(result, "\"\n");
         // printf("final header name: %s\n", bdata(result));
@@ -169,7 +177,35 @@ int metagen(char *metaname, char *genname, char *forwarddeclparam, char *ext) {
         printf("metainit::Unable to open type core file for initiation.");
     }
     bdestroy(typecorepathtarget);
-    return 0;
+    return;
+}
+
+void metageninternal(char *metaname, char *metaarg, char *forwarddeclparam, char *ext, const char *typestr) {
+    bstring forwarddecl = bfromcstr(forwarddeclparam);
+    bcatcstr(forwarddecl, "(");
+    bcatcstr(forwarddecl, metaarg);
+    bcatcstr(forwarddecl, ");");
+
+    bstring metatypepathinternal = bfromcstr(metapath);
+    bcatcstr(metatypepathinternal, metaname);
+    bcatcstr(metatypepathinternal, "_");
+    bcatcstr(metatypepathinternal, typestr);
+    bcatcstr(metatypepathinternal, "_internal");
+    bcatcstr(metatypepathinternal, ext);
+    // printf("metatypepathinternal: %s\n", bdata(metatypepathinternal));
+
+    bstring outpathinternal = bfromcstr(metapath);
+    bcatcstr(outpathinternal, "gen/");
+    bcatcstr(outpathinternal, metaname);
+    bcatcstr(outpathinternal, "_");
+    bcatcstr(outpathinternal, metaarg);
+    bcatcstr(outpathinternal, "_internal");
+    bcatcstr(outpathinternal, ext);
+    // printf("outpathinternal: %s\n", bdata(outpathinternal));
+
+    metareplace(metatypepathinternal, metaarg, forwarddecl, typestr, outpathinternal);
+    bdestroy(metatypepathinternal);
+    bdestroy(outpathinternal);
 }
 
 void metacore(char *metaname) {
@@ -185,8 +221,8 @@ void metacore(char *metaname) {
         metainit(metaname, ".c");
     }
     for (int i = 0; i < coretypeslen; ++i) {
-        metagen(metaname, coretypes[i], "structdecl", ".h");
-        metagen(metaname, coretypes[i], "structdecl", ".c");
+        metagen(metaname, coretypes[i], "structdecl", ".h", typestr);
+        metagen(metaname, coretypes[i], "structdecl", ".c", typestr);
     }
 }
 
@@ -302,9 +338,9 @@ int main(int argc, char *argv[]) {
     Node_bstring *head = NULL;
     bstring hktag = bfromcstr("haikal@");
     if (NULL != (input = fopen(bdata(cpath), "r"))) {
-        bstring b = bread((bNread) fread, input);
+        bstring filestringdata = bread((bNread) fread, input);
         fclose(input);
-        if (NULL != (lines = bsplit(b, '\n'))) {
+        if (NULL != (lines = bsplit(filestringdata, '\n'))) {
             for (int i = 0; i < lines->qty; ++i) {
                 // printf("%04d: %s\n", i, bdatae(lines->entry[i], "NULL"));
                 int found = binstr(lines->entry[i], 0, hktag);
@@ -364,17 +400,21 @@ int main(int argc, char *argv[]) {
                         printf("haikal::\thkCommand[1] = %s:%s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), bdata(hkCommand->entry[2]));
                     }
                     if (strcmp(bdata(hkCommand->entry[2]), "s") == 0) {
-                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".h");
-                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".c");
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".h", typestr);
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".c", typestr);
+                        metageninternal(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".h", typestr);
                     } else if (strcmp(bdata(hkCommand->entry[2]), "u") == 0) {
-                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "uniondecl", ".h");
-                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "uniondecl", ".c");
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "uniondecl", ".h", typestr);
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "uniondecl", ".c", typestr);
+                        metageninternal(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "uniondecl", ".h", typestr);
                     } else if (strcmp(bdata(hkCommand->entry[2]), "p") == 0) {
-                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".h");
-                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".c");
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".h", typestr);
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".c", typestr);
+                        metageninternal(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".h", typestr);
                     } else if (strcmp(bdata(hkCommand->entry[2]), "e") == 0) {
-                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".h");
-                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".c");
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".h", typestr);
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".c", typestr);
+                        metageninternal(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".h", typestr);
                     }
                     if (verbose) {
                         printf("haikal::linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
@@ -392,7 +432,7 @@ int main(int argc, char *argv[]) {
         } else {
             printf("metagen::main::error::line read error!\n");
         }
-        bdestroy(b);
+        bdestroy(filestringdata);
     } else {
         printf("metagen::main::error::Unable to open main.c file.\n");
     }

@@ -1,7 +1,22 @@
 # haikal هيكل
-Haikal uses metaprogramming to generate C code as a pre-build step.  
-Haikal monomorphises C files and writes them to be included.  
+haikal uses metaprogramming code gen to generate C code as a pre-build step.  
+haikal monomorphises C files and writes them to be included.  
+basically search & replace "TYPE" with your type.
 Code should be easy to debug & works great with LSPs.  
+## Code example:  
+The `i32` in this instance could be any data type:  
+```c
+// haikal@hkArray:i32:p
+hkArray_i32 array = hkarray_i32_create(12);
+array.data[0] = 0x19;
+hkarray_i32_destroy(&array);
+```  
+## Code structure:
+```
+metatype_TYPE.h // public API
+metatype_TYPE_internal.h // private API
+metatype_TYPE.c // implementation
+```
 ## Installation:
 - Add `haikal` as a git submodule to your project and build the program.  
 - Add `haikal.toml` to your project root.
@@ -9,16 +24,9 @@ Code should be easy to debug & works great with LSPs.
 - example: [c-init](https://github.com/IbrahimHindawi/c-init)
 ## Usage:
 - To generate the files to `metapath`, build and invoke the `haikal` program from the your root directory.  
-- To generate custom types, add a `//haikal@container:typename:s` in your code & simply include the headers.
-- `#include <hkArray.h>` to include all generated `hkArray` types.
-## Code example:  
-The `i32` in this instance could be any data type:  
-```c
-//haikal@hkArray:i32:p
-hkArray_i32 array = hkarray_i32_create(12);
-array.data[0] = 0x19;
-hkarray_i32_destroy(&array);
-```  
+- To generate custom types, add a `// haikal@metatype:typename:s` in your code & simply include the headers.
+- `#include <hkArray.h>` to include all generated `hkArray` types public APIs.
+- `#include <hkArray.c>` to include all generated `hkArray` implementations preferably after your `main()`.
 ## Configuration:
 Haikal uses toml for configuration. For example:  
 ```toml
@@ -33,12 +41,13 @@ mainpath = "src/main.c"
 - hkStack/hkNode: stack.
 - hkQueue: queue.
 - hkHashMap: hashtable.
-## Syntactic Limitations:
-Cannot add pointer types to `[meta]` unless `typedef`ed. Could automate the process by detecting the pointer and auto `typedef`ing it.  
+## Current Limitations:
+Problem 1: Cannot instantiate pointer types to `metatype`s unless `typedef`ed.
+Possible Solution: Could automate the process by detecting the pointer and auto `typedef`ing it.  
 For example: `int *` will become `typedef int *intptr` and then you can generate `hkArray_intptr`.  
-## Monomorphization Codegen Include Order Rules:
-TODO: Automate header placement:  
-
+Problem 2: In the instatiation declaration, you must hint to `haikal` the type you want to instantiate: `s` for struct, `e` for enum, `p` for primitives or pointers, `u` for union.
+Possible Solution: Detect the type being instantiated, this is non trivial unless we include the compiler to help us!
+## Include Order Rules:
 For containers that have value types eg `T`:
 - the type must be included before the generated header.
 - this is because the container expects to know the type in it's struct.
@@ -53,3 +62,5 @@ For types that include a container of themselves eg `struct T { hkArray_T arr; }
 - the type must be included after the generated header.
 - this is because the type needs to know the container definition.
 - Warning: can be recursive type with `T *` but not `T`
+
+Possible Solition: Automate header placement, will probably need the compiler to scan the types being instantiated.  

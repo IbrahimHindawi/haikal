@@ -18,9 +18,6 @@ structdef(hkHashMap_TYPE) {
     size_t border;
 };
 
-static u64 hkHashMap_TYPE_hash_key(const char* key);
-static bool hkHashMap_TYPE_expand(hkHashMap_TYPE* hashmap);
-static const char *hkHashMap_TYPE_set_entry(hkHashMapEntry_TYPE *entries, usize border, const char *key, TYPE val, usize *plength);
 hkHashMap_TYPE *hkHashMap_TYPE_create();
 void hkHashMap_TYPE_destroy(hkHashMap_TYPE *hashmap);
 TYPE *hkHashMap_TYPE_get(hkHashMap_TYPE *hashmap, const char *key);
