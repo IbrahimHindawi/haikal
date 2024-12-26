@@ -11,32 +11,32 @@
 // this is because the container has `T` forward declared.
 // Warning: can be recursive type
 //
-// for types that include a container of themselves eg `struct T { hkArray_T arr; };`
+// for types that include a container of themselves eg `struct T { Array_T arr; };`
 // the type must be included after the generated header.
 // this is because the type needs to know the container definition.
 // Warning: can be recursive type with `T *` but not `T`
 //---------------------------------------------------------------------------------------------------
 // primitives
 //---------------------------------------------------------------------------------------------------
-// haikal@hkArray:i8:p
-// haikal@hkArray:i32:p
-// haikal@hkHashMap:i32:p
-// haikal@hkNode:i32:p
-// haikal@hkList:i32:p
-// haikal@hkBiNode:i32:p
-// haikal@hkDList:i32:p
-// haikal@hkQueue:i32:p
-// haikal@hkStack:i32:p
+// haikal@Array:i8:p
+// haikal@Array:i32:p
+// haikal@HashMap:i32:p
+// haikal@Node:i32:p
+// haikal@List:i32:p
+// haikal@BiNode:i32:p
+// haikal@DList:i32:p
+// haikal@Queue:i32:p
+// haikal@Stack:i32:p
 //---------------------------------------------------------------------------------------------------
 // structs
 //---------------------------------------------------------------------------------------------------
-// haikal@hkArray:hkList_i32:s
-// haikal@hkArray:vec3:s
-// haikal@hkArray:Rec:s
-// haikal@hkHashMap:vec3:s
-// haikal@hkHashMap:Rec:s
-// haikal@hkHashMap:hkArray_i8:s
-// haikal@hkHashMap:hkArray_i32:s
+// haikal@Array:List_i32:s
+// haikal@Array:vec3:s
+// haikal@Array:Rec:s
+// haikal@HashMap:vec3:s
+// haikal@HashMap:Rec:s
+// haikal@HashMap:Array_i8:s
+// haikal@HashMap:Array_i32:s
 
 #define CORE_IMPL
 #include <core.h>
@@ -44,30 +44,30 @@
 #include "Arena.h"
 #include "vec3.h"
 
-#include <hkArray.h>
-#include <hkNode.h>
-#include <hkList.h>
-#include <hkBiNode.h>
-#include <hkDList.h>
-#include <hkStack.h>
-#include <hkQueue.h>
+#include <Array.h>
+#include <Node.h>
+#include <List.h>
+#include <BiNode.h>
+#include <DList.h>
+#include <Stack.h>
+#include <Queue.h>
 
 #include "Rec.h"
-#include <hkHashMap.h>
+#include <HashMap.h>
 
 #include "Component.h"
 
-void hkArray_test() {
-    printf("hkArray_test:\n");
-    hkArray_i8 string = hkArray_i8_create(27);
+void Array_test() {
+    printf("Array_test:\n");
+    Array_i8 string = Array_i8_create(27);
     for (i32 i = 0; i < string.length; ++i) {
         string.data[i] = 0b01100000 | i + 1;
     }
     string.data[string.length - 1] = '\0';
     printf("string: %s\n", string.data);
-    hkArray_i8_destroy(&string);
+    Array_i8_destroy(&string);
 
-    hkArray_vec3 vectors = hkArray_vec3_create(10);
+    Array_vec3 vectors = Array_vec3_create(10);
     for (i32 i = 0; i < vectors.length; ++i) {
         vectors.data[i].x = 1.0f;
         vectors.data[i].y = (f32)i;
@@ -76,262 +76,262 @@ void hkArray_test() {
     for (i32 i = 0; i < vectors.length; ++i) { 
         printf("vectors[%d] = {%f, %f, %f}\n", i, vectors.data[i].x, vectors.data[i].y, vectors.data[i].z); 
     }
-    hkArray_vec3_destroy(&vectors);
+    Array_vec3_destroy(&vectors);
 
-    hkArray_i8 arr = {0};
-    hkArray_i8_append(&arr, 127);
-    hkArray_i8_append(&arr, 23);
-    hkArray_i8_append(&arr, 11);
-    hkArray_i8_append(&arr, 8);
-    hkArray_i8_append(&arr, 127);
-    hkArray_i8_append(&arr, 23);
-    hkArray_i8_append(&arr, 11);
-    hkArray_i8_append(&arr, 8);
+    Array_i8 arr = {0};
+    Array_i8_append(&arr, 127);
+    Array_i8_append(&arr, 23);
+    Array_i8_append(&arr, 11);
+    Array_i8_append(&arr, 8);
+    Array_i8_append(&arr, 127);
+    Array_i8_append(&arr, 23);
+    Array_i8_append(&arr, 11);
+    Array_i8_append(&arr, 8);
     for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
     arr.length = 0;
     for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
-    hkArray_i8_append(&arr, 0xBA);
-    hkArray_i8_append(&arr, 0xBA);
-    hkArray_i8_append(&arr, 0xBA);
-    hkArray_i8_append(&arr, 0xBA);
-    hkArray_i8_append(&arr, 0xBA);
-    hkArray_i8_append(&arr, 0xBA);
-    hkArray_i8_append(&arr, 0xBA);
-    hkArray_i8_append(&arr, 0xBA);
+    Array_i8_append(&arr, 0xBA);
+    Array_i8_append(&arr, 0xBA);
+    Array_i8_append(&arr, 0xBA);
+    Array_i8_append(&arr, 0xBA);
+    Array_i8_append(&arr, 0xBA);
+    Array_i8_append(&arr, 0xBA);
+    Array_i8_append(&arr, 0xBA);
+    Array_i8_append(&arr, 0xBA);
     for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
-    hkArray_i8_destroy(&arr);
+    Array_i8_destroy(&arr);
     printf("\n");
 }
 
-void hkList_test() {
-    printf("hkList_test:\n");
-    hkList_i32 loi = {0};
-    hkNode_i32 *node = NULL;
-    hkList_i32_append(&loi, 11);
-    hkList_i32_append(&loi, 22);
-    hkList_i32_append(&loi, 33);
-    hkList_i32_append(&loi, 44);
-    hkList_i32_print(&loi);
+void List_test() {
+    printf("List_test:\n");
+    List_i32 loi = {0};
+    Node_i32 *node = NULL;
+    List_i32_append(&loi, 11);
+    List_i32_append(&loi, 22);
+    List_i32_append(&loi, 33);
+    List_i32_append(&loi, 44);
+    List_i32_print(&loi);
 
-    node = hkList_i32_remove_at(&loi, 0);
+    node = List_i32_remove_at(&loi, 0);
     if (node) {
-        hkNode_i32_destroy(&node);
+        Node_i32_destroy(&node);
     }
-    hkList_i32_print(&loi);
-    node = hkList_i32_remove_at(&loi, 1);
+    List_i32_print(&loi);
+    node = List_i32_remove_at(&loi, 1);
     if (node) {
-        hkNode_i32_destroy(&node);
+        Node_i32_destroy(&node);
     }
-    hkList_i32_print(&loi);
-    node = hkList_i32_remove_at(&loi, 1);
+    List_i32_print(&loi);
+    node = List_i32_remove_at(&loi, 1);
     if (node) {
-        hkNode_i32_destroy(&node);
+        Node_i32_destroy(&node);
     }
-    hkList_i32_print(&loi);
-    node = hkList_i32_remove_at(&loi, 0);
+    List_i32_print(&loi);
+    node = List_i32_remove_at(&loi, 0);
     if (node) {
-        hkNode_i32_destroy(&node);
+        Node_i32_destroy(&node);
     }
-    hkList_i32_print(&loi);
+    List_i32_print(&loi);
     if (loi.length == 0) {
         printf("list is empty\n");
     }
-    hkList_i32_destroy(&loi);
+    List_i32_destroy(&loi);
 
-    printf("hkArray_hkList_i32:\n");
-    hkArray_hkList_i32 arrayoflists = {0};
-    hkList_i32 *list = hkArray_hkList_i32_append(&arrayoflists, (hkList_i32) {0});
+    printf("Array_List_i32:\n");
+    Array_List_i32 arrayoflists = {0};
+    List_i32 *list = Array_List_i32_append(&arrayoflists, (List_i32) {0});
     if (!list) { printf("list invalid!\n"); }
-    hkList_i32_append(list, 32);
-    hkList_i32_append(list, 22);
-    hkList_i32_append(list, 12);
-    hkList_i32_print(list);
-    list = hkArray_hkList_i32_append(&arrayoflists, (hkList_i32) {0});
+    List_i32_append(list, 32);
+    List_i32_append(list, 22);
+    List_i32_append(list, 12);
+    List_i32_print(list);
+    list = Array_List_i32_append(&arrayoflists, (List_i32) {0});
     if (!list) { printf("list invalid!\n"); }
-    hkList_i32_append(list, 16);
-    hkList_i32_append(list, 26);
-    hkList_i32_append(list, 36);
-    hkList_i32_print(list);
+    List_i32_append(list, 16);
+    List_i32_append(list, 26);
+    List_i32_append(list, 36);
+    List_i32_print(list);
     printf("array.length = %llu\n", arrayoflists.length);
     for (i32 i = 0; i < arrayoflists.length; ++i) {
         printf("list[%d] = \n", i);
-        hkList_i32 list = arrayoflists.data[i];
-        hkList_i32_print(&list);
+        List_i32 list = arrayoflists.data[i];
+        List_i32_print(&list);
     }
     printf("\n");
 }
 
-void hkDList_test() {
-    printf("hkDList_test:\n");
-    hkDList_i32 *loi = hkDList_i32_create();
-    hkBiNode_i32 *node = NULL;
-    hkDList_i32_append(loi, 11);
-    hkDList_i32_append(loi, 22);
-    hkDList_i32_append(loi, 33);
-    hkDList_i32_append(loi, 44);
-    hkDList_i32_print(loi);
-    node = hkDList_i32_remove_at(loi, 0); if (node) { hkBiNode_i32_destroy(&node); }
-    hkDList_i32_print(loi);
-    node = hkDList_i32_remove_at(loi, 1); if (node) { hkBiNode_i32_destroy(&node); }
-    hkDList_i32_print(loi);
-    node = hkDList_i32_remove_at(loi, 1); if (node) { hkBiNode_i32_destroy(&node); }
-    hkDList_i32_print(loi);
-    hkDList_i32_destroy(&loi);
+void DList_test() {
+    printf("DList_test:\n");
+    DList_i32 *loi = DList_i32_create();
+    BiNode_i32 *node = NULL;
+    DList_i32_append(loi, 11);
+    DList_i32_append(loi, 22);
+    DList_i32_append(loi, 33);
+    DList_i32_append(loi, 44);
+    DList_i32_print(loi);
+    node = DList_i32_remove_at(loi, 0); if (node) { BiNode_i32_destroy(&node); }
+    DList_i32_print(loi);
+    node = DList_i32_remove_at(loi, 1); if (node) { BiNode_i32_destroy(&node); }
+    DList_i32_print(loi);
+    node = DList_i32_remove_at(loi, 1); if (node) { BiNode_i32_destroy(&node); }
+    DList_i32_print(loi);
+    DList_i32_destroy(&loi);
     printf("\n");
 }
 
-void hkQueue_test() {
-    printf("hkQueue_test:\n");
-    hkQueue_i32 *q = hkQueue_i32_create();
-    hkQueue_i32_print(q);
-    hkQueue_i32_enqueue(q, 0);
-    hkQueue_i32_print(q);
-    hkQueue_i32_enqueue(q, 1);
-    hkQueue_i32_print(q);
-    hkQueue_i32_enqueue(q, 2);
-    hkQueue_i32_print(q);
+void Queue_test() {
+    printf("Queue_test:\n");
+    Queue_i32 *q = Queue_i32_create();
+    Queue_i32_print(q);
+    Queue_i32_enqueue(q, 0);
+    Queue_i32_print(q);
+    Queue_i32_enqueue(q, 1);
+    Queue_i32_print(q);
+    Queue_i32_enqueue(q, 2);
+    Queue_i32_print(q);
 
-    hkNode_i32 *node = NULL;
+    Node_i32 *node = NULL;
     i32 value = 0;
 
-    node = hkQueue_i32_dequeue(q);
-    hkNode_i32_get(node, value);
+    node = Queue_i32_dequeue(q);
+    Node_i32_get(node, value);
     printf("node value: %d\n", value);
-    hkNode_i32_destroy(&node);
-    hkQueue_i32_print(q);
+    Node_i32_destroy(&node);
+    Queue_i32_print(q);
 
-    node = hkQueue_i32_dequeue(q);
-    hkNode_i32_get(node, value);
+    node = Queue_i32_dequeue(q);
+    Node_i32_get(node, value);
     printf("node value: %d\n", value);
-    hkNode_i32_destroy(&node);
-    hkQueue_i32_print(q);
+    Node_i32_destroy(&node);
+    Queue_i32_print(q);
 
-    node = hkQueue_i32_dequeue(q);
-    hkNode_i32_get(node, value);
+    node = Queue_i32_dequeue(q);
+    Node_i32_get(node, value);
     printf("node value: %d\n", value);
-    hkNode_i32_destroy(&node);
-    hkQueue_i32_print(q);
+    Node_i32_destroy(&node);
+    Queue_i32_print(q);
 
-    node = hkQueue_i32_dequeue(q);
-    hkNode_i32_get(node, value);
+    node = Queue_i32_dequeue(q);
+    Node_i32_get(node, value);
     printf("node value: %d\n", value);
-    hkNode_i32_destroy(&node);
-    hkQueue_i32_print(q);
+    Node_i32_destroy(&node);
+    Queue_i32_print(q);
 
-    hkQueue_i32_destroy(&q);
+    Queue_i32_destroy(&q);
     printf("\n");
 }
 
-void hkStack_test() {
-    printf("hkStack_test:\n");
-    hkStack_i32 *stack = hkStack_i32_create();
-    hkNode_i32 *node = NULL;
-    hkStack_i32_push(stack, 32);
-    hkStack_i32_push(stack, 12);
-    hkStack_i32_push(stack, 22);
-    hkStack_i32_push(stack, 42);
-    hkStack_i32_print(stack);
+void Stack_test() {
+    printf("Stack_test:\n");
+    Stack_i32 *stack = Stack_i32_create();
+    Node_i32 *node = NULL;
+    Stack_i32_push(stack, 32);
+    Stack_i32_push(stack, 12);
+    Stack_i32_push(stack, 22);
+    Stack_i32_push(stack, 42);
+    Stack_i32_print(stack);
 
-    node = hkStack_i32_pop(stack);
+    node = Stack_i32_pop(stack);
     i32 value = 0;
-    hkStack_i32_print(stack);
+    Stack_i32_print(stack);
 
-    node = hkStack_i32_pop(stack);
-    hkNode_i32_get(node, value);
-    hkStack_i32_print(stack);
+    node = Stack_i32_pop(stack);
+    Node_i32_get(node, value);
+    Stack_i32_print(stack);
 
-    node = hkStack_i32_pop(stack);
-    hkNode_i32_get(node, value);
-    hkStack_i32_print(stack);
+    node = Stack_i32_pop(stack);
+    Node_i32_get(node, value);
+    Stack_i32_print(stack);
 
-    node = hkStack_i32_pop(stack);
-    hkNode_i32_get(node, value);
-    hkStack_i32_print(stack);
+    node = Stack_i32_pop(stack);
+    Node_i32_get(node, value);
+    Stack_i32_print(stack);
 
-    node = hkStack_i32_pop(stack);
-    hkNode_i32_get(node, value);
-    hkStack_i32_print(stack);
+    node = Stack_i32_pop(stack);
+    Node_i32_get(node, value);
+    Stack_i32_print(stack);
 
-    hkStack_i32_destroy(&stack);
+    Stack_i32_destroy(&stack);
     printf("\n");
 }
 
-void hkHashMap_test() {
-    printf("hkHashMap_test:\n");
+void HashMap_test() {
+    printf("HashMap_test:\n");
     puts("");
-    printf("hkHashMap_i32:\n");
-    hkHashMap_i32 *hashmap = hkHashMap_i32_create();
-    printf("hashmap length = %llu\n", hkHashMap_i32_length(hashmap));
+    printf("HashMap_i32:\n");
+    HashMap_i32 *hashmap = HashMap_i32_create();
+    printf("hashmap length = %llu\n", HashMap_i32_length(hashmap));
     if (!hashmap) {
         printf("nomem\n");
         exit(-1);
     }
-    if (!hkHashMap_i32_set(hashmap, "dog", 3)) {
+    if (!HashMap_i32_set(hashmap, "dog", 3)) {
         printf("nomem\n");
         exit(-1);
     }
-    i32 *result = hkHashMap_i32_get(hashmap, "dog");
+    i32 *result = HashMap_i32_get(hashmap, "dog");
     if (result) {
         printf("key = %s, val = %d\n", "dog", *result);
     }
-    printf("hashmap length = %llu\n", hkHashMap_i32_length(hashmap));
-    hkHashMap_i32_destroy(hashmap);
+    printf("hashmap length = %llu\n", HashMap_i32_length(hashmap));
+    HashMap_i32_destroy(hashmap);
 
     puts("");
-    printf("hkHashMap_vec:\n");
-    hkHashMap_vec3 *hashmapvec = hkHashMap_vec3_create();
-    printf("hashmapvec length = %llu\n", hkHashMap_vec3_length(hashmapvec));
+    printf("HashMap_vec:\n");
+    HashMap_vec3 *hashmapvec = HashMap_vec3_create();
+    printf("hashmapvec length = %llu\n", HashMap_vec3_length(hashmapvec));
     if (!hashmapvec) {
         printf("nomem\n");
         exit(-1);
     }
-    if (!hkHashMap_vec3_set(hashmapvec, "dog", (vec3){1.f, 0.f, 0.f})) {
+    if (!HashMap_vec3_set(hashmapvec, "dog", (vec3){1.f, 0.f, 0.f})) {
         printf("nomem\n");
         exit(-1);
     }
-    printf("hashmapvec length = %llu\n", hkHashMap_vec3_length(hashmapvec));
-    if (!hkHashMap_vec3_set(hashmapvec, "frog", (vec3){0.f, 1.f, 0.f})) {
+    printf("hashmapvec length = %llu\n", HashMap_vec3_length(hashmapvec));
+    if (!HashMap_vec3_set(hashmapvec, "frog", (vec3){0.f, 1.f, 0.f})) {
         printf("nomem\n");
         exit(-1);
     }
-    printf("hashmapvec length = %llu\n", hkHashMap_vec3_length(hashmapvec));
-    vec3 *resultvec = hkHashMap_vec3_get(hashmapvec, "dog");
+    printf("hashmapvec length = %llu\n", HashMap_vec3_length(hashmapvec));
+    vec3 *resultvec = HashMap_vec3_get(hashmapvec, "dog");
     if (resultvec) {
         printf("key = %s, val = {%f, %f, %f}\n", "dog", resultvec->x, resultvec->y, resultvec->z);
     }
-    printf("hashmapvec length = %llu\n", hkHashMap_vec3_length(hashmapvec));
+    printf("hashmapvec length = %llu\n", HashMap_vec3_length(hashmapvec));
     printf("hash iterator...\n");
-    hkHashMapIterator_vec3 itvec = hkHashMapIterator_vec3_create(hashmapvec);
-    while (hkHashMapIterator_vec3_next(&itvec)) {
+    HashMapIterator_vec3 itvec = HashMapIterator_vec3_create(hashmapvec);
+    while (HashMapIterator_vec3_next(&itvec)) {
         printf("key = %s, val = {%f, %f, %f}\n", itvec.key, itvec.val.x, itvec.val.y, itvec.val.z);
     }
-    hkHashMap_vec3_destroy(hashmapvec);
+    HashMap_vec3_destroy(hashmapvec);
 
     puts("");
-    printf("hkHashMap_hkArray_i32:\n");
-    hkHashMap_hkArray_i32 *hashmaparray = hkHashMap_hkArray_i32_create();
-    hkArray_i32 *resultarray = hkHashMap_hkArray_i32_get(hashmaparray, "dog");
+    printf("HashMap_Array_i32:\n");
+    HashMap_Array_i32 *hashmaparray = HashMap_Array_i32_create();
+    Array_i32 *resultarray = HashMap_Array_i32_get(hashmaparray, "dog");
     if (!resultarray) {
-        hkHashMap_hkArray_i32_set(hashmaparray, "dog", (hkArray_i32) {0});
-        resultarray = hkHashMap_hkArray_i32_get(hashmaparray, "dog");
+        HashMap_Array_i32_set(hashmaparray, "dog", (Array_i32) {0});
+        resultarray = HashMap_Array_i32_get(hashmaparray, "dog");
     }
     printf("key = %s, val = %p", "dog", resultarray);
-    *resultarray = hkArray_i32_create(12);
+    *resultarray = Array_i32_create(12);
     for (i32 i = 0; i < 12; i++) {
         resultarray->data[i] = i * i;
     }
     for (i32 i = 0; i < 12; i++) {
-        printf("hkArray.data[%d] = %d\n", i, resultarray->data[i]);
+        printf("Array.data[%d] = %d\n", i, resultarray->data[i]);
     }
-    printf("hashmapvec length = %llu\n", hkHashMap_hkArray_i32_length(hashmaparray));
+    printf("hashmapvec length = %llu\n", HashMap_Array_i32_length(hashmaparray));
 
     printf("hash iterator...\n");
-    hkHashMapIterator_hkArray_i32 itarr = hkHashMapIterator_hkArray_i32_create(hashmaparray);
-    while (hkHashMapIterator_hkArray_i32_next(&itarr)) {
+    HashMapIterator_Array_i32 itarr = HashMapIterator_Array_i32_create(hashmaparray);
+    while (HashMapIterator_Array_i32_next(&itarr)) {
         printf("key = %s, val = {%llu, %llu, %p}\n", itarr.key, itarr.val.length, itarr.val.border, itarr.val.data);
-        hkArray_i32_destroy(&itarr.val);
+        Array_i32_destroy(&itarr.val);
     }
-    hkHashMap_hkArray_i32_destroy(hashmaparray);
+    HashMap_Array_i32_destroy(hashmaparray);
     printf("\n");
 }
 
@@ -414,12 +414,12 @@ void Arena_test() {
 
 i32 main(i32 argc, char *argv[]) {
     printf("haikal test begin.\n");
-    hkArray_test();
-    hkHashMap_test();
-    hkList_test();
-    hkDList_test();
-    hkQueue_test();
-    hkStack_test();
+    Array_test();
+    HashMap_test();
+    List_test();
+    DList_test();
+    Queue_test();
+    Stack_test();
     // Arena_test();
     printf("haikal test end.\n");
 
@@ -436,11 +436,11 @@ i32 main(i32 argc, char *argv[]) {
     return 0;
 }
 
-#include <hkArray.c>
-#include <hkBiNode.c>
-#include <hkDList.c>
-#include <hkHashMap.c>
-#include <hkList.c>
-#include <hkNode.c>
-#include <hkStack.c>
-#include <hkQueue.c>
+#include <Array.c>
+#include <BiNode.c>
+#include <DList.c>
+#include <HashMap.c>
+#include <List.c>
+#include <Node.c>
+#include <Stack.c>
+#include <Queue.c>
