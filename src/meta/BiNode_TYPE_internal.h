@@ -1,6 +1,6 @@
 #pragma once
-/* hkBiNode_TYPE */
+/* BiNode_TYPE */
 #include <core.h>
 
 #include "TYPE.h"
-#include "hkBiNode_TYPE.h"
+#include "BiNode_TYPE.h"

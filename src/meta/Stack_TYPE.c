@@ -1,52 +1,52 @@
 #include <core.h>
 
-#include "hkStack_TYPE.h"
+#include "Stack_TYPE.h"
 
-hkStack_TYPE *hkStack_TYPE_create() {
-    hkStack_TYPE *stack = malloc(sizeof(hkStack_TYPE));
+Stack_TYPE *Stack_TYPE_create() {
+    Stack_TYPE *stack = malloc(sizeof(Stack_TYPE));
     stack->head = NULL;
     stack->length = 0;
     return stack;
 }
 
-void hkStack_TYPE_push(hkStack_TYPE *stack, TYPE data) {
+void Stack_TYPE_push(Stack_TYPE *stack, TYPE data) {
     stack->length += 1;
     if (!stack->head) {
-        hkNode_TYPE *node = hkNode_TYPE_create(data);
+        Node_TYPE *node = Node_TYPE_create(data);
         stack->head = node;
         return;
     }
-    hkNode_TYPE *node = hkNode_TYPE_create(data);
+    Node_TYPE *node = Node_TYPE_create(data);
     node->next = stack->head;
     stack->head = node;
 }
 
-hkNode_TYPE *hkStack_TYPE_pop(hkStack_TYPE *stack) {
+Node_TYPE *Stack_TYPE_pop(Stack_TYPE *stack) {
     if (stack->length > 0) {
         stack->length -= 1;
     }
     if (stack->length == 0) {
-        hkNode_TYPE *head_node = stack->head;
+        Node_TYPE *head_node = stack->head;
         stack->head = NULL;
         return head_node;
     }
-    hkNode_TYPE *head_node = stack->head;
+    Node_TYPE *head_node = stack->head;
     stack->head = head_node->next;
     head_node->next = NULL;
     return head_node;
 }
 
-hkNode_TYPE *hkStack_TYPE_peek(hkStack_TYPE *stack) { 
+Node_TYPE *Stack_TYPE_peek(Stack_TYPE *stack) { 
     return stack->head;
 }
 
-void hkStack_TYPE_destroy(hkStack_TYPE **stack) {
+void Stack_TYPE_destroy(Stack_TYPE **stack) {
     free(*stack);
     *stack = NULL;
 }
 
-void hkStack_TYPE_print(hkStack_TYPE *stack) { 
-    hkNode_TYPE *iter = stack->head; 
+void Stack_TYPE_print(Stack_TYPE *stack) { 
+    Node_TYPE *iter = stack->head; 
     printf("Stack length = %llu\n", stack->length);
     while (iter) { 
         printf("stack: {%d, %p}\n", iter->data, iter->next); 

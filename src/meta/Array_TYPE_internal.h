@@ -1,6 +1,6 @@
 #pragma once
-/* hkArray_TYPE */
+/* Array_TYPE */
 #include <core.h>
 
 #include "TYPE.h"
-#include "hkArray_TYPE.h"
+#include "Array_TYPE.h"

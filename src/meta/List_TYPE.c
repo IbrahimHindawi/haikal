@@ -1,15 +1,15 @@
 #include <core.h>
 
-#include "hkList_TYPE.h"
+#include "List_TYPE.h"
 
-hkList_TYPE *hkList_TYPE_create(void) {
-    hkList_TYPE *list = malloc(sizeof(hkList_TYPE));
+List_TYPE *List_TYPE_create(void) {
+    List_TYPE *list = malloc(sizeof(List_TYPE));
     list->head = NULL;
     list->length = 0;
     return list;
 }
 
-void hkList_TYPE_insert_at(hkList_TYPE *list, TYPE item, i32 index) {
+void List_TYPE_insert_at(List_TYPE *list, TYPE item, i32 index) {
     if (!list->head) {
         printf("list is empty\n");
         return;
@@ -18,17 +18,17 @@ void hkList_TYPE_insert_at(hkList_TYPE *list, TYPE item, i32 index) {
         printf("invalid index\n");
         return;
     } else if (list->length == index) {
-        hkList_TYPE_append(list, item);
+        List_TYPE_append(list, item);
     } else if (index == 0) {
-        hkList_TYPE_prepend(list, item);
+        List_TYPE_prepend(list, item);
     }
     list->length += 1;
-    hkNode_TYPE *iter = list->head;
+    Node_TYPE *iter = list->head;
     i32 count = 0;
     while (iter) {
         if (count == index) {
-            hkNode_TYPE *next_node = iter->next;
-            hkNode_TYPE *new_node = hkNode_TYPE_create(item);
+            Node_TYPE *next_node = iter->next;
+            Node_TYPE *new_node = Node_TYPE_create(item);
             if (next_node) {
                 iter->next = new_node;
                 new_node->next = next_node;
@@ -43,23 +43,23 @@ void hkList_TYPE_insert_at(hkList_TYPE *list, TYPE item, i32 index) {
     }
 }
 
-void hkList_TYPE_append(hkList_TYPE *list, TYPE item) {
+void List_TYPE_append(List_TYPE *list, TYPE item) {
     if (!list->head) {
-        list->head = hkNode_TYPE_create(item);
+        list->head = Node_TYPE_create(item);
         list->length += 1;
         return;
     }
-    hkNode_TYPE *iter = list->head; 
+    Node_TYPE *iter = list->head; 
     while (iter->next) { 
         iter = iter->next; 
     }
-    iter->next = hkNode_TYPE_create(item);
+    iter->next = Node_TYPE_create(item);
     list->length += 1;
     return;
 }
 
-void hkList_TYPE_prepend(hkList_TYPE *list, TYPE item) {
-    hkNode_TYPE *prepend_node = hkNode_TYPE_create(item);
+void List_TYPE_prepend(List_TYPE *list, TYPE item) {
+    Node_TYPE *prepend_node = Node_TYPE_create(item);
     list->length += 1;
     if (!list->head) {
         list->head = prepend_node;
@@ -69,17 +69,17 @@ void hkList_TYPE_prepend(hkList_TYPE *list, TYPE item) {
     list->head = prepend_node;
 }
 
-usize hkList_TYPE_get_length(hkList_TYPE *list) {
+usize List_TYPE_get_length(List_TYPE *list) {
     return list->length;
 }
 
-hkNode_TYPE *hkList_TYPE_remove(hkList_TYPE *list, TYPE item) {
+Node_TYPE *List_TYPE_remove(List_TYPE *list, TYPE item) {
     if (list->length == 0) {
         return NULL;
     }
-    hkNode_TYPE *result = NULL;
-    hkNode_TYPE *iter = list->head;
-    hkNode_TYPE *prev = NULL;
+    Node_TYPE *result = NULL;
+    Node_TYPE *iter = list->head;
+    Node_TYPE *prev = NULL;
     while (iter) {
         if (TYPE_eq(iter->data, item)) {
             if (iter == list->head) {
@@ -107,7 +107,7 @@ hkNode_TYPE *hkList_TYPE_remove(hkList_TYPE *list, TYPE item) {
     return result;
 }
 
-hkNode_TYPE *hkList_TYPE_remove_at(hkList_TYPE *list, i32 index) {
+Node_TYPE *List_TYPE_remove_at(List_TYPE *list, i32 index) {
     if (index > list->length - 1 || index < 0) {
         printf("invalid index\n");
         return NULL;
@@ -115,9 +115,9 @@ hkNode_TYPE *hkList_TYPE_remove_at(hkList_TYPE *list, i32 index) {
     if (list->length == 0) {
         return NULL;
     }
-    hkNode_TYPE *result = NULL;
-    hkNode_TYPE *iter = list->head;
-    hkNode_TYPE *prev = NULL;
+    Node_TYPE *result = NULL;
+    Node_TYPE *iter = list->head;
+    Node_TYPE *prev = NULL;
     i32 count = 0;
     while (iter) {
         if (count == index) {
@@ -151,15 +151,15 @@ hkNode_TYPE *hkList_TYPE_remove_at(hkList_TYPE *list, i32 index) {
     return result;
 }
 
-hkNode_TYPE *hkList_TYPE_get_at(hkList_TYPE *list, i32 index) {
+Node_TYPE *List_TYPE_get_at(List_TYPE *list, i32 index) {
     if (list->length < index) {
         return NULL;
     }
     if (list->length == 0) {
         return NULL;
     }
-    hkNode_TYPE *result = NULL;
-    hkNode_TYPE *iter = list->head;
+    Node_TYPE *result = NULL;
+    Node_TYPE *iter = list->head;
     i32 count = 0;
     while (iter != NULL) {
         if (count == index) {
@@ -171,20 +171,20 @@ hkNode_TYPE *hkList_TYPE_get_at(hkList_TYPE *list, i32 index) {
     return result;
 }
 
-void hkList_TYPE_destroy(hkList_TYPE *list) {
-    hkNode_TYPE *iter = list->head;
+void List_TYPE_destroy(List_TYPE *list) {
+    Node_TYPE *iter = list->head;
     while (iter) {
-        hkNode_TYPE *destroyer = iter;
+        Node_TYPE *destroyer = iter;
         iter = iter->next;
-        hkNode_TYPE_destroy(&destroyer);
+        Node_TYPE_destroy(&destroyer);
     }
     // free(*list);
     list->head = NULL;
     list->length = 0;
 }
 
-void hkList_TYPE_print(hkList_TYPE *list) { 
-    hkNode_TYPE *iter = list->head; 
+void List_TYPE_print(List_TYPE *list) { 
+    Node_TYPE *iter = list->head; 
     printf("list.length: %llu\n", list->length); 
     while (iter) { 
         printf("list: {%d, %p}\n", iter->data, iter->next); 

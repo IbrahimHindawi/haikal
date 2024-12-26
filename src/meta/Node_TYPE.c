@@ -1,10 +1,10 @@
-/* hkNode_TYPE */
+/* Node_TYPE */
 #include <core.h>
 
-#include "hkNode_TYPE.h"
+#include "Node_TYPE.h"
 
-hkNode_TYPE *hkNode_TYPE_create(TYPE data) {
-    hkNode_TYPE *node = malloc(sizeof(hkNode_TYPE));
+Node_TYPE *Node_TYPE_create(TYPE data) {
+    Node_TYPE *node = malloc(sizeof(Node_TYPE));
     if (node) {
         node->next = NULL;
         node->data = data;
@@ -12,19 +12,19 @@ hkNode_TYPE *hkNode_TYPE_create(TYPE data) {
     return node;
 }
 
-void hkNode_TYPE_destroy(hkNode_TYPE **node) {
+void Node_TYPE_destroy(Node_TYPE **node) {
     free(*node);
     *node = NULL;
 }
 
 // no optional types, handled at callsite.
 // maybe add a macro?
-TYPE *hkNode_TYPE_value(hkNode_TYPE *node) {
+TYPE *Node_TYPE_value(Node_TYPE *node) {
     // TYPE result;
     // if (node) {
     //     result = node->data;
     // } else {
-    //     printf("hkNode_TYPE is NULL.\n");
+    //     printf("Node_TYPE is NULL.\n");
     //     exit(1);
     // };
     // return result;

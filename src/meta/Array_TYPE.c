@@ -1,9 +1,9 @@
 #include <core.h>
 
-#include "hkArray_TYPE.h"
+#include "Array_TYPE.h"
 
-hkArray_TYPE hkArray_TYPE_create(u64 length) {
-    hkArray_TYPE array = {0};
+Array_TYPE Array_TYPE_create(u64 length) {
+    Array_TYPE array = {0};
     if (length == 0) {
         return array;
     }
@@ -20,14 +20,14 @@ hkArray_TYPE hkArray_TYPE_create(u64 length) {
     return array;
 }
 
-void hkArray_TYPE_destroy(hkArray_TYPE *array) {
+void Array_TYPE_destroy(Array_TYPE *array) {
     array->border = 0;
     array->length = 0;
     free(array->data);
     array->data = NULL;
 }
 
-TYPE *hkArray_TYPE_resize(hkArray_TYPE *array) {
+TYPE *Array_TYPE_resize(Array_TYPE *array) {
     u64 old_border = array->border;
     array->border *= 2;
     array->data = realloc(array->data, sizeof(TYPE) * array->border);
@@ -45,7 +45,7 @@ TYPE *hkArray_TYPE_resize(hkArray_TYPE *array) {
     return array->data;
 }
 
-TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
+TYPE *Array_TYPE_append(Array_TYPE *array, TYPE elem) {
     if (array->length == 0 && array->border == 0) { 
         array->length += 1;
         array->border += 1;
@@ -58,7 +58,7 @@ TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
     if (array->length == array->border ) {
         array->border *= 2;
         // TODO: check if it zeroes out properly
-        hkArray_TYPE_resize(array);
+        Array_TYPE_resize(array);
     }
     array->length += 1;
     array->data[array->length - 1] = elem;
@@ -67,7 +67,7 @@ TYPE *hkArray_TYPE_append(hkArray_TYPE *array, TYPE elem) {
     return &array->data[array->length - 1];
 }
 
-int hkArray_TYPE_is_empty(hkArray_TYPE *array) {
+int Array_TYPE_is_empty(Array_TYPE *array) {
     return array->length == 0 ? 1 : 0;
 }
 

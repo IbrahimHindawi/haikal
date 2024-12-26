@@ -1,6 +1,6 @@
 #pragma once
-/* hkNode_TYPE */
+/* Node_TYPE */
 #include <core.h>
 
 #include "TYPE.h"
-#include "hkNode_TYPE.h"
+#include "Node_TYPE.h"
