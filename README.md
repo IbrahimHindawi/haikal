@@ -6,10 +6,10 @@ Code should be easy to debug & works great with LSPs.
 ## Code example:  
 The `i32` in this instance could be any data type:  
 ```c
-// haikal@hkArray:i32:p
-hkArray_i32 array = hkarray_i32_create(12);
+// haikal@Array:i32:p
+Array_i32 array = array_i32_create(12);
 array.data[0] = 0x19;
-hkarray_i32_destroy(&array);
+array_i32_destroy(&array);
 ```  
 ## Code structure:
 ```
@@ -25,8 +25,8 @@ metatype_TYPE.c // implementation
 ## Usage:
 - To generate the files to `metapath`, build and invoke the `haikal` program from the your root directory.  
 - To generate custom types, add a `// haikal@metatype:typename:s` in your code & simply include the headers.
-- `#include <hkArray.h>` to include all generated `hkArray` types public APIs.
-- `#include <hkArray.c>` to include all generated `hkArray` implementations preferably after your `main()`.
+- `#include <Array.h>` to include all generated `hkArray` types public APIs.
+- `#include <Array.c>` to include all generated `hkArray` implementations preferably after your `main()`.
 ## Configuration:
 Haikal uses toml for configuration. For example:  
 ```toml
@@ -35,16 +35,16 @@ metapath = "extern/haikal/src/meta/"
 mainpath = "src/main.c"
 ```
 ## Data Structures:  
-- hkArray: growable heap allocated array.
-- hkList/hkNode: singly linked list.
-- hkDList/hkBiNode: doubly linked list.
-- hkStack/hkNode: stack.
-- hkQueue: queue.
-- hkHashMap: hashtable.
+- Array: growable heap allocated array.
+- List/hkNode: singly linked list.
+- DList/hkBiNode: doubly linked list.
+- Stack/hkNode: stack.
+- Queue: queue.
+- HashMap: hashtable.
 ## Current Limitations:
 1. Cannot instantiate pointer types to `metatype`s unless `typedef`ed.  
   For example:  
-  `int *` will become `typedef int *intptr` and then you can generate `hkArray_intptr`.  
+  `int *` will become `typedef int *intptr` and then you can generate `Array_intptr`.  
   Possible Solution:  
   Could automate the process by detecting the pointer and auto `typedef`ing it.  
 3. In the instatiation declaration, you must hint to `haikal` the type you want to instantiate:
@@ -65,7 +65,7 @@ For containers that have pointer types eg `T *`:
 - this is because the container has `T` forward declared.
 - Warning: can be recursive type
 
-For types that include a container of themselves eg `struct T { hkArray_T arr; };`:
+For types that include a container of themselves eg `struct T { Array_T arr; };`:
 - the type must be included after the generated header.
 - this is because the type needs to know the container definition.
 - Warning: can be recursive type with `T *` but not `T`
