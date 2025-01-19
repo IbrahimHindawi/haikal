@@ -54,7 +54,7 @@ const char *Map_TYPE_set_entry(MapEntry_TYPE *entries, usize border, const char 
         }
     }
     if (plength) {
-        key = _strdup(key);
+        key = strdup(key);
         if (!key) {
             return NULL;
         }
