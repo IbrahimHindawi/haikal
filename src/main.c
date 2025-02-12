@@ -41,7 +41,7 @@
 #define CORE_IMPL
 #include <core.h>
 
-#include "Arena.h"
+// #include "Arena.h"
 #include "vec3.h"
 
 #include <Array.h>
@@ -59,7 +59,7 @@
 
 void Array_test() {
     printf("Array_test:\n");
-    Array_i8 string = Array_i8_create(27);
+    Array_i8 string = Array_i8_reserve(27);
     for (i32 i = 0; i < string.length; ++i) {
         string.data[i] = 0b01100000 | i + 1;
     }
@@ -67,7 +67,7 @@ void Array_test() {
     printf("string: %s\n", string.data);
     Array_i8_destroy(&string);
 
-    Array_vec3 vectors = Array_vec3_create(10);
+    Array_vec3 vectors = Array_vec3_reserve(10);
     for (i32 i = 0; i < vectors.length; ++i) {
         vectors.data[i].x = 1.0f;
         vectors.data[i].y = (f32)i;
