@@ -2,7 +2,7 @@
 
 #include "Array_TYPE.h"
 
-Array_TYPE Array_TYPE_create(u64 length) {
+Array_TYPE Array_TYPE_reserve(u64 length) {
     Array_TYPE array = {0};
     if (length == 0) {
         return array;

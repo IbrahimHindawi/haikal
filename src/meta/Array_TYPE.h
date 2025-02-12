@@ -10,7 +10,7 @@ structdef(Array_TYPE) {
     u64 border;
 };
 
-Array_TYPE Array_TYPE_create(u64 length);
+Array_TYPE Array_TYPE_reserve(u64 length);
 void Array_TYPE_destroy(Array_TYPE *array);
 TYPE *Array_TYPE_resize(Array_TYPE *array);
 TYPE *Array_TYPE_append(Array_TYPE *array, TYPE elem);
