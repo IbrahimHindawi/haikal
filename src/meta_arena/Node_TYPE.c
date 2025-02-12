@@ -4,7 +4,8 @@
 #include "Node_TYPE.h"
 
 Node_TYPE *Node_TYPE_create(Arena *arena, TYPE data) {
-    Node_TYPE *node = malloc(sizeof(Node_TYPE));
+    // Node_TYPE *node = malloc(sizeof(Node_TYPE));
+    Node_TYPE *node = arenaPushStruct(arena, Node_TYPE);
     if (node) {
         node->next = NULL;
         node->data = data;
