@@ -1,5 +1,6 @@
 [core]
-metapath = "src/meta/"
+metapath = "src/meta_arena/"
+mainpath = "src/main.c"
 [meta]
 hkArray = []
 hkNode = []
