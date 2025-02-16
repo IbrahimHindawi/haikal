@@ -127,7 +127,7 @@ void arenaClear(Arena *arena) {
 void *arenaRealloc_(Arena *arena, u64 new_alloc_size, void *old_ptr, u64 old_alloc_size, u64 align) {
     void *new_ptr = arenaPush(arena, new_alloc_size, align);
     memcpy(new_ptr, old_ptr, old_alloc_size);
-    memset(old_ptr, 0, old_alloc_size);
+    // memset(old_ptr, 0, old_alloc_size);
     return new_ptr;
 }
 
