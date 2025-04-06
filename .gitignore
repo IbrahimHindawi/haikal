@@ -59,8 +59,8 @@ build/
 vimsess
 scripts/psClang
 
-src/meta/gen/*
-!src/meta/gen/core.h
+src/meta/gen
+src/meta_arena/gen
 
-src/meta_arena/gen/*
+!src/meta/gen/core.h
 !src/meta_arena/gen/core.h

@@ -67,7 +67,7 @@ const char *Map_TYPE_set_entry(MapEntry_TYPE *entries, usize border, const char 
 }
 
 
-#define Map_TYPE_initial_capacity 16
+#define Map_TYPE_initial_capacity 128
 
 Map_TYPE *Map_TYPE_create(Arena *arena) {
     // Map_TYPE *hashmap = malloc(sizeof(Map_TYPE));

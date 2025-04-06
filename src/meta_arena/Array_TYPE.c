@@ -7,7 +7,7 @@ Array_TYPE Array_TYPE_reserve(Arena *arena, u64 length) {
     if (length == 0) {
         return array;
     }
-    array.length = length;
+    // array.length = length;
     array.data = arenaPushArray(arena, TYPE, length);
     // array.data = malloc(sizeof(TYPE) * length);
     if (array.data == NULL) {
@@ -31,6 +31,7 @@ void Array_TYPE_destroy(Arena *arena, Array_TYPE *array) {
 TYPE *Array_TYPE_resize(Arena *arena, Array_TYPE *array) {
     u64 old_border = array->border;
     array->border *= 2;
+    // __debugbreak();
     array->data = arenaRealloc(arena, TYPE, array->border, array->data, old_border);
     // array->data = realloc(arena, array->data, sizeof(TYPE) * array->border);
     if (array->data == NULL) {
