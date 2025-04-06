@@ -67,7 +67,7 @@ const char *Map_TYPE_set_entry(MapEntry_TYPE *entries, usize border, const char 
 }
 
 
-#define Map_TYPE_initial_capacity 128
+#define Map_TYPE_initial_capacity 256 
 
 Map_TYPE *Map_TYPE_create(Arena *arena) {
     // Map_TYPE *hashmap = malloc(sizeof(Map_TYPE));
@@ -121,6 +121,15 @@ const char *Map_TYPE_set(Arena *arena, Map_TYPE *hashmap, const char *key, TYPE 
         }
     }
     return Map_TYPE_set_entry(hashmap->entries, hashmap->border, key, val, &hashmap->length);
+}
+
+TYPE *Map_TYPE_try_emplace(Arena *arena, Map_TYPE *hashmap, const char *key, TYPE val) {
+    TYPE *result = Map_TYPE_get(arena, hashmap, key);
+    if (!result) {
+        Map_TYPE_set(arena, hashmap, key, val);
+        result = Map_TYPE_get(arena, hashmap, key);
+    }
+    return result;
 }
 
 usize Map_TYPE_length(Arena *arena, Map_TYPE *hashmap) {

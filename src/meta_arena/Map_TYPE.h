@@ -23,6 +23,7 @@ Map_TYPE *Map_TYPE_create(Arena *arena);
 void Map_TYPE_destroy(Arena *arena, Map_TYPE *hashmap);
 TYPE *Map_TYPE_get(Arena *arena, Map_TYPE *hashmap, const char *key);
 const char *Map_TYPE_set(Arena *arena, Map_TYPE *hashmap, const char *key, TYPE val);
+TYPE *Map_TYPE_try_emplace(Arena *arena, Map_TYPE *hashmap, const char *key, TYPE val);
 usize Map_TYPE_length(Arena *arena, Map_TYPE *hashmap);
 
 structdef(MapIterator_TYPE) {
