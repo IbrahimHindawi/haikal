@@ -53,6 +53,12 @@ typedef str *strptr;
 #define structdecl(structname) typedef struct structname structname
 #define structdef(structname) typedef struct structname structname; struct structname
 
+#ifdef __cplusplus
+    #define haikal_alignof(type) alignof(type)
+#else
+    #define haikal_alignof(type) _Alignof(type)
+#endif
+
 #define def_eq_prot(T) bool T##_eq(T a, T b);
 #define def_eq_body(T) bool T##_eq(T a, T b) { return a == b; }
 

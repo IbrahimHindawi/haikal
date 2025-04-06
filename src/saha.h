@@ -49,7 +49,7 @@ void arenaInit(Arena *arena) {
     // printf("allocationgranularity = %lu\n", systeminfo.dwAllocationGranularity);
     // printf("page size = %lu\n", systeminfo.dwPageSize);
     arena->pagesize = systeminfo.dwPageSize; // 4096 or 0x1000
-    arena->base = VirtualAlloc(NULL, max_alloc_size, MEM_RESERVE, PAGE_NOACCESS); // reserve 1,099,511,627,776 bytes
+    arena->base = (u8 *)VirtualAlloc(NULL, max_alloc_size, MEM_RESERVE, PAGE_NOACCESS); // reserve 1,099,511,627,776 bytes
     if (!arena->base) { exit(EXIT_FAILURE); }
     arena->cursor = arena->base;
     arena->previous = arena->base;
@@ -68,7 +68,7 @@ void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
     if (arena->used + alloc_size + diff > arena->pagesize * arena->npages) {
         i32 npages = (i32)(ceil((f32)(arena->used + alloc_size + diff) / arena->pagesize));
         arena->npages = npages;
-        arena->base = VirtualAlloc(arena->base, arena->pagesize * arena->npages, MEM_COMMIT, PAGE_READWRITE);
+        arena->base = (u8 *)VirtualAlloc(arena->base, arena->pagesize * arena->npages, MEM_COMMIT, PAGE_READWRITE);
         if (!arena->base) { exit(EXIT_FAILURE); }
     }
     if (arena->used > max_alloc_size) {
@@ -97,7 +97,7 @@ void *arenaPushZero(Arena *arena, u64 alloc_size, u64 align) {
 void *arenaSetPos(Arena *arena, void *pos) {
     u64 diff = (u64)arena->cursor - (u64)pos;
     arena->used -= diff;
-    arena->cursor = pos;
+    arena->cursor = (u8 *)pos;
     return arena->cursor;
 }
 
@@ -123,7 +123,7 @@ void arenaClear(Arena *arena) {
 }
 
 #define arenaRealloc(arena, type, new_count, old_ptr, old_count) \
-    arenaRealloc_(arena, sizeof(type) * new_count, old_ptr, sizeof(type) * old_count, _Alignof(type))
+    (type *)arenaRealloc_(arena, sizeof(type) * new_count, old_ptr, sizeof(type) * old_count, haikal_alignof(type))
 void *arenaRealloc_(Arena *arena, u64 new_alloc_size, void *old_ptr, u64 old_alloc_size, u64 align) {
     void *new_ptr = arenaPush(arena, new_alloc_size, align);
     memcpy(new_ptr, old_ptr, old_alloc_size);
@@ -148,7 +148,7 @@ void arenaPrint(Arena *arena) {
 
 char *strAlloc(Arena *arena, char *input_str) {
     u64 input_str_len = strlen(input_str) + 1;
-    char *output_str = arenaPush(arena, sizeof(char) * input_str_len, _Alignof(char));
+    char *output_str = (char *)arenaPush(arena, sizeof(char) * input_str_len, haikal_alignof(char));
     memcpy(output_str, input_str, input_str_len);
     // output_str[0] = 'a';
     // for (i32 i = 0; i < input_str_len; ++i) {
@@ -162,7 +162,7 @@ void *strDealloc(Arena *arena, const char *input_str) {
     return arenaPop(arena, input_str_len);
 }
 
-#define arenaPushStruct(arena, type) arenaPush(arena, sizeof(type), _Alignof(type))
-#define arenaPushArray(arena, type, count) arenaPush(arena, sizeof(type) * count, _Alignof(type))
-#define arenaPopArray(arena, type, count) arenaPop(arena, sizeof(type) * count)
-#define arenaPushArrayZero(arena, type, count) arenaPushZero(arena, sizeof(type) * count, _Alignof(type))
+#define arenaPushStruct(arena, type) (type *)arenaPush(arena, sizeof(type), haikal_alignof(type))
+#define arenaPushArray(arena, type, count) (type *)arenaPush(arena, sizeof(type) * count, haikal_alignof(type))
+#define arenaPopArray(arena, type, count) (type *)arenaPop(arena, sizeof(type) * count)
+#define arenaPushArrayZero(arena, type, count) (type *)arenaPushZero(arena, sizeof(type) * count, haikal_alignof(type))

@@ -4,7 +4,8 @@
 #include "Node_i32.h"
 
 Node_i32 *Node_i32_create(Arena *arena, i32 data) {
-    Node_i32 *node = malloc(sizeof(Node_i32));
+    // Node_i32 *node = malloc(sizeof(Node_i32));
+    Node_i32 *node = arenaPushStruct(arena, Node_i32);
     if (node) {
         node->next = NULL;
         node->data = data;
