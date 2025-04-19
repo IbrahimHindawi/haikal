@@ -31,9 +31,9 @@ typedef void *voidptr;
 typedef const char *str;
 typedef str *strptr;
 
-#define internal static
-#define global static
-#define localpersist static
+#define static_internal static
+#define static_global static
+#define static_local static
 
 #define Kilobytes(N) ((u64)(N) * 1024)
 #define Megabytes(N) ((u64)Kilobytes(N) * 1024)

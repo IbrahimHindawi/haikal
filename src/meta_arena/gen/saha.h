@@ -1,13 +1,47 @@
-#include <string.h>
 #pragma once
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
+#include <string.h>
 #include <core.h>
 #include <stdalign.h>
 #define max_alloc_size 0x10000000000
+
+typedef struct Arena Arena;
+struct Arena {
+    u8 *base;
+    u8 *cursor;
+    u8 *previous;
+    u64 used;
+    u64 pagesize;
+    u64 npages;
+};
+
+bool isPowerOfTwo(uintptr_t x);
+uintptr_t memoryAlignForward(uintptr_t ptr, size_t align);
+void arenaInit(Arena *arena);
+#define arenaPushStruct(arena, type) (type *)arenaPush(arena, sizeof(type), haikal_alignof(type))
+#define arenaPushArray(arena, type, count) (type *)arenaPush(arena, sizeof(type) * count, haikal_alignof(type))
+#define arenaPushArrayZero(arena, type, count) (type *)arenaPushZero(arena, sizeof(type) * count, haikal_alignof(type))
+void *arenaPush(Arena *arena, u64 alloc_size, u64 align);
+void *arenaPushZero(Arena *arena, u64 alloc_size, u64 align);
+void *arenaSetPos(Arena *arena, void *pos);
+#define arenaPopArray(arena, type, count) (type *)arenaPop(arena, sizeof(type) * count)
+void *arenaPop(Arena *arena, u64 alloc_size);
+void *arenaGetPos(Arena *arena);
+void arenaClear(Arena *arena);
+#define arenaRealloc(arena, type, new_count, old_ptr, old_count) \
+    (type *)arenaRealloc_(arena, sizeof(type) * new_count, old_ptr, sizeof(type) * old_count, haikal_alignof(type))
+void *arenaRealloc_(Arena *arena, u64 new_alloc_size, void *old_ptr, u64 old_alloc_size, u64 align);
+void arenaDestroy(Arena *arena);
+void arenaPrint(Arena *arena);
+char *strAlloc(Arena *arena, char *input_str);
+void *strDealloc(Arena *arena, const char *input_str);
+
+// #define SAHA_IMPLEMENTATION
+#ifdef SAHA_IMPLEMENTATION
 
 bool isPowerOfTwo(uintptr_t x) {
 	return (x & (x-1)) == 0;
@@ -32,16 +66,6 @@ uintptr_t memoryAlignForward(uintptr_t ptr, size_t align) {
 	}
 	return p;
 }
-
-typedef struct Arena Arena;
-struct Arena {
-    u8 *base;
-    u8 *cursor;
-    u8 *previous;
-    u64 used;
-    u64 pagesize;
-    u64 npages;
-};
 
 void arenaInit(Arena *arena) {
     SYSTEM_INFO systeminfo = {0};
@@ -122,8 +146,6 @@ void arenaClear(Arena *arena) {
     arena->used = 0;
 }
 
-#define arenaRealloc(arena, type, new_count, old_ptr, old_count) \
-    (type *)arenaRealloc_(arena, sizeof(type) * new_count, old_ptr, sizeof(type) * old_count, haikal_alignof(type))
 void *arenaRealloc_(Arena *arena, u64 new_alloc_size, void *old_ptr, u64 old_alloc_size, u64 align) {
     void *new_ptr = arenaPush(arena, new_alloc_size, align);
     memcpy(new_ptr, old_ptr, old_alloc_size);
@@ -162,7 +184,4 @@ void *strDealloc(Arena *arena, const char *input_str) {
     return arenaPop(arena, input_str_len);
 }
 
-#define arenaPushStruct(arena, type) (type *)arenaPush(arena, sizeof(type), haikal_alignof(type))
-#define arenaPushArray(arena, type, count) (type *)arenaPush(arena, sizeof(type) * count, haikal_alignof(type))
-#define arenaPopArray(arena, type, count) (type *)arenaPop(arena, sizeof(type) * count)
-#define arenaPushArrayZero(arena, type, count) (type *)arenaPushZero(arena, sizeof(type) * count, haikal_alignof(type))
+#endif
