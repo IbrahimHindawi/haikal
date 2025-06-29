@@ -113,9 +113,9 @@ void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
 }
 
 void *arenaPushZero(Arena *arena, u64 alloc_size, u64 align) {
-    arenaPush(arena, alloc_size, align);
-    memcpy(arena->cursor, 0, alloc_size);
-    return arena->cursor;
+    void *alloc_location = arenaPush(arena, alloc_size, align);
+    memset(arena->previous, 0, alloc_size);
+    return alloc_location;
 }
 
 void *arenaSetPos(Arena *arena, void *pos) {
