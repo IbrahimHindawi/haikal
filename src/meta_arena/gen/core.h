@@ -58,32 +58,3 @@ typedef str *strptr;
 #else
     #define haikal_alignof(type) _Alignof(type)
 #endif
-
-#define def_eq_prot(T) bool T##_eq(T a, T b);
-#define def_eq_body(T) bool T##_eq(T a, T b) { return a == b; }
-
-def_eq_prot(f32);
-def_eq_prot(f64);
-def_eq_prot(u8);
-def_eq_prot(u16);
-def_eq_prot(u32);
-def_eq_prot(u64);
-def_eq_prot(i8);
-def_eq_prot(i16);
-def_eq_prot(i32);
-def_eq_prot(i64);
-def_eq_prot(usize);
-
-#ifdef CORE_IMPL
-def_eq_body(f32);
-def_eq_body(f64);
-def_eq_body(u8);
-def_eq_body(u16);
-def_eq_body(u32);
-def_eq_body(u64);
-def_eq_body(i8);
-def_eq_body(i16);
-def_eq_body(i32);
-def_eq_body(i64);
-def_eq_body(usize);
-#endif
