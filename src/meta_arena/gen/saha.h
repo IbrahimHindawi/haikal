@@ -80,35 +80,47 @@ void arenaInit(Arena *arena) {
 }
 
 void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
-	// Align 'curr_offset' forward to the specified alignment
-	uintptr_t curr_ptr = (uintptr_t)arena->base + (uintptr_t)arena->used;
-	uintptr_t offset = memoryAlignForward(curr_ptr, align);
-    // Change to relative offset
-	// offset -= (uintptr_t)arena->base;
-    // uintptr_t diff = curr_ptr - offset;
-    uintptr_t diff = offset - curr_ptr;
-    // printf("align = %llu\n", align);
-    // printf("offset = %llu\n", offset);
-    if (arena->used + alloc_size + diff > arena->pagesize * arena->npages) {
-        i32 npages = (i32)(ceil((f32)(arena->used + alloc_size + diff) / arena->pagesize));
-        arena->npages = npages;
-        arena->base = (u8 *)VirtualAlloc(arena->base, arena->pagesize * arena->npages, MEM_COMMIT, PAGE_READWRITE);
-        if (!arena->base) { exit(EXIT_FAILURE); }
+    uintptr_t curr_ptr = (uintptr_t)arena->base + (uintptr_t)arena->used;
+    uintptr_t offset   = memoryAlignForward(curr_ptr, align);
+    uintptr_t diff     = offset - curr_ptr;
+
+    u64 needed = arena->used + alloc_size + diff;
+    u64 committed = arena->pagesize * arena->npages;
+
+    // Commit ONLY the missing pages, not from base
+    if (needed > committed) {
+        u64 missing = needed - committed;
+        u64 pages_to_commit =
+            (missing + arena->pagesize - 1) / arena->pagesize;
+
+        void *r = VirtualAlloc(
+            arena->base + committed,
+            pages_to_commit * arena->pagesize,
+            MEM_COMMIT,
+            PAGE_READWRITE
+        );
+
+        if (!r) { 
+            printf("Arena commit failed!\n");
+            exit(EXIT_FAILURE);
+        }
+
+        arena->npages += (i32)pages_to_commit;
     }
-    if (arena->used > max_alloc_size) {
+
+    if (needed > max_alloc_size) {
         printf("Memory allocation failure! Maximum memory reached!\n");
         exit(EXIT_FAILURE);
     }
+
     arena->used += alloc_size + diff;
-    // save cursor before push
+
     arena->previous = arena->cursor;
-    // align cursor
-    arena->cursor += diff;
-    // save aligned cursor
+    arena->cursor  += diff;
+
     void *oldpos = arena->cursor;
-    // allocate
     arena->cursor += alloc_size;
-    // return aligned cursor
+
     return oldpos;
 }
 
