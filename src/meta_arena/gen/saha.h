@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -24,8 +25,8 @@ uintptr_t memoryAlignForward(uintptr_t ptr, size_t align);
 void arenaInit(Arena *arena);
 #define arenaPushStruct(arena, type) (type *)arenaPush(arena, sizeof(type), haikal_alignof(type))
 #define arenaPushArray(arena, type, count) (type *)arenaPush(arena, sizeof(type) * count, haikal_alignof(type))
-#define arenaPushArrayZero(arena, type, count) (type *)arenaPushZero(arena, sizeof(type) * count, haikal_alignof(type))
 void *arenaPush(Arena *arena, u64 alloc_size, u64 align);
+#define arenaPushArrayZero(arena, type, count) (type *)arenaPushZero(arena, sizeof(type) * count, haikal_alignof(type))
 void *arenaPushZero(Arena *arena, u64 alloc_size, u64 align);
 void *arenaSetPos(Arena *arena, void *pos);
 #define arenaPopArray(arena, type, count) (type *)arenaPop(arena, sizeof(type) * count)
@@ -37,8 +38,6 @@ void arenaClear(Arena *arena);
 void *arenaRealloc_(Arena *arena, u64 new_alloc_size, void *old_ptr, u64 old_alloc_size, u64 align);
 void arenaDestroy(Arena *arena);
 void arenaPrint(Arena *arena);
-char *strAlloc(Arena *arena, char *input_str);
-void *strDealloc(Arena *arena, const char *input_str);
 
 // #define SAHA_IMPLEMENTATION
 #ifdef SAHA_IMPLEMENTATION
@@ -77,49 +76,72 @@ void arenaInit(Arena *arena) {
     if (!arena->base) { exit(EXIT_FAILURE); }
     arena->cursor = arena->base;
     arena->previous = arena->base;
+    arena->used = 0;
+    arena->npages = 0;
 }
 
 void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
-    uintptr_t curr_ptr = (uintptr_t)arena->base + (uintptr_t)arena->used;
-    uintptr_t offset   = memoryAlignForward(curr_ptr, align);
-    uintptr_t diff     = offset - curr_ptr;
+    //
+    // Current aligned cursor based on: base + used
+    //
+    // printf("arena: alloc: %zu\n", alloc_size);
+    uintptr_t base_addr = (uintptr_t)arena->base;
+    uintptr_t curr_addr = base_addr + (uintptr_t)arena->used;
 
-    u64 needed = arena->used + alloc_size + diff;
-    u64 committed = arena->pagesize * arena->npages;
+    uintptr_t aligned_addr = memoryAlignForward(curr_addr, align);
+    uintptr_t diff         = aligned_addr - curr_addr;
 
-    // Commit ONLY the missing pages, not from base
+    u64 needed     = arena->used + alloc_size + diff;
+    u64 committed  = arena->pagesize * arena->npages;
+
+    //
+    // COMMIT MISSING MEMORY
+    //
     if (needed > committed) {
-        u64 missing = needed - committed;
+        u64 missing_bytes = needed - committed;
         u64 pages_to_commit =
-            (missing + arena->pagesize - 1) / arena->pagesize;
+            (missing_bytes + arena->pagesize - 1) / arena->pagesize;
+
+        //
+        // 🔥 CRITICAL FIX:
+        // commit starting at the address inside reserved region:
+        //
+        uintptr_t commit_addr = base_addr + committed;
 
         void *r = VirtualAlloc(
-            arena->base + committed,
+            (void *)commit_addr,
             pages_to_commit * arena->pagesize,
             MEM_COMMIT,
             PAGE_READWRITE
         );
 
-        if (!r) { 
-            printf("Arena commit failed!\n");
+        if (!r) {
+            printf("Arena commit failed at %p!\n", (void*)commit_addr);
             exit(EXIT_FAILURE);
         }
 
-        arena->npages += (i32)pages_to_commit;
+        arena->npages += (u32)pages_to_commit;
     }
 
+    //
+    // Overflow protection
+    //
     if (needed > max_alloc_size) {
-        printf("Memory allocation failure! Maximum memory reached!\n");
+        printf("Arena maximum size exceeded!\n");
         exit(EXIT_FAILURE);
     }
 
-    arena->used += alloc_size + diff;
+    //
+    // Update arena state
+    //
+    arena->used    += alloc_size + diff;
 
-    arena->previous = arena->cursor;
-    arena->cursor  += diff;
+    // cursor ALWAYS stored as pointer, never recalc from 'used'
+    arena->previous  = arena->cursor;
+    arena->cursor    = (u8 *)aligned_addr;
+    void *oldpos      = arena->cursor;
 
-    void *oldpos = arena->cursor;
-    arena->cursor += alloc_size;
+    arena->cursor    += alloc_size;
 
     return oldpos;
 }
@@ -178,22 +200,6 @@ void arenaPrint(Arena *arena) {
         printf("%02x ", arena->base[i]);
     }
     printf("\nMemory Dump: End.\n");
-}
-
-char *strAlloc(Arena *arena, char *input_str) {
-    u64 input_str_len = strlen(input_str) + 1;
-    char *output_str = (char *)arenaPush(arena, sizeof(char) * input_str_len, haikal_alignof(char));
-    memcpy(output_str, input_str, input_str_len);
-    // output_str[0] = 'a';
-    // for (i32 i = 0; i < input_str_len; ++i) {
-    //     output_str[i] = input_str[i];
-    // }
-    return output_str;
-}
-
-void *strDealloc(Arena *arena, const char *input_str) {
-    u64 input_str_len = strlen(input_str) + 1;
-    return arenaPop(arena, input_str_len);
 }
 
 #endif
