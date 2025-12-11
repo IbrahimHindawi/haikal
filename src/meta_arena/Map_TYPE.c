@@ -1,7 +1,10 @@
 #include <core.h>
+#include <stdio.h>
 
 #include "Map_TYPE.h"
 #include "Map_TYPE_internal.h"
+
+// #include <windows.h>
 
 // Return 64-bit FNV-1a hash for key (NUL-terminated). See description:
 // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
@@ -22,6 +25,8 @@ bool Map_TYPE_expand(Arena *arena, Map_TYPE* hashmap) {
     }
     // MapEntry_TYPE *new_entries = calloc(new_capacity, sizeof(MapEntry_TYPE));
     MapEntry_TYPE *new_entries = arenaPushArray(arena, MapEntry_TYPE, new_capacity);
+    printf("Arena Expanded! Realloced!\n");
+    // DebugBreak();
     if (!new_entries) {
         return false;
     }
@@ -67,7 +72,7 @@ const char *Map_TYPE_set_entry(MapEntry_TYPE *entries, usize border, const char 
 }
 
 
-#define Map_TYPE_initial_capacity 256 
+#define Map_TYPE_initial_capacity 512
 
 Map_TYPE *Map_TYPE_create(Arena *arena) {
     // Map_TYPE *hashmap = malloc(sizeof(Map_TYPE));

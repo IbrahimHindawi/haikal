@@ -117,6 +117,7 @@ void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
 
         if (!r) {
             printf("Arena commit failed at %p!\n", (void*)commit_addr);
+            DebugBreak();
             exit(EXIT_FAILURE);
         }
 
