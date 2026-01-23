@@ -3,9 +3,9 @@
 
 #include "Node_TYPE.h"
 
-Node_TYPE *Node_TYPE_create(Arena *arena, TYPE data) {
+Node_TYPE *Node_TYPE_create(memops_arena *arena, TYPE data) {
     // Node_TYPE *node = malloc(sizeof(Node_TYPE));
-    Node_TYPE *node = arenaPushStruct(arena, Node_TYPE);
+    Node_TYPE *node = memops_arena_push_struct(arena, Node_TYPE);
     if (node) {
         node->next = NULL;
         node->data = data;
@@ -13,14 +13,14 @@ Node_TYPE *Node_TYPE_create(Arena *arena, TYPE data) {
     return node;
 }
 
-void Node_TYPE_destroy(Arena *arena, Node_TYPE **node) {
+void Node_TYPE_destroy(memops_arena *arena, Node_TYPE **node) {
     // free(*node);
     *node = NULL;
 }
 
 // no optional types, handled at callsite.
 // maybe add a macro?
-TYPE *Node_TYPE_value(Arena *arena, Node_TYPE *node) {
+TYPE *Node_TYPE_value(memops_arena *arena, Node_TYPE *node) {
     // TYPE result;
     // if (node) {
     //     result = node->data;

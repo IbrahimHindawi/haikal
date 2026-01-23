@@ -12,9 +12,9 @@ structdef(Queue_TYPE) {
     usize length;
 };
 
-Queue_TYPE *Queue_TYPE_create(Arena *arena);
-void Queue_TYPE_enqueue(Arena *arena, Queue_TYPE *queue, TYPE data);
-Node_TYPE *Queue_TYPE_dequeue(Arena *arena, Queue_TYPE *queue);
-Node_TYPE *Queue_TYPE_peek(Arena *arena, Queue_TYPE *queue);
-void Queue_TYPE_destroy(Arena *arena, Queue_TYPE **queue);
-void Queue_TYPE_print(Arena *arena, Queue_TYPE *queue);
+Queue_TYPE *Queue_TYPE_create(memops_arena *arena);
+void Queue_TYPE_enqueue(memops_arena *arena, Queue_TYPE *queue, TYPE data);
+Node_TYPE *Queue_TYPE_dequeue(memops_arena *arena, Queue_TYPE *queue);
+Node_TYPE *Queue_TYPE_peek(memops_arena *arena, Queue_TYPE *queue);
+void Queue_TYPE_destroy(memops_arena *arena, Queue_TYPE **queue);
+void Queue_TYPE_print(memops_arena *arena, Queue_TYPE *queue);

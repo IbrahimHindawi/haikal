@@ -12,14 +12,14 @@ structdef(DList_TYPE) {
     usize length;
 };
 
-DList_TYPE *DList_TYPE_create(Arena *arena);
-void DList_TYPE_insert_at(Arena *arena, DList_TYPE *list, TYPE item, i32 index);
-void DList_TYPE_append(Arena *arena, DList_TYPE *list, TYPE item);
-void DList_TYPE_prepend(Arena *arena, DList_TYPE *list, TYPE item);
-usize DList_TYPE_get_length(Arena *arena, DList_TYPE *list);
-BiNode_TYPE *DList_TYPE_remove_node(Arena *arena, DList_TYPE *list, BiNode_TYPE *node);
-BiNode_TYPE *DList_TYPE_remove(Arena *arena, DList_TYPE *list, TYPE item);
-BiNode_TYPE *DList_TYPE_remove_at(Arena *arena, DList_TYPE *list, i32 index);
-BiNode_TYPE *DList_TYPE_get_at(Arena *arena, DList_TYPE *list, i32 index);
-void DList_TYPE_destroy(Arena *arena, DList_TYPE **list);
-void DList_TYPE_print(Arena *arena, DList_TYPE *list);
+DList_TYPE *DList_TYPE_create(memops_arena *arena);
+void DList_TYPE_insert_at(memops_arena *arena, DList_TYPE *list, TYPE item, i32 index);
+void DList_TYPE_append(memops_arena *arena, DList_TYPE *list, TYPE item);
+void DList_TYPE_prepend(memops_arena *arena, DList_TYPE *list, TYPE item);
+usize DList_TYPE_get_length(memops_arena *arena, DList_TYPE *list);
+BiNode_TYPE *DList_TYPE_remove_node(memops_arena *arena, DList_TYPE *list, BiNode_TYPE *node);
+BiNode_TYPE *DList_TYPE_remove(memops_arena *arena, DList_TYPE *list, TYPE item);
+BiNode_TYPE *DList_TYPE_remove_at(memops_arena *arena, DList_TYPE *list, i32 index);
+BiNode_TYPE *DList_TYPE_get_at(memops_arena *arena, DList_TYPE *list, i32 index);
+void DList_TYPE_destroy(memops_arena *arena, DList_TYPE **list);
+void DList_TYPE_print(memops_arena *arena, DList_TYPE *list);

@@ -2,15 +2,15 @@
 
 #include "Stack_TYPE.h"
 
-Stack_TYPE *Stack_TYPE_create(Arena *arena) {
+Stack_TYPE *Stack_TYPE_create(memops_arena *arena) {
     // Stack_TYPE *stack = malloc(sizeof(Stack_TYPE));
-    Stack_TYPE *stack = arenaPushStruct(arena, Stack_TYPE);
+    Stack_TYPE *stack = memops_arena_push_struct(arena, Stack_TYPE);
     stack->head = NULL;
     stack->length = 0;
     return stack;
 }
 
-void Stack_TYPE_push(Arena *arena, Stack_TYPE *stack, TYPE data) {
+void Stack_TYPE_push(memops_arena *arena, Stack_TYPE *stack, TYPE data) {
     stack->length += 1;
     if (!stack->head) {
         Node_TYPE *node = Node_TYPE_create(arena, data);
@@ -22,7 +22,7 @@ void Stack_TYPE_push(Arena *arena, Stack_TYPE *stack, TYPE data) {
     stack->head = node;
 }
 
-Node_TYPE *Stack_TYPE_pop(Arena *arena, Stack_TYPE *stack) {
+Node_TYPE *Stack_TYPE_pop(memops_arena *arena, Stack_TYPE *stack) {
     if (stack->length > 0) {
         stack->length -= 1;
     }
@@ -37,16 +37,16 @@ Node_TYPE *Stack_TYPE_pop(Arena *arena, Stack_TYPE *stack) {
     return head_node;
 }
 
-Node_TYPE *Stack_TYPE_peek(Arena *arena, Stack_TYPE *stack) { 
+Node_TYPE *Stack_TYPE_peek(memops_arena *arena, Stack_TYPE *stack) { 
     return stack->head;
 }
 
-void Stack_TYPE_destroy(Arena *arena, Stack_TYPE **stack) {
+void Stack_TYPE_destroy(memops_arena *arena, Stack_TYPE **stack) {
     // free(*stack);
     *stack = NULL;
 }
 
-void Stack_TYPE_print(Arena *arena, Stack_TYPE *stack) { 
+void Stack_TYPE_print(memops_arena *arena, Stack_TYPE *stack) { 
     Node_TYPE *iter = stack->head; 
     printf("Stack length = %llu\n", stack->length);
     while (iter) { 

@@ -2,15 +2,15 @@
 
 #include "DList_TYPE.h"
 
-DList_TYPE *DList_TYPE_create(Arena *arena) {
-    DList_TYPE *list = arenaPushStruct(arena, DList_TYPE);
+DList_TYPE *DList_TYPE_create(memops_arena *arena) {
+    DList_TYPE *list = memops_arena_push_struct(arena, DList_TYPE);
     list->head = NULL;
     list->tail = NULL;
     list->length = 0;
     return list;
 }
 
-void DList_TYPE_insert_at(Arena *arena, DList_TYPE *list, TYPE item, i32 index) {
+void DList_TYPE_insert_at(memops_arena *arena, DList_TYPE *list, TYPE item, i32 index) {
     if (!list->head) {
         printf("list is empty\n");
         return;
@@ -35,7 +35,7 @@ void DList_TYPE_insert_at(Arena *arena, DList_TYPE *list, TYPE item, i32 index) 
     }
 }
 
-void DList_TYPE_append(Arena *arena, DList_TYPE *list, TYPE item) {
+void DList_TYPE_append(memops_arena *arena, DList_TYPE *list, TYPE item) {
     if (!list->head) {
         list->length += 1;
         list->head = BiNode_TYPE_create(arena, item);
@@ -55,7 +55,7 @@ void DList_TYPE_append(Arena *arena, DList_TYPE *list, TYPE item) {
     list->tail = node;
 }
 
-void DList_TYPE_prepend(Arena *arena, DList_TYPE *list, TYPE item) {
+void DList_TYPE_prepend(memops_arena *arena, DList_TYPE *list, TYPE item) {
     BiNode_TYPE *node = BiNode_TYPE_create(arena, item);
     list->length += 1;
     if (!list->head) {
@@ -67,11 +67,11 @@ void DList_TYPE_prepend(Arena *arena, DList_TYPE *list, TYPE item) {
     list->head = node;
 }
 
-usize DList_TYPE_get_length(Arena *arena, DList_TYPE *list) {
+usize DList_TYPE_get_length(memops_arena *arena, DList_TYPE *list) {
     return list->length;
 }
 
-BiNode_TYPE *DList_TYPE_remove_node(Arena *arena, DList_TYPE *list, BiNode_TYPE *node) {
+BiNode_TYPE *DList_TYPE_remove_node(memops_arena *arena, DList_TYPE *list, BiNode_TYPE *node) {
     list->length -= 1;
     if (node->prev) {
         node->prev->next = node->next;
@@ -89,7 +89,7 @@ BiNode_TYPE *DList_TYPE_remove_node(Arena *arena, DList_TYPE *list, BiNode_TYPE 
     return node;
 }
 
-BiNode_TYPE *DList_TYPE_remove(Arena *arena, DList_TYPE *list, TYPE item) {
+BiNode_TYPE *DList_TYPE_remove(memops_arena *arena, DList_TYPE *list, TYPE item) {
     BiNode_TYPE *result = NULL;
     if (list->length == 0) {
         result = list->head;
@@ -111,7 +111,7 @@ BiNode_TYPE *DList_TYPE_remove(Arena *arena, DList_TYPE *list, TYPE item) {
     return result;
 }
 
-BiNode_TYPE *DList_TYPE_remove_at(Arena *arena, DList_TYPE *list, i32 index) {
+BiNode_TYPE *DList_TYPE_remove_at(memops_arena *arena, DList_TYPE *list, i32 index) {
     BiNode_TYPE *result = DList_TYPE_get_at(arena, list, index);
     if (!result) {
         return NULL;
@@ -120,7 +120,7 @@ BiNode_TYPE *DList_TYPE_remove_at(Arena *arena, DList_TYPE *list, i32 index) {
     return result;
 }
 
-BiNode_TYPE *DList_TYPE_get_at(Arena *arena, DList_TYPE *list, i32 index) {
+BiNode_TYPE *DList_TYPE_get_at(memops_arena *arena, DList_TYPE *list, i32 index) {
     if (index > list->length - 1 || index < 0) {
         printf("invalid index\n");
         return NULL;
@@ -132,7 +132,7 @@ BiNode_TYPE *DList_TYPE_get_at(Arena *arena, DList_TYPE *list, i32 index) {
     return iter;
 }
 
-void DList_TYPE_destroy(Arena *arena, DList_TYPE **list) {
+void DList_TYPE_destroy(memops_arena *arena, DList_TYPE **list) {
     BiNode_TYPE *iter = (*list)->head;
     while (iter) {
         BiNode_TYPE *destroyer = iter;
@@ -143,7 +143,7 @@ void DList_TYPE_destroy(Arena *arena, DList_TYPE **list) {
     *list = NULL;
 }
 
-void DList_TYPE_print(Arena *arena, DList_TYPE *list) { 
+void DList_TYPE_print(memops_arena *arena, DList_TYPE *list) { 
     BiNode_TYPE *iter = list->head; 
     while (iter) { 
         printf("list: {%d, %p}\n", iter->data, iter->next); 

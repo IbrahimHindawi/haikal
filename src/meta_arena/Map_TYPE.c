@@ -17,15 +17,15 @@ u64 Map_TYPE_hash_key(const char* key) {
     return hash;
 }
 
-bool Map_TYPE_expand(Arena *arena, Map_TYPE* hashmap) {
+bool Map_TYPE_expand(memops_arena *arena, Map_TYPE* hashmap) {
     // Allocate new entries array.
     size_t new_capacity = hashmap->border * 2;
     if (new_capacity < hashmap->border) {
         return false;  // overflow (border would be too big)
     }
     // MapEntry_TYPE *new_entries = calloc(new_capacity, sizeof(MapEntry_TYPE));
-    MapEntry_TYPE *new_entries = arenaPushArray(arena, MapEntry_TYPE, new_capacity);
-    printf("Arena Expanded! Realloced!\n");
+    MapEntry_TYPE *new_entries = memops_arena_push_array(arena, MapEntry_TYPE, new_capacity);
+    printf("memops_arena Expanded! Realloced!\n");
     // DebugBreak();
     if (!new_entries) {
         return false;
@@ -74,9 +74,9 @@ const char *Map_TYPE_set_entry(MapEntry_TYPE *entries, usize border, const char 
 
 #define Map_TYPE_initial_capacity 512
 
-Map_TYPE *Map_TYPE_create(Arena *arena) {
+Map_TYPE *Map_TYPE_create(memops_arena *arena) {
     // Map_TYPE *hashmap = malloc(sizeof(Map_TYPE));
-    Map_TYPE *hashmap = arenaPushArray(arena, Map_TYPE, 1);
+    Map_TYPE *hashmap = memops_arena_push_array(arena, Map_TYPE, 1);
     if (!hashmap) {
         return NULL;
     }
@@ -84,7 +84,7 @@ Map_TYPE *Map_TYPE_create(Arena *arena) {
     hashmap->border = Map_TYPE_initial_capacity;
 
     // hashmap->entries = calloc(hashmap->border, sizeof(MapEntry_TYPE));
-    hashmap->entries = arenaPushArray(arena, MapEntry_TYPE, hashmap->border);
+    hashmap->entries = memops_arena_push_array(arena, MapEntry_TYPE, hashmap->border);
     if (!hashmap->entries) {
         // free(hashmap);
         return NULL;
@@ -92,7 +92,7 @@ Map_TYPE *Map_TYPE_create(Arena *arena) {
     return hashmap;
 }
 
-void Map_TYPE_destroy(Arena *arena, Map_TYPE *hashmap) {
+void Map_TYPE_destroy(memops_arena *arena, Map_TYPE *hashmap) {
     // for (i32 i = 0; i < hashmap->border; i++) {
     //     free((void *)hashmap->entries[i].key);
     // }
@@ -100,7 +100,7 @@ void Map_TYPE_destroy(Arena *arena, Map_TYPE *hashmap) {
     // free(hashmap);
 }
 
-TYPE *Map_TYPE_get(Arena *arena, Map_TYPE *hashmap, const char *key) {
+TYPE *Map_TYPE_get(memops_arena *arena, Map_TYPE *hashmap, const char *key) {
     u64 hash = Map_TYPE_hash_key(key);
     usize index = (usize)(hash & (u64)(hashmap->border - 1));
     while (hashmap->entries[index].key) {
@@ -115,7 +115,7 @@ TYPE *Map_TYPE_get(Arena *arena, Map_TYPE *hashmap, const char *key) {
     return NULL;
 }
 
-const char *Map_TYPE_set(Arena *arena, Map_TYPE *hashmap, const char *key, TYPE val) {
+const char *Map_TYPE_set(memops_arena *arena, Map_TYPE *hashmap, const char *key, TYPE val) {
     // assert(val != NULL);
     // if (!val) {
     //     return NULL;
@@ -128,7 +128,7 @@ const char *Map_TYPE_set(Arena *arena, Map_TYPE *hashmap, const char *key, TYPE 
     return Map_TYPE_set_entry(hashmap->entries, hashmap->border, key, val, &hashmap->length);
 }
 
-TYPE *Map_TYPE_try_emplace(Arena *arena, Map_TYPE *hashmap, const char *key, TYPE val) {
+TYPE *Map_TYPE_try_emplace(memops_arena *arena, Map_TYPE *hashmap, const char *key, TYPE val) {
     TYPE *result = Map_TYPE_get(arena, hashmap, key);
     if (!result) {
         Map_TYPE_set(arena, hashmap, key, val);
@@ -137,11 +137,11 @@ TYPE *Map_TYPE_try_emplace(Arena *arena, Map_TYPE *hashmap, const char *key, TYP
     return result;
 }
 
-usize Map_TYPE_length(Arena *arena, Map_TYPE *hashmap) {
+usize Map_TYPE_length(memops_arena *arena, Map_TYPE *hashmap) {
     return hashmap->length;
 }
 
-MapIterator_TYPE MapIterator_TYPE_create(Arena *arena, Map_TYPE* hashmap) {
+MapIterator_TYPE MapIterator_TYPE_create(memops_arena *arena, Map_TYPE* hashmap) {
     MapIterator_TYPE it = {0};
     if (hashmap) {
         it._hashmap = hashmap;
@@ -150,7 +150,7 @@ MapIterator_TYPE MapIterator_TYPE_create(Arena *arena, Map_TYPE* hashmap) {
     return it;
 }
 
-bool MapIterator_TYPE_next(Arena *arena, MapIterator_TYPE* it) {
+bool MapIterator_TYPE_next(memops_arena *arena, MapIterator_TYPE* it) {
     // Loop till we've hit end of entries array.
     Map_TYPE* hashmap = it->_hashmap;
     while (it->_index < hashmap->border) {

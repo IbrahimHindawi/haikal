@@ -41,7 +41,7 @@
 #define CORE_IMPL
 #include <core.h>
 
-// #include "Arena.h"
+// #include "memops_arena.h"
 #include "vec3.h"
 
 #include <Array.h>
@@ -344,11 +344,11 @@ structdef(Payload) {
 structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
 
 void Arena_test() {
-    Arena arena = {0};
-    arenaInit(&arena, store);
+    memops_arena arena = {0};
+    memops_arena_initialize(&arena, store);
 
     const i32 len = 4;
-    f32 *nums = arenaPushArray(&arena, i32, len);
+    f32 *nums = memops_arena_push_array(&arena, i32, len);
     for (i32 i = 0; i < len; ++i) {
         nums[i] = (f32)(i + 1);
     }
@@ -376,29 +376,29 @@ void Arena_test() {
     printf("%s\n", str1);
     printf("%s\n", str2);
 
-    Payload *pld = arenaPushStruct(&arena, Payload);
+    Payload *pld = memops_arena_push_struct(&arena, Payload);
     pld->id = 0xDEADBEEF;
     pld->mx = 0xCAFEBABE;
     pld->str = "Name0";
-    arenaPop(&arena, sizeof(Payload));
-    pld = arenaPushStruct(&arena, Payload);
+    memops_arena_pop(&arena, sizeof(Payload));
+    pld = memops_arena_push_struct(&arena, Payload);
     pld->id = 0xFFFFFFFF;
     pld->mx = 0xFFFFFFFF;
     pld->str = "Name0";
-    arenaPop(&arena, sizeof(Payload));
+    memops_arena_pop(&arena, sizeof(Payload));
 
-    arenaClear(&arena);
+    memops_arena_clear(&arena);
 
-    // vec4i8 *vs = arenaPushArrayZero(&arena, vec4i8, 32);
+    // vec4i8 *vs = memops_arena_push_array_zero(&arena, vec4i8, 32);
     const i32 npts = 32;
-    vec4i8 *vs = arenaPushArray(&arena, vec4i8, npts);
+    vec4i8 *vs = memops_arena_push_array(&arena, vec4i8, npts);
     for (i32 i = 0; i < npts; ++i) {
         vs[i].x = 0xAA;
         vs[i].y = 0xBB;
         vs[i].z = 0xCC;
         vs[i].w = 0xDD;
     }
-    arenaPopArray(&arena, vec4i8, npts);
+    memops_arena_pop_array(&arena, vec4i8, npts);
 
     printf("Memory Dump: %d bytes allocated.\n", N);
     printf("%p: ", store);
@@ -409,7 +409,7 @@ void Arena_test() {
         }
         printf("%02x ", store[i]);
     }
-    arenaClear(&arena);
+    memops_arena_clear(&arena);
 }
 
 i32 main(i32 argc, char *argv[]) {

@@ -2,14 +2,14 @@
 
 #include "List_TYPE.h"
 
-List_TYPE *List_TYPE_create(Arena *arena) {
-    List_TYPE *list = arenaPushStruct(arena, List_TYPE);
+List_TYPE *List_TYPE_create(memops_arena *arena) {
+    List_TYPE *list = memops_arena_push_struct(arena, List_TYPE);
     list->head = NULL;
     list->length = 0;
     return list;
 }
 
-void List_TYPE_insert_at(Arena *arena, List_TYPE *list, TYPE item, i32 index) {
+void List_TYPE_insert_at(memops_arena *arena, List_TYPE *list, TYPE item, i32 index) {
     if (!list->head) {
         printf("list is empty\n");
         return;
@@ -43,7 +43,7 @@ void List_TYPE_insert_at(Arena *arena, List_TYPE *list, TYPE item, i32 index) {
     }
 }
 
-void List_TYPE_append(Arena *arena, List_TYPE *list, TYPE item) {
+void List_TYPE_append(memops_arena *arena, List_TYPE *list, TYPE item) {
     if (!list->head) {
         list->head = Node_TYPE_create(arena, item);
         list->length += 1;
@@ -58,7 +58,7 @@ void List_TYPE_append(Arena *arena, List_TYPE *list, TYPE item) {
     return;
 }
 
-void List_TYPE_prepend(Arena *arena, List_TYPE *list, TYPE item) {
+void List_TYPE_prepend(memops_arena *arena, List_TYPE *list, TYPE item) {
     Node_TYPE *prepend_node = Node_TYPE_create(arena, item);
     list->length += 1;
     if (!list->head) {
@@ -69,11 +69,11 @@ void List_TYPE_prepend(Arena *arena, List_TYPE *list, TYPE item) {
     list->head = prepend_node;
 }
 
-usize List_TYPE_get_length(Arena *arena, List_TYPE *list) {
+usize List_TYPE_get_length(memops_arena *arena, List_TYPE *list) {
     return list->length;
 }
 
-Node_TYPE *List_TYPE_remove(Arena *arena, List_TYPE *list, TYPE item) {
+Node_TYPE *List_TYPE_remove(memops_arena *arena, List_TYPE *list, TYPE item) {
     if (list->length == 0) {
         return NULL;
     }
@@ -107,7 +107,7 @@ Node_TYPE *List_TYPE_remove(Arena *arena, List_TYPE *list, TYPE item) {
     return result;
 }
 
-Node_TYPE *List_TYPE_remove_at(Arena *arena, List_TYPE *list, i32 index) {
+Node_TYPE *List_TYPE_remove_at(memops_arena *arena, List_TYPE *list, i32 index) {
     if (index > list->length - 1 || index < 0) {
         printf("invalid index\n");
         return NULL;
@@ -151,7 +151,7 @@ Node_TYPE *List_TYPE_remove_at(Arena *arena, List_TYPE *list, i32 index) {
     return result;
 }
 
-Node_TYPE *List_TYPE_get_at(Arena *arena, List_TYPE *list, i32 index) {
+Node_TYPE *List_TYPE_get_at(memops_arena *arena, List_TYPE *list, i32 index) {
     if (list->length < index) {
         return NULL;
     }
@@ -171,7 +171,7 @@ Node_TYPE *List_TYPE_get_at(Arena *arena, List_TYPE *list, i32 index) {
     return result;
 }
 
-void List_TYPE_destroy(Arena *arena, List_TYPE *list) {
+void List_TYPE_destroy(memops_arena *arena, List_TYPE *list) {
     Node_TYPE *iter = list->head;
     while (iter) {
         Node_TYPE *destroyer = iter;
@@ -183,7 +183,7 @@ void List_TYPE_destroy(Arena *arena, List_TYPE *list) {
     list->length = 0;
 }
 
-void List_TYPE_print(Arena *arena, List_TYPE *list) { 
+void List_TYPE_print(memops_arena *arena, List_TYPE *list) { 
     Node_TYPE *iter = list->head; 
     printf("list.length: %llu\n", list->length); 
     while (iter) { 

@@ -2,9 +2,9 @@
 
 #include "BiNode_TYPE.h"
 
-BiNode_TYPE *BiNode_TYPE_create(Arena *arena, TYPE data) {
+BiNode_TYPE *BiNode_TYPE_create(memops_arena *arena, TYPE data) {
     // BiNode_TYPE *node = malloc(sizeof(BiNode_TYPE));
-    BiNode_TYPE *node = arenaPushStruct(arena, BiNode_TYPE);
+    BiNode_TYPE *node = memops_arena_push_struct(arena, BiNode_TYPE);
     if (node) {
         node->next = NULL;
         node->prev = NULL;
@@ -13,12 +13,12 @@ BiNode_TYPE *BiNode_TYPE_create(Arena *arena, TYPE data) {
     return node;
 }
 
-void BiNode_TYPE_destroy(Arena *arena, BiNode_TYPE **node) {
+void BiNode_TYPE_destroy(memops_arena *arena, BiNode_TYPE **node) {
     // free(*node);
     *node = NULL;
 }
 
-TYPE BiNode_TYPE_value(Arena *arena, BiNode_TYPE *node) {
+TYPE BiNode_TYPE_value(memops_arena *arena, BiNode_TYPE *node) {
     TYPE result;
     if (node) { 
         result = node->data; 

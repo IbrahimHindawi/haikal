@@ -11,9 +11,9 @@ structdef(BiNode_TYPE) {
     TYPE data;
 };
 
-BiNode_TYPE *BiNode_TYPE_create(Arena *arena, TYPE data);
-void BiNode_TYPE_destroy(Arena *arena, BiNode_TYPE **node);
-TYPE BiNode_TYPE_value(Arena *arena, BiNode_TYPE *node);
+BiNode_TYPE *BiNode_TYPE_create(memops_arena *arena, TYPE data);
+void BiNode_TYPE_destroy(memops_arena *arena, BiNode_TYPE **node);
+TYPE BiNode_TYPE_value(memops_arena *arena, BiNode_TYPE *node);
 
 #define BiNode_TYPE_get(node, value) \
     if (!(node)) { \

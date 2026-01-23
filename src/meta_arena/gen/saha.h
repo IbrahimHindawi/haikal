@@ -10,8 +10,8 @@
 #include <stdalign.h>
 #define max_alloc_size 0x10000000000
 
-typedef struct Arena Arena;
-struct Arena {
+typedef struct memops_arena memops_arena;
+struct memops_arena {
     u8 *base;
     u8 *cursor;
     u8 *previous;
@@ -20,38 +20,38 @@ struct Arena {
     u64 npages;
 };
 
-bool isPowerOfTwo(uintptr_t x);
-uintptr_t memoryAlignForward(uintptr_t ptr, size_t align);
-void arenaInit(Arena *arena);
-#define arenaPushStruct(arena, type) (type *)arenaPush(arena, sizeof(type), haikal_alignof(type))
-#define arenaPushArray(arena, type, count) (type *)arenaPush(arena, sizeof(type) * count, haikal_alignof(type))
-void *arenaPush(Arena *arena, u64 alloc_size, u64 align);
-#define arenaPushArrayZero(arena, type, count) (type *)arenaPushZero(arena, sizeof(type) * count, haikal_alignof(type))
-void *arenaPushZero(Arena *arena, u64 alloc_size, u64 align);
-void *arenaSetPos(Arena *arena, void *pos);
-#define arenaPopArray(arena, type, count) (type *)arenaPop(arena, sizeof(type) * count)
-void *arenaPop(Arena *arena, u64 alloc_size);
-void *arenaGetPos(Arena *arena);
-void arenaClear(Arena *arena);
-#define arenaRealloc(arena, type, new_count, old_ptr, old_count) \
-    (type *)arenaRealloc_(arena, sizeof(type) * new_count, old_ptr, sizeof(type) * old_count, haikal_alignof(type))
-void *arenaRealloc_(Arena *arena, u64 new_alloc_size, void *old_ptr, u64 old_alloc_size, u64 align);
-void arenaDestroy(Arena *arena);
-void arenaPrint(Arena *arena);
+bool memops_is_power_of_two(uintptr_t x);
+uintptr_t memops_align_forward(uintptr_t ptr, size_t align);
+void memops_arena_initialize(memops_arena *arena);
+#define memops_arena_push_struct(arena, type) (type *)memops_arena_push(arena, sizeof(type), haikal_alignof(type))
+#define memops_arena_push_array(arena, type, count) (type *)memops_arena_push(arena, sizeof(type) * count, haikal_alignof(type))
+void *memops_arena_push(memops_arena *arena, u64 alloc_size, u64 align);
+#define memops_arena_push_array_zero(arena, type, count) (type *)memops_arena_push_zero(arena, sizeof(type) * count, haikal_alignof(type))
+void *memops_arena_push_zero(memops_arena *arena, u64 alloc_size, u64 align);
+void *memops_arena_set_pos(memops_arena *arena, void *pos);
+#define memops_arena_pop_array(arena, type, count) (type *)memops_arena_pop(arena, sizeof(type) * count)
+void *memops_arena_pop(memops_arena *arena, u64 alloc_size);
+void *memops_arena_get_pos(memops_arena *arena);
+void memops_arena_clear(memops_arena *arena);
+#define memops_arena_realloc(arena, type, new_count, old_ptr, old_count) \
+    (type *)memops_arena_realloc_(arena, sizeof(type) * new_count, old_ptr, sizeof(type) * old_count, haikal_alignof(type))
+void *memops_arena_realloc_(memops_arena *arena, u64 new_alloc_size, void *old_ptr, u64 old_alloc_size, u64 align);
+void memops_arena_destroy(memops_arena *arena);
+void memops_arena_print(memops_arena *arena);
 
 // #define SAHA_IMPLEMENTATION
 #ifdef SAHA_IMPLEMENTATION
 
-bool isPowerOfTwo(uintptr_t x) {
+bool memops_is_power_of_two(uintptr_t x) {
 	return (x & (x-1)) == 0;
 }
 
-uintptr_t memoryAlignForward(uintptr_t ptr, size_t align) {
+uintptr_t memops_align_forward(uintptr_t ptr, size_t align) {
 	uintptr_t p;
     uintptr_t a;
     uintptr_t modulo;
 
-	assert(isPowerOfTwo(align));
+	assert(memops_is_power_of_two(align));
 
 	p = ptr;
 	a = (uintptr_t)align;
@@ -66,7 +66,7 @@ uintptr_t memoryAlignForward(uintptr_t ptr, size_t align) {
 	return p;
 }
 
-void arenaInit(Arena *arena) {
+void memops_arena_initialize(memops_arena *arena) {
     SYSTEM_INFO systeminfo = {0};
     GetSystemInfo(&systeminfo);
     // printf("allocationgranularity = %lu\n", systeminfo.dwAllocationGranularity);
@@ -80,7 +80,7 @@ void arenaInit(Arena *arena) {
     arena->npages = 0;
 }
 
-void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
+void *memops_arena_push(memops_arena *arena, u64 alloc_size, u64 align) {
     //
     // Current aligned cursor based on: base + used
     //
@@ -88,7 +88,7 @@ void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
     uintptr_t base_addr = (uintptr_t)arena->base;
     uintptr_t curr_addr = base_addr + (uintptr_t)arena->used;
 
-    uintptr_t aligned_addr = memoryAlignForward(curr_addr, align);
+    uintptr_t aligned_addr = memops_align_forward(curr_addr, align);
     uintptr_t diff         = aligned_addr - curr_addr;
 
     u64 needed     = arena->used + alloc_size + diff;
@@ -116,7 +116,7 @@ void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
         );
 
         if (!r) {
-            printf("Arena commit failed at %p!\n", (void*)commit_addr);
+            printf("memops_arena commit failed at %p!\n", (void*)commit_addr);
             DebugBreak();
             exit(EXIT_FAILURE);
         }
@@ -128,7 +128,7 @@ void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
     // Overflow protection
     //
     if (needed > max_alloc_size) {
-        printf("Arena maximum size exceeded!\n");
+        printf("memops_arena maximum size exceeded!\n");
         exit(EXIT_FAILURE);
     }
 
@@ -147,20 +147,20 @@ void *arenaPush(Arena *arena, u64 alloc_size, u64 align) {
     return oldpos;
 }
 
-void *arenaPushZero(Arena *arena, u64 alloc_size, u64 align) {
-    void *alloc_location = arenaPush(arena, alloc_size, align);
+void *memops_arena_push_zero(memops_arena *arena, u64 alloc_size, u64 align) {
+    void *alloc_location = memops_arena_push(arena, alloc_size, align);
     memset(arena->previous, 0, alloc_size);
     return alloc_location;
 }
 
-void *arenaSetPos(Arena *arena, void *pos) {
+void *memops_arena_set_pos(memops_arena *arena, void *pos) {
     u64 diff = (u64)arena->cursor - (u64)pos;
     arena->used -= diff;
     arena->cursor = (u8 *)pos;
     return arena->cursor;
 }
 
-void *arenaPop(Arena *arena, u64 alloc_size) {
+void *memops_arena_pop(memops_arena *arena, u64 alloc_size) {
     // leads to fragmentation, needs solution
     // uintptr_t diff = arena->cursor - arena->previous;
     // uintptr_t offset = diff - alloc_size;
@@ -172,25 +172,25 @@ void *arenaPop(Arena *arena, u64 alloc_size) {
     return arena->cursor;
 }
 
-void *arenaGetPos(Arena *arena) {
+void *memops_arena_get_pos(memops_arena *arena) {
     return arena->cursor;
 }
 
-void arenaClear(Arena *arena) {
+void memops_arena_clear(memops_arena *arena) {
     arena->cursor = arena->base;
     arena->used = 0;
 }
 
-void *arenaRealloc_(Arena *arena, u64 new_alloc_size, void *old_ptr, u64 old_alloc_size, u64 align) {
-    void *new_ptr = arenaPush(arena, new_alloc_size, align);
+void *memops_arena_realloc_(memops_arena *arena, u64 new_alloc_size, void *old_ptr, u64 old_alloc_size, u64 align) {
+    void *new_ptr = memops_arena_push(arena, new_alloc_size, align);
     memcpy(new_ptr, old_ptr, old_alloc_size);
     // memset(old_ptr, 0, old_alloc_size);
     return new_ptr;
 }
 
-void arenaDestroy(Arena *arena) { }
+void memops_arena_destroy(memops_arena *arena) { }
 
-void arenaPrint(Arena *arena) {
+void memops_arena_print(memops_arena *arena) {
     printf("Memory Dump: %llu bytes allocated.\n", arena->used);
     printf("%p: ", arena->base);
     for (i32 i = 0; i < arena->used; ++i) {

@@ -2,13 +2,13 @@
 
 #include "Array_TYPE.h"
 
-Array_TYPE Array_TYPE_reserve(Arena *arena, u64 length) {
+Array_TYPE Array_TYPE_reserve(memops_arena *arena, u64 length) {
     Array_TYPE array = {0};
     if (length == 0) {
         return array;
     }
     // array.length = length;
-    array.data = arenaPushArray(arena, TYPE, length);
+    array.data = memops_arena_push_array(arena, TYPE, length);
     // array.data = malloc(sizeof(TYPE) * length);
     if (array.data == NULL) {
         printf("haikal::Memory Allocation Failure!\n");
@@ -21,18 +21,18 @@ Array_TYPE Array_TYPE_reserve(Arena *arena, u64 length) {
     return array;
 }
 
-void Array_TYPE_destroy(Arena *arena, Array_TYPE *array) {
+void Array_TYPE_destroy(memops_arena *arena, Array_TYPE *array) {
     array->border = 0;
     array->length = 0;
     // free(array->data);
     array->data = NULL;
 }
 
-TYPE *Array_TYPE_resize(Arena *arena, Array_TYPE *array) {
+TYPE *Array_TYPE_resize(memops_arena *arena, Array_TYPE *array) {
     u64 old_border = array->border;
     array->border *= 2;
     // __debugbreak();
-    array->data = arenaRealloc(arena, TYPE, array->border, array->data, old_border);
+    array->data = memops_arena_realloc(arena, TYPE, array->border, array->data, old_border);
     // array->data = realloc(arena, array->data, sizeof(TYPE) * array->border);
     if (array->data == NULL) {
         printf("haikal::Memory Reallocation Failure!\n");
@@ -48,11 +48,11 @@ TYPE *Array_TYPE_resize(Arena *arena, Array_TYPE *array) {
     return array->data;
 }
 
-TYPE *Array_TYPE_append(Arena *arena, Array_TYPE *array, TYPE elem) {
+TYPE *Array_TYPE_append(memops_arena *arena, Array_TYPE *array, TYPE elem) {
     if (array->length == 0 && array->border == 0) { 
         array->length += 1;
         array->border += 1;
-        array->data = arenaPushArray(arena, TYPE, array->border);
+        array->data = memops_arena_push_array(arena, TYPE, array->border);
         // array->data = realloc(NULL, sizeof(TYPE) * array->border);
         array->data[array->length - 1] = elem;
         // char *cursor = (char *)array->data;
@@ -71,7 +71,7 @@ TYPE *Array_TYPE_append(Arena *arena, Array_TYPE *array, TYPE elem) {
     return &array->data[array->length - 1];
 }
 
-int Array_TYPE_is_empty(Arena *arena, Array_TYPE *array) {
+int Array_TYPE_is_empty(memops_arena *arena, Array_TYPE *array) {
     return array->length == 0 ? 1 : 0;
 }
 

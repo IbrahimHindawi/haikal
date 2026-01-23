@@ -10,9 +10,9 @@ structdef(Node_TYPE) {
     TYPE data;
 };
 
-Node_TYPE *Node_TYPE_create(Arena *arena, TYPE data);
-void Node_TYPE_destroy(Arena *arena, Node_TYPE **node);
-TYPE *Node_TYPE_value(Arena *arena, Node_TYPE *node);
+Node_TYPE *Node_TYPE_create(memops_arena *arena, TYPE data);
+void Node_TYPE_destroy(memops_arena *arena, Node_TYPE **node);
+TYPE *Node_TYPE_value(memops_arena *arena, Node_TYPE *node);
 
 #define Node_TYPE_get(node, value) \
     if (!(node)) { \

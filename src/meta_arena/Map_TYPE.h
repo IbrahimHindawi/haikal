@@ -19,12 +19,12 @@ structdef(Map_TYPE) {
     size_t border;
 };
 
-Map_TYPE *Map_TYPE_create(Arena *arena);
-void Map_TYPE_destroy(Arena *arena, Map_TYPE *hashmap);
-TYPE *Map_TYPE_get(Arena *arena, Map_TYPE *hashmap, const char *key);
-const char *Map_TYPE_set(Arena *arena, Map_TYPE *hashmap, const char *key, TYPE val);
-TYPE *Map_TYPE_try_emplace(Arena *arena, Map_TYPE *hashmap, const char *key, TYPE val);
-usize Map_TYPE_length(Arena *arena, Map_TYPE *hashmap);
+Map_TYPE *Map_TYPE_create(memops_arena *arena);
+void Map_TYPE_destroy(memops_arena *arena, Map_TYPE *hashmap);
+TYPE *Map_TYPE_get(memops_arena *arena, Map_TYPE *hashmap, const char *key);
+const char *Map_TYPE_set(memops_arena *arena, Map_TYPE *hashmap, const char *key, TYPE val);
+TYPE *Map_TYPE_try_emplace(memops_arena *arena, Map_TYPE *hashmap, const char *key, TYPE val);
+usize Map_TYPE_length(memops_arena *arena, Map_TYPE *hashmap);
 
 structdef(MapIterator_TYPE) {
     const char *key;
@@ -33,5 +33,5 @@ structdef(MapIterator_TYPE) {
     usize _index;
 };
 
-MapIterator_TYPE MapIterator_TYPE_create(Arena *arena, Map_TYPE* hashmap);
-bool MapIterator_TYPE_next(Arena *arena, MapIterator_TYPE* it);
+MapIterator_TYPE MapIterator_TYPE_create(memops_arena *arena, Map_TYPE* hashmap);
+bool MapIterator_TYPE_next(memops_arena *arena, MapIterator_TYPE* it);
