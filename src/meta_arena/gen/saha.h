@@ -20,6 +20,15 @@ struct memops_arena {
     u64 npages;
 };
 
+typedef struct memops_arena_temp memops_arena_temp;
+struct memops_arena_temp {
+    memops_arena *arena;
+    void *pos;
+};
+
+memops_arena_temp memops_arena_temp_begin(memops_arena *arena);
+void memops_arena_temp_end(memops_arena_temp arena_temp);
+
 bool memops_is_power_of_two(uintptr_t x);
 uintptr_t memops_align_forward(uintptr_t ptr, size_t align);
 void memops_arena_initialize(memops_arena *arena);
@@ -148,15 +157,18 @@ void *memops_arena_push(memops_arena *arena, u64 alloc_size, u64 align) {
 }
 
 void *memops_arena_push_zero(memops_arena *arena, u64 alloc_size, u64 align) {
-    void *alloc_location = memops_arena_push(arena, alloc_size, align);
-    memset(arena->previous, 0, alloc_size);
-    return alloc_location;
+    void *p = memops_arena_push(arena, alloc_size, align);
+    memset(p, 0, (size_t)alloc_size);
+    return p;
 }
 
 void *memops_arena_set_pos(memops_arena *arena, void *pos) {
-    u64 diff = (u64)arena->cursor - (u64)pos;
-    arena->used -= diff;
+    // u64 diff = (u64)arena->cursor - (u64)pos;
+    // arena->used -= diff;
+    // arena->cursor = (u8 *)pos;
+    // return arena->cursor;
     arena->cursor = (u8 *)pos;
+    arena->used = (u64)((u8 *)pos - arena->base);
     return arena->cursor;
 }
 
@@ -173,7 +185,8 @@ void *memops_arena_pop(memops_arena *arena, u64 alloc_size) {
 }
 
 void *memops_arena_get_pos(memops_arena *arena) {
-    return arena->cursor;
+    // return arena->cursor;
+    return arena->base + arena->used;
 }
 
 void memops_arena_clear(memops_arena *arena) {
@@ -201,6 +214,17 @@ void memops_arena_print(memops_arena *arena) {
         printf("%02x ", arena->base[i]);
     }
     printf("\nMemory Dump: End.\n");
+}
+
+memops_arena_temp memops_arena_temp_begin(memops_arena *arena) {
+    memops_arena_temp t;
+    t.arena = arena;
+    t.pos = memops_arena_get_pos(arena);
+    return t;
+}
+
+void memops_arena_temp_end(memops_arena_temp t) {
+    memops_arena_set_pos(t.arena, t.pos);
 }
 
 #endif
