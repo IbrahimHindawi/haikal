@@ -23,7 +23,8 @@ struct memops_arena {
 typedef struct memops_arena_temp memops_arena_temp;
 struct memops_arena_temp {
     memops_arena *arena;
-    void *pos;
+    // void *pos;
+    u64 used;
 };
 
 memops_arena_temp memops_arena_temp_begin(memops_arena *arena);
@@ -219,12 +220,15 @@ void memops_arena_print(memops_arena *arena) {
 memops_arena_temp memops_arena_temp_begin(memops_arena *arena) {
     memops_arena_temp t;
     t.arena = arena;
-    t.pos = memops_arena_get_pos(arena);
+    // t.pos = memops_arena_get_pos(arena);
+    t.used = arena->used;
     return t;
 }
 
 void memops_arena_temp_end(memops_arena_temp t) {
-    memops_arena_set_pos(t.arena, t.pos);
+    // memops_arena_set_pos(t.arena, t.pos);
+    t.arena->used = t.used;
+    t.arena->cursor = t.arena->base + t.used;
 }
 
 #endif
