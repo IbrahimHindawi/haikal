@@ -1,8 +1,8 @@
 #pragma once
 
-#ifdef _MSC_VER
-#   define _CRT_SECURE_NO_WARNINGS
-#endif
+// #ifdef _MSC_VER
+// #   define _CRT_SECURE_NO_WARNINGS
+// #endif
 
 #include <math.h>
 #include <stdint.h>
@@ -42,7 +42,7 @@ typedef str *strptr;
 
 #define stringify(s) #s
 #define concat(a, b) a##b
-#define Pi 3.141592f
+// #define pi 3.141592f
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
 #define cast(T, V) (T)(V)
 
