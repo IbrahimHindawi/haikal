@@ -226,19 +226,6 @@ void metacore(char *metaname) {
     }
 }
 
-void metapayload() {
-    char *coretypes[] = {
-        "hkArray",
-        "hkList", "hkNode",
-        "hkDList", "hkBiNode",
-        "hkQueue", "hkStack",
-    };
-    const i8 coretypeslen = sizeofarray(coretypes);
-    for (int i = 0; i < coretypeslen; ++i) {
-        metacore(coretypes[i]);
-    }
-}
-
 int main(int argc, char *argv[]) {
     printf("haikal::codegen::initialize.\n");
 
@@ -436,8 +423,6 @@ int main(int argc, char *argv[]) {
     } else {
         printf("metagen::main::error::Unable to open main.c file.\n");
     }
-
-    // metapayload();
 
     printf("haikal::CodeGen::Finalize.\n");
     return 0;
