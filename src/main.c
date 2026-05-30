@@ -1,446 +1,429 @@
-//---------------------------------------------------------------------------------------------------
-// monomorphization codegen limitations:
-//---------------------------------------------------------------------------------------------------
-// for containers that have value types eg `T`,
-// the type must be included before the generated header.
-// this is because the container expects to know the type in it's struct.
-// Warning: cannot be recursive type
-//
-// for containers that have pointer types eg `T *`,
-// the type can be included before or after the generated header.
-// this is because the container has `T` forward declared.
-// Warning: can be recursive type
-//
-// for types that include a container of themselves eg `struct T { Array_T arr; };`
-// the type must be included after the generated header.
-// this is because the type needs to know the container definition.
-// Warning: can be recursive type with `T *` but not `T`
-//---------------------------------------------------------------------------------------------------
-// primitives
-//---------------------------------------------------------------------------------------------------
-// haikal@Array:i8:p
-// haikal@Array:i32:p
-// haikal@HashMap:i32:p
-// haikal@Node:i32:p
-// haikal@List:i32:p
-// haikal@BiNode:i32:p
-// haikal@DList:i32:p
-// haikal@Queue:i32:p
-// haikal@Stack:i32:p
-//---------------------------------------------------------------------------------------------------
-// structs
-//---------------------------------------------------------------------------------------------------
-// haikal@Array:List_i32:s
-// haikal@Array:vec3:s
-// haikal@Array:Rec:s
-// haikal@HashMap:vec3:s
-// haikal@HashMap:Rec:s
-// haikal@HashMap:Array_i8:s
-// haikal@HashMap:Array_i32:s
+/*
+ * Metaprogramming Data Structures & Algorithms in C by
+ * creating an external program `meta` that parses C source
+ * and replaces the `TYPE` token with a desired type.
+ * for core types -> `metacore()` -> `#include "hkType_core.h"
+ * for new types -> `metagen()` -> 
+ *      `#include "custom.h"`
+ *      `#include "hkType_custom.h"`
+ */
 
-#define CORE_IMPL
-#include <core.h>
+#ifdef _MSC_VER
+#   define _CRT_SECURE_NO_WARNINGS
+#   include <windows.h>
+#   include <direct.h>
+#elif __linux__
+#   include <unistd.h>
+#else
+#   error "Unknown Platform"
+#endif
 
-// #include "memops_arena.h"
-#include "vec3.h"
+#include "core.h"
+// #include "jsmn.h"
+#include "bstring/bstring/bstrlib.h"
+#include <toml-c.h>
 
-#include <Array.h>
-#include <Node.h>
-#include <List.h>
-#include <BiNode.h>
-#include <DList.h>
-#include <Stack.h>
-#include <Queue.h>
+const char *metapath = NULL;
+const char *mainpath = NULL;
+const char *typestr = "TYPE";
 
-#include "Rec.h"
-#include <HashMap.h>
-
-#include "Component.h"
-
-void Array_test() {
-    printf("Array_test:\n");
-    Array_i8 string = Array_i8_reserve(27);
-    for (i32 i = 0; i < string.length; ++i) {
-        string.data[i] = 0b01100000 | i + 1;
-    }
-    string.data[string.length - 1] = '\0';
-    printf("string: %s\n", string.data);
-    Array_i8_destroy(&string);
-
-    Array_vec3 vectors = Array_vec3_reserve(10);
-    for (i32 i = 0; i < vectors.length; ++i) {
-        vectors.data[i].x = 1.0f;
-        vectors.data[i].y = (f32)i;
-        vectors.data[i].z = 3.141592f;
-    }
-    for (i32 i = 0; i < vectors.length; ++i) { 
-        printf("vectors[%d] = {%f, %f, %f}\n", i, vectors.data[i].x, vectors.data[i].y, vectors.data[i].z); 
-    }
-    Array_vec3_destroy(&vectors);
-
-    Array_i8 arr = {0};
-    Array_i8_append(&arr, 127);
-    Array_i8_append(&arr, 23);
-    Array_i8_append(&arr, 11);
-    Array_i8_append(&arr, 8);
-    Array_i8_append(&arr, 127);
-    Array_i8_append(&arr, 23);
-    Array_i8_append(&arr, 11);
-    Array_i8_append(&arr, 8);
-    for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
-    arr.length = 0;
-    for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
-    Array_i8_append(&arr, 0xBA);
-    Array_i8_append(&arr, 0xBA);
-    Array_i8_append(&arr, 0xBA);
-    Array_i8_append(&arr, 0xBA);
-    Array_i8_append(&arr, 0xBA);
-    Array_i8_append(&arr, 0xBA);
-    Array_i8_append(&arr, 0xBA);
-    Array_i8_append(&arr, 0xBA);
-    for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
-    Array_i8_destroy(&arr);
-    printf("\n");
-}
-
-void List_test() {
-    printf("List_test:\n");
-    List_i32 loi = {0};
-    Node_i32 *node = NULL;
-    List_i32_append(&loi, 11);
-    List_i32_append(&loi, 22);
-    List_i32_append(&loi, 33);
-    List_i32_append(&loi, 44);
-    List_i32_print(&loi);
-
-    node = List_i32_remove_at(&loi, 0);
-    if (node) {
-        Node_i32_destroy(&node);
-    }
-    List_i32_print(&loi);
-    node = List_i32_remove_at(&loi, 1);
-    if (node) {
-        Node_i32_destroy(&node);
-    }
-    List_i32_print(&loi);
-    node = List_i32_remove_at(&loi, 1);
-    if (node) {
-        Node_i32_destroy(&node);
-    }
-    List_i32_print(&loi);
-    node = List_i32_remove_at(&loi, 0);
-    if (node) {
-        Node_i32_destroy(&node);
-    }
-    List_i32_print(&loi);
-    if (loi.length == 0) {
-        printf("list is empty\n");
-    }
-    List_i32_destroy(&loi);
-
-    printf("Array_List_i32:\n");
-    Array_List_i32 arrayoflists = {0};
-    List_i32 *list = Array_List_i32_append(&arrayoflists, (List_i32) {0});
-    if (!list) { printf("list invalid!\n"); }
-    List_i32_append(list, 32);
-    List_i32_append(list, 22);
-    List_i32_append(list, 12);
-    List_i32_print(list);
-    list = Array_List_i32_append(&arrayoflists, (List_i32) {0});
-    if (!list) { printf("list invalid!\n"); }
-    List_i32_append(list, 16);
-    List_i32_append(list, 26);
-    List_i32_append(list, 36);
-    List_i32_print(list);
-    printf("array.length = %llu\n", arrayoflists.length);
-    for (i32 i = 0; i < arrayoflists.length; ++i) {
-        printf("list[%d] = \n", i);
-        List_i32 list = arrayoflists.data[i];
-        List_i32_print(&list);
-    }
-    printf("\n");
-}
-
-void DList_test() {
-    printf("DList_test:\n");
-    DList_i32 *loi = DList_i32_create();
-    BiNode_i32 *node = NULL;
-    DList_i32_append(loi, 11);
-    DList_i32_append(loi, 22);
-    DList_i32_append(loi, 33);
-    DList_i32_append(loi, 44);
-    DList_i32_print(loi);
-    node = DList_i32_remove_at(loi, 0); if (node) { BiNode_i32_destroy(&node); }
-    DList_i32_print(loi);
-    node = DList_i32_remove_at(loi, 1); if (node) { BiNode_i32_destroy(&node); }
-    DList_i32_print(loi);
-    node = DList_i32_remove_at(loi, 1); if (node) { BiNode_i32_destroy(&node); }
-    DList_i32_print(loi);
-    DList_i32_destroy(&loi);
-    printf("\n");
-}
-
-void Queue_test() {
-    printf("Queue_test:\n");
-    Queue_i32 *q = Queue_i32_create();
-    Queue_i32_print(q);
-    Queue_i32_enqueue(q, 0);
-    Queue_i32_print(q);
-    Queue_i32_enqueue(q, 1);
-    Queue_i32_print(q);
-    Queue_i32_enqueue(q, 2);
-    Queue_i32_print(q);
-
-    Node_i32 *node = NULL;
-    i32 value = 0;
-
-    node = Queue_i32_dequeue(q);
-    Node_i32_get(node, value);
-    printf("node value: %d\n", value);
-    Node_i32_destroy(&node);
-    Queue_i32_print(q);
-
-    node = Queue_i32_dequeue(q);
-    Node_i32_get(node, value);
-    printf("node value: %d\n", value);
-    Node_i32_destroy(&node);
-    Queue_i32_print(q);
-
-    node = Queue_i32_dequeue(q);
-    Node_i32_get(node, value);
-    printf("node value: %d\n", value);
-    Node_i32_destroy(&node);
-    Queue_i32_print(q);
-
-    node = Queue_i32_dequeue(q);
-    Node_i32_get(node, value);
-    printf("node value: %d\n", value);
-    Node_i32_destroy(&node);
-    Queue_i32_print(q);
-
-    Queue_i32_destroy(&q);
-    printf("\n");
-}
-
-void Stack_test() {
-    printf("Stack_test:\n");
-    Stack_i32 *stack = Stack_i32_create();
-    Node_i32 *node = NULL;
-    Stack_i32_push(stack, 32);
-    Stack_i32_push(stack, 12);
-    Stack_i32_push(stack, 22);
-    Stack_i32_push(stack, 42);
-    Stack_i32_print(stack);
-
-    node = Stack_i32_pop(stack);
-    i32 value = 0;
-    Stack_i32_print(stack);
-
-    node = Stack_i32_pop(stack);
-    Node_i32_get(node, value);
-    Stack_i32_print(stack);
-
-    node = Stack_i32_pop(stack);
-    Node_i32_get(node, value);
-    Stack_i32_print(stack);
-
-    node = Stack_i32_pop(stack);
-    Node_i32_get(node, value);
-    Stack_i32_print(stack);
-
-    node = Stack_i32_pop(stack);
-    Node_i32_get(node, value);
-    Stack_i32_print(stack);
-
-    Stack_i32_destroy(&stack);
-    printf("\n");
-}
-
-void HashMap_test() {
-    printf("HashMap_test:\n");
-    puts("");
-    printf("HashMap_i32:\n");
-    HashMap_i32 *hashmap = HashMap_i32_create();
-    printf("hashmap length = %llu\n", HashMap_i32_length(hashmap));
-    if (!hashmap) {
-        printf("nomem\n");
-        exit(-1);
-    }
-    if (!HashMap_i32_set(hashmap, "dog", 3)) {
-        printf("nomem\n");
-        exit(-1);
-    }
-    i32 *result = HashMap_i32_get(hashmap, "dog");
-    if (result) {
-        printf("key = %s, val = %d\n", "dog", *result);
-    }
-    printf("hashmap length = %llu\n", HashMap_i32_length(hashmap));
-    HashMap_i32_destroy(hashmap);
-
-    puts("");
-    printf("HashMap_vec:\n");
-    HashMap_vec3 *hashmapvec = HashMap_vec3_create();
-    printf("hashmapvec length = %llu\n", HashMap_vec3_length(hashmapvec));
-    if (!hashmapvec) {
-        printf("nomem\n");
-        exit(-1);
-    }
-    if (!HashMap_vec3_set(hashmapvec, "dog", (vec3){1.f, 0.f, 0.f})) {
-        printf("nomem\n");
-        exit(-1);
-    }
-    printf("hashmapvec length = %llu\n", HashMap_vec3_length(hashmapvec));
-    if (!HashMap_vec3_set(hashmapvec, "frog", (vec3){0.f, 1.f, 0.f})) {
-        printf("nomem\n");
-        exit(-1);
-    }
-    printf("hashmapvec length = %llu\n", HashMap_vec3_length(hashmapvec));
-    vec3 *resultvec = HashMap_vec3_get(hashmapvec, "dog");
-    if (resultvec) {
-        printf("key = %s, val = {%f, %f, %f}\n", "dog", resultvec->x, resultvec->y, resultvec->z);
-    }
-    printf("hashmapvec length = %llu\n", HashMap_vec3_length(hashmapvec));
-    printf("hash iterator...\n");
-    HashMapIterator_vec3 itvec = HashMapIterator_vec3_create(hashmapvec);
-    while (HashMapIterator_vec3_next(&itvec)) {
-        printf("key = %s, val = {%f, %f, %f}\n", itvec.key, itvec.val.x, itvec.val.y, itvec.val.z);
-    }
-    HashMap_vec3_destroy(hashmapvec);
-
-    puts("");
-    printf("HashMap_Array_i32:\n");
-    HashMap_Array_i32 *hashmaparray = HashMap_Array_i32_create();
-    Array_i32 *resultarray = HashMap_Array_i32_get(hashmaparray, "dog");
-    if (!resultarray) {
-        HashMap_Array_i32_set(hashmaparray, "dog", (Array_i32) {0});
-        resultarray = HashMap_Array_i32_get(hashmaparray, "dog");
-    }
-    printf("key = %s, val = %p", "dog", resultarray);
-    *resultarray = Array_i32_create(12);
-    for (i32 i = 0; i < 12; i++) {
-        resultarray->data[i] = i * i;
-    }
-    for (i32 i = 0; i < 12; i++) {
-        printf("Array.data[%d] = %d\n", i, resultarray->data[i]);
-    }
-    printf("hashmapvec length = %llu\n", HashMap_Array_i32_length(hashmaparray));
-
-    printf("hash iterator...\n");
-    HashMapIterator_Array_i32 itarr = HashMapIterator_Array_i32_create(hashmaparray);
-    while (HashMapIterator_Array_i32_next(&itarr)) {
-        printf("key = %s, val = {%llu, %llu, %p}\n", itarr.key, itarr.val.length, itarr.val.border, itarr.val.data);
-        Array_i32_destroy(&itarr.val);
-    }
-    HashMap_Array_i32_destroy(hashmaparray);
-    printf("\n");
-}
-
-structdef(Payload) {
-    i32 id;
-    i32 mx;
-    char *str;
+structdef(Node_bstring) {
+    bstring data;
+    i32 foundat;
+    Node_bstring *next;
 };
 
-structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
-
-void Arena_test() {
-    memops_arena arena = {0};
-    memops_arena_initialize(&arena, store);
-
-    const i32 len = 4;
-    f32 *nums = memops_arena_push_array(&arena, i32, len);
-    for (i32 i = 0; i < len; ++i) {
-        nums[i] = (f32)(i + 1);
-    }
-    for (i32 i = 0; i < len; ++i) {
-        printf("%f ", nums[i]);
-    }
-    printf("\n");
-
-    u8 *ptr = (u8 *)nums;
-    for (i32 i = 0; i < sizeof(f32) * len; ++i) {
-        printf("%02x ", ptr[i]);
-    }
-    printf("\n");
-
-    char *str0 = strAlloc(&arena, "this is a te");
-    char *str1 = strAlloc(&arena, "st string to");
-    char *str2 = strAlloc(&arena, "alloc bytes.");
-    printf("%s\n", str0);
-    printf("%s\n", str1);
-    printf("%s\n", str2);
-
-    strDealloc(&arena, str2);
-    str2 = strAlloc(&arena, "fortitude");
-    printf("%s\n", str0);
-    printf("%s\n", str1);
-    printf("%s\n", str2);
-
-    Payload *pld = memops_arena_push_struct(&arena, Payload);
-    pld->id = 0xDEADBEEF;
-    pld->mx = 0xCAFEBABE;
-    pld->str = "Name0";
-    memops_arena_pop(&arena, sizeof(Payload));
-    pld = memops_arena_push_struct(&arena, Payload);
-    pld->id = 0xFFFFFFFF;
-    pld->mx = 0xFFFFFFFF;
-    pld->str = "Name0";
-    memops_arena_pop(&arena, sizeof(Payload));
-
-    memops_arena_clear(&arena);
-
-    // vec4i8 *vs = memops_arena_push_array_zero(&arena, vec4i8, 32);
-    const i32 npts = 32;
-    vec4i8 *vs = memops_arena_push_array(&arena, vec4i8, npts);
-    for (i32 i = 0; i < npts; ++i) {
-        vs[i].x = 0xAA;
-        vs[i].y = 0xBB;
-        vs[i].z = 0xCC;
-        vs[i].w = 0xDD;
-    }
-    memops_arena_pop_array(&arena, vec4i8, npts);
-
-    printf("Memory Dump: %d bytes allocated.\n", N);
-    printf("%p: ", store);
-    for (i32 i = 0; i < N; ++i) {
-        if(i % 8 == 0 && i != 0) {
-            printf("\n");
-            printf("%p: ", &store[i]);
-        }
-        printf("%02x ", store[i]);
-    }
-    memops_arena_clear(&arena);
+Node_bstring *Node_bstring_create(bstring input, i32 foundat) {
+    Node_bstring *result = malloc(sizeof(Node_bstring));
+    if (result == NULL) { exit(-1);}
+    result->data = input;
+    result->next = NULL;
+    result->foundat = foundat;
+    return result;
 }
 
-i32 main(i32 argc, char *argv[]) {
-    printf("haikal test begin.\n");
-    Array_test();
-    HashMap_test();
-    List_test();
-    DList_test();
-    Queue_test();
-    Stack_test();
-    // Arena_test();
-    printf("haikal test end.\n");
+void Node_bstring_destroy(Node_bstring *node) {
+    Node_bstring *destroyer = node;
+    // while (node->
+    bdestroy(node->data);
+    // node->next = 
+}
 
-    // TODO: fix code gen for external files
-    // for this to work, we need to read all the included files
-    // compile_commands.json should be enough...
-    // or, use a unity build and just include everything in main.c 
-    // but LSP will die in Component.h...
-    //---------------------------------------------------------------------------------------------------
-    // Component comp = Component_create(10);
-    // printf("comp.id = %d\n", comp.id);
-    // Component_destroy(&comp);
+char *getCurrentWorkingDirectory() {
+    const i32 buffersize = 256;
+    char *cwdstr = malloc(buffersize);
+    if (!cwdstr) {
+        printf("malloc failure.");
+        return NULL;
+    }
+#ifdef _MSC_VER
+    // i32 pathstrlen = GetCurrentDirectoryA(buffersize, cwdstr);
+    _getcwd(cwdstr, buffersize);
+#elif __linux__
+    getcwd(cwdstr, buffersize);
+#endif
+    return cwdstr;
+}
 
+/*
+ * initialize main header:
+ * genpath/metaname.h
+ */
+void metainit(char *metaname, char *ext) {
+    // char *cwdstr = getCurrentWorkingDirectory();
+    // bstring typecorepath = bfromcstr(cwdstr);
+    bstring typecorepath = bfromcstr(metapath);
+    bcatcstr(typecorepath, "gen/");
+    bcatcstr(typecorepath, metaname);
+    bcatcstr(typecorepath, ext);
+    // printf("typecorepath: %s\n", bdata(typecorepath));
+    FILE *output = NULL;
+    if (NULL != (output = fopen(bdata(typecorepath), "w"))) {
+        bstring result = bfromcstr("#pragma once\n");
+        fputs(bdatae(result, "NULL"), output);
+        bdestroy(result);
+        fclose(output);
+    } else {
+        printf("metainit::Unable to open type core gen file: '%s' for initiation.\n", bdata(typecorepath));
+        exit(-1);
+    }
+}
+
+void metareplace(bstring metatypepath, const char *metaarg, bstring forwarddecl, const char *typestr, bstring outpath) {
+    bstring bmetaarg = bfromcstr(metaarg);
+    FILE *input = NULL;
+    FILE *output = NULL;
+    struct tagbstring postfix = bsStatic("\n");
+    bstring btypestr = bfromcstr(typestr);
+    bstring stubinclude = bfromcstr("#include \"");
+    bcatcstr(stubinclude, typestr);
+    bcatcstr(stubinclude, ".h\"");
+    if (NULL != (input = fopen(bdata(metatypepath), "r"))) {
+        bstring filestringdata = bread((bNread) fread, input);
+        struct bstrList *lines;
+        fclose(input);
+        if (NULL != (lines = bsplit(filestringdata, '\n'))) {
+            for (int i = 0; i < lines->qty; ++i) {
+                bfindreplace(lines->entry[i], stubinclude, forwarddecl, 0);
+                bfindreplace(lines->entry[i], btypestr, bmetaarg, 0);
+                binsert(lines->entry[i], blength(lines->entry[i]), &postfix, '?');
+                // printf("%04d: %s\n", i, bdatae(lines->entry[i], "NULL"));
+            }
+            if (NULL != (output = fopen(bdata(outpath), "w"))) {
+                for (int i = 0; i < lines->qty; ++i) {
+                    fputs(bdatae(lines->entry[i], "NULL"), output);
+                }
+                fclose(output);
+            }
+            else {
+                printf("haikal::metagen::error::Failed to open file: %s.\n", bdata(outpath));
+            }
+            bstrListDestroy(lines);
+        }
+        bdestroy(filestringdata);
+    } else {
+        printf("haikal::metagen::error::Unable to open type core file: %s.\n", bdata(metatypepath));
+    }
+}
+
+/*
+ * generate types and `#include "hk<metaname>_<metaarg>.h"` append to main header
+ * genpath/metaname.h <---append--- genpath/metaname_metaarg.h
+ */
+void metagen(char *metaname, char *metaarg, char *forwarddeclparam, char *ext, const char *typestr) {
+    // FILE *input = NULL;
+    FILE *output = NULL;
+    bstring forwarddecl = bfromcstr(forwarddeclparam);
+    bcatcstr(forwarddecl, "(");
+    bcatcstr(forwarddecl, metaarg);
+    bcatcstr(forwarddecl, ");");
+
+    bstring metatypepath = bfromcstr(metapath);
+    bcatcstr(metatypepath, metaname);
+    bcatcstr(metatypepath, "_");
+    bcatcstr(metatypepath, typestr);
+    bcatcstr(metatypepath, ext);
+    // printf("metatypepath: %s\n", bdata(metatypepath));
+
+    bstring outpath = bfromcstr(metapath);
+    bcatcstr(outpath, "gen/");
+    bcatcstr(outpath, metaname);
+    bcatcstr(outpath, "_");
+    bcatcstr(outpath, metaarg);
+    bcatcstr(outpath, ext);
+    // printf("outpath: %s\n", bdata(outpath));
+
+    metareplace(metatypepath, metaarg, forwarddecl, typestr, outpath);
+    bdestroy(metatypepath);
+    bdestroy(outpath);
+
+    bstring typecorepathtarget = bfromcstr(metapath);
+    bcatcstr(typecorepathtarget, "gen/");
+    bcatcstr(typecorepathtarget, metaname);
+    bcatcstr(typecorepathtarget, ext);
+    // printf("typecorepathtarget: %s\n", bdata(typecorepathtarget));
+    if (NULL != (output = fopen(bdata(typecorepathtarget), "a"))) {
+        bstring result = bfromcstr("#include \"");
+        bcatcstr(result, metaname);
+        bcatcstr(result, "_");
+        bcatcstr(result, metaarg);
+        bcatcstr(result, ext);
+        bcatcstr(result, "\"\n");
+        // printf("final header name: %s\n", bdata(result));
+        fputs(bdatae(result, "NULL"), output);
+        bdestroy(result);
+        fclose(output);
+    } else {
+        printf("metainit::Unable to open type core file for initiation.");
+    }
+    bdestroy(typecorepathtarget);
+    return;
+}
+
+void metageninternal(char *metaname, char *metaarg, char *forwarddeclparam, char *ext, const char *typestr) {
+    bstring forwarddecl = bfromcstr(forwarddeclparam);
+    bcatcstr(forwarddecl, "(");
+    bcatcstr(forwarddecl, metaarg);
+    bcatcstr(forwarddecl, ");");
+
+    bstring metatypepathinternal = bfromcstr(metapath);
+    bcatcstr(metatypepathinternal, metaname);
+    bcatcstr(metatypepathinternal, "_");
+    bcatcstr(metatypepathinternal, typestr);
+    bcatcstr(metatypepathinternal, "_internal");
+    bcatcstr(metatypepathinternal, ext);
+    // printf("metatypepathinternal: %s\n", bdata(metatypepathinternal));
+
+    bstring outpathinternal = bfromcstr(metapath);
+    bcatcstr(outpathinternal, "gen/");
+    bcatcstr(outpathinternal, metaname);
+    bcatcstr(outpathinternal, "_");
+    bcatcstr(outpathinternal, metaarg);
+    bcatcstr(outpathinternal, "_internal");
+    bcatcstr(outpathinternal, ext);
+    // printf("outpathinternal: %s\n", bdata(outpathinternal));
+
+    metareplace(metatypepathinternal, metaarg, forwarddecl, typestr, outpathinternal);
+    bdestroy(metatypepathinternal);
+    bdestroy(outpathinternal);
+}
+
+void metacore(char *metaname) {
+    char *coretypes[] = {
+        "i8", "i16", "i32", "i64",
+        "u8", "u16", "u32", "u64",
+        "f32", "f64",
+        "str", "cstr",
+    };
+    i8 coretypeslen = sizeofarray(coretypes);
+    for (int i = 0; i < coretypeslen; ++i) {
+        metainit(metaname, ".h");
+        metainit(metaname, ".c");
+    }
+    for (int i = 0; i < coretypeslen; ++i) {
+        metagen(metaname, coretypes[i], "structdecl", ".h", typestr);
+        metagen(metaname, coretypes[i], "structdecl", ".c", typestr);
+    }
+}
+
+int main(int argc, char *argv[]) {
+    printf("haikal::codegen::initialize.\n");
+
+    char *cwdstr = getCurrentWorkingDirectory();
+    printf("haikal::main::cwd::%s\n", cwdstr);
+    // char* cwdstr = malloc(256);
+    // cwdstr = getcwd(cwdstr, 256);
+    bstring docpath = bfromcstr(cwdstr);
+    bstring docname = bfromcstr("/haikal.toml");
+    bconcat(docpath, docname);
+    bool verbose = false;
+    printf("haikal::main::docpath::%s\n", bdata(docpath));
+    FILE *input = fopen(bdata(docpath), "r");
+    if (!input) {
+        printf("haikal::Failed to open config haikal.toml\n");
+		exit(1);
+    }
+    fseek(input, 0L, SEEK_END);
+    usize file_size = ftell(input);
+    // printf("haikal::toml::file::size::%llu\n", file_size);
+    // fseek(input, 0L, SEEK_SET);
+    rewind(input);
+    char *buffer = malloc(file_size);
+    if (!buffer) {
+        printf("haikal::failed to allocate memory for input toml.\n");
+    }
+    usize ret;
+    ret = fread(buffer, sizeof(*buffer), file_size, input);
+    buffer[ret] = '\0';
+    // printf("%s\n", buffer);
+    // printf("ret = %lu, sizeofarray(buffer) = %ld\n", ret, sizeofarray(buffer));
+    // if (ret != sizeofarray(buffer)) { fprintf(stderr, "fread() failed: %zu\n", ret); exit(EXIT_FAILURE); }
+    fclose(input);
+
+	char errbuf[200];
+	toml_table_t *tbl = toml_parse(buffer, errbuf, sizeof(errbuf));
+	if (!tbl) {
+		fprintf(stderr, "ERROR: %s\n", errbuf);
+		exit(1);
+	}
+
+	toml_table_t *core_tbl = toml_table_table(tbl, "core");
+    if (core_tbl) {
+        int l = toml_table_len(core_tbl);
+		for (int i = 0; i < l; i++) {
+			int keylen;
+			const char *key = toml_table_key(core_tbl, i, &keylen);
+            if (verbose) {
+                printf("haikal::core::key[%d]::%s\n", i, key);
+            }
+            // theres only one key so no need to check...
+            toml_value_t metapath_value = toml_table_string(core_tbl, "metapath");
+            if (!metapath_value.ok) {
+                printf("haikal::core::haikal.toml missing metapath attribute.\n");
+            }
+            metapath = metapath_value.u.s;
+            toml_value_t mainpath_value = toml_table_string(core_tbl, "mainpath");
+            if (!mainpath_value.ok) {
+                printf("haikal::core::haikal.toml missing mainpath attribute.\n");
+            }
+            mainpath = mainpath_value.u.s;
+        }
+    }
+    printf("haikal::core::metapath::%s\n", metapath);
+
+	toml_table_t *meta_tbl = toml_table_table(tbl, "meta");
+	if (meta_tbl) {
+		// Loop over all keys in a table.
+		int l = toml_table_len(meta_tbl);
+		for (int i = 0; i < l; i++) {
+			int keylen;
+			const char *key = toml_table_key(meta_tbl, i, &keylen);
+			// printf("haikal::metainit::key[%d]: %s\n", i, key);
+            // metainit(key);
+            // metacore(key);
+
+            toml_array_t *arr = toml_table_array(meta_tbl, key);
+            if (arr) {
+                int l = toml_array_len(arr);
+                for (int i = 0; i < l; i++) {
+                    // printf("  haikal::metagen::index[%d]: %s\n", i, toml_array_string(arr, i).u.s);
+                    // metagen(key, toml_array_string(arr, i).u.s);
+                }
+                // printf("\n");
+            }
+        }
+	}
+
+    // TODO(ibrahim): parse files with main recursively to find hktags
+    bstring cpath;
+    // cpath = bfromcstr(cwdstr);
+    // bconchar(cpath, '/');
+    cpath = bfromcstr("");
+    bconcat(cpath, cstr2bstr(mainpath));
+    printf("haikal::main::cpath::%s\n", bdata(cpath));
+    struct bstrList *lines;
+    Node_bstring *head = NULL;
+    bstring hktag = bfromcstr("haikal@");
+    if (NULL != (input = fopen(bdata(cpath), "r"))) {
+        bstring filestringdata = bread((bNread) fread, input);
+        fclose(input);
+        if (NULL != (lines = bsplit(filestringdata, '\n'))) {
+            for (int i = 0; i < lines->qty; ++i) {
+                // printf("%04d: %s\n", i, bdatae(lines->entry[i], "NULL"));
+                int found = binstr(lines->entry[i], 0, hktag);
+                if (found != BSTR_ERR) {
+                    printf("haikal::tag detected in main.c: '%s'\n", bdata(lines->entry[i]));
+                    // printf("%s\n", bdata(iter->data));
+                    if (head == NULL) {
+                        head = Node_bstring_create(lines->entry[i], found);
+                        if (verbose) {
+                            printf("haikal::head initalized with: '%s'\n", bdata(head->data));
+                        }
+                    } else {
+                        Node_bstring *iter = head;
+                        while (iter->next != NULL) {
+                            iter = iter->next;
+                        }
+                        iter->next = Node_bstring_create(lines->entry[i], found);
+                    }
+                }
+            }
+            Node_bstring *iter = head;
+            if (head != NULL) {
+                iter = head;
+                while (iter != NULL) {
+                    bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
+                    struct bstrList *hkCommand = bsplit(result, ':');
+                    if (verbose) {
+                        printf("haikal::metainit::%s\n", bdata(hkCommand->entry[0]));
+                        printf("haikal::\thkCommand[0] = %s\n", bdata(hkCommand->entry[0]));
+                    }
+                    metainit(bdata(hkCommand->entry[0]), ".h");
+                    metainit(bdata(hkCommand->entry[0]), ".c");
+                    // metainit(bdata(hkCommand->entry[0]), ".h");
+                    // metainit(bdata(hkCommand->entry[0]), ".c");
+                    // printf("haikal::linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
+                    iter = iter->next;
+                }
+                if (verbose) {
+                    printf("haikal::metainit::complete.\n\n");
+                }
+                iter = head;
+                while (iter != NULL) {
+                    bstring result = bmidstr(iter->data, iter->foundat + hktag->slen, iter->data->slen - (iter->foundat + hktag->slen));
+                    // printf("result = %s\n", bdata(result));
+                    struct bstrList *hkCommand = bsplit(result, ':');
+                    // printf("haikal::metagen::%s\n", bdata(hkCommand->entry[0]));
+                    // printf("haikal::metagen::%s\n", bdata(hkCommand->entry[1]));
+                    // printf("haikal::metagen::%s\n", bdata(hkCommand->entry[2]));
+                    if (verbose) {
+                        printf("haikal::metagen::%d\n", hkCommand->qty);
+                    }
+                    if (hkCommand->qty != 3) {
+                        printf("haikal::metagen::error::entry '%s' is missing type specifier.\n", bdata(result));
+                        exit(-1);
+                    }
+                    if (verbose) {
+                        printf("haikal::\thkCommand[1] = %s:%s:%s\n", bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), bdata(hkCommand->entry[2]));
+                    }
+                    if (strcmp(bdata(hkCommand->entry[2]), "s") == 0) {
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".h", typestr);
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".c", typestr);
+                        metageninternal(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "structdecl", ".h", typestr);
+                    } else if (strcmp(bdata(hkCommand->entry[2]), "u") == 0) {
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "uniondecl", ".h", typestr);
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "uniondecl", ".c", typestr);
+                        metageninternal(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "uniondecl", ".h", typestr);
+                    } else if (strcmp(bdata(hkCommand->entry[2]), "p") == 0) {
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".h", typestr);
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".c", typestr);
+                        metageninternal(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "primdecl", ".h", typestr);
+                    } else if (strcmp(bdata(hkCommand->entry[2]), "e") == 0) {
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".h", typestr);
+                        metagen(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".c", typestr);
+                        metageninternal(bdata(hkCommand->entry[0]), bdata(hkCommand->entry[1]), "enumdecl", ".h", typestr);
+                    }
+                    if (verbose) {
+                        printf("haikal::linkedlist walk: {bstring: '%s', foundat: %d, next: %p}\n", bdata(iter->data), iter->foundat, iter->next);
+                    }
+                    iter = iter->next;
+                }
+                if (verbose) {
+                    printf("haikal::metagen::complete.\n\n");
+                }
+            } else {
+                printf("metagen::main::error::linkedlist is empty!\n");
+            }
+            // DANGER! don't destroy list before using the linked list!
+            bstrListDestroy(lines);
+        } else {
+            printf("metagen::main::error::line read error!\n");
+        }
+        bdestroy(filestringdata);
+    } else {
+        printf("metagen::main::error::Unable to open main.c file.\n");
+    }
+
+    printf("haikal::CodeGen::Finalize.\n");
     return 0;
 }
-
-#include <Array.c>
-#include <BiNode.c>
-#include <DList.c>
-#include <HashMap.c>
-#include <List.c>
-#include <Node.c>
-#include <Stack.c>
-#include <Queue.c>

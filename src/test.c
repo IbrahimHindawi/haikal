@@ -1,67 +1,70 @@
+//-----------------------------------------------
+// primitives
+//-----------------------------------------------
+// haikal@Vec:voidptr:p
+// haikal@Vec:i8:p
+// haikal@Vec:i32:p
+// haikal@Vec:f32:p
+// haikal@Vec:char:p
+// haikal@Vec:u8:p
+// haikal@Map:i32:p
+// haikal@Map:u64:p
+// haikal@Node:i32:p
+// haikal@List:i32:p
+// haikal@BiNode:i32:p
+// haikal@DList:i32:p
+// haikal@Queue:i32:p
+// haikal@Stack:i32:p
+//-----------------------------------------------
+// structs
+//-----------------------------------------------
+// haikal@Vec:vec3:s
+// haikal@Map:vec3:s
+// haikal@Vec:List_i32:s
+// haikal@Map:Vec_i8:s
+// haikal@Map:Vec_i32:s
+// haikal@Vec:string8:s
+// haikal@Vec:string8slice:s
+//-----------------------------------------------
+// unions
+//-----------------------------------------------
+#define SAHA_IMPLEMENTATION
+#include <saha.h>
+
+#define CORE_IMPL
 #include <core.h>
+bool i32_eq(i32 a, i32 b) { return a == b; }
 
-#include <hkNode.h>
-#include <hkList.h>
-#include <hkArray.h>
-#include <hkQueue.h>
+#include "string8.h"
+#include "test_types.h"
+#include "tests.h"
 
-i32 proc(i32 x, i32 y) {
-    i32 result = x + y;
-    return result;
-}
+// Generated public APIs. Value types above must be complete before this block.
+#include <Array.h>
+#include <Vec.h>
+#include <Node.h>
+#include <List.h>
+#include <BiNode.h>
+#include <DList.h>
+#include <Stack.h>
+#include <Queue.h>
+#include <Map.h>
 
-int main() {
-    hkNode_i8 *node0 = hknode_i8_create(0xAD);
-    hkNode_i8 *node1 = hknode_i8_create(0xFF);
-    node0->next = node1;
-    printf("node0.data = %x, node0.next = %p\n", node0->data, node0->next);
-    printf("node1.data = %x, node1.next = %p\n", node1->data, node1->next);
-    hknode_i8_destroy(&node1);
-    hknode_i8_destroy(&node0);
-
-    hkList_i32 *list = hklist_i32_create();
-    hklist_i32_append(list, 0xDEADBEEF);
-    hklist_i32_append(list, 0xCAFEBABE);
-    hklist_i32_append(list, 0xFFFFFFFF);
-    hkNode_i32 *current = list->head;
-    while (current) {
-        printf("current.data = %x, current.addr = %p, current.next = %p\n", 
-                current->data, current, current->next);
-        current = current->next;
-    }
-
-    hkArray_i32 array = hkarray_i32_create(8);
-    for (i32 i = 0; i < array.length; ++i) {
-        array.data[i] = array.data[i] + 19 * i;
-    }
-    for (i32 i = 0; i < array.length; ++i) {
-        printf("value = %d, address = %p\n", 
-            array.data[i], &array.data[i]);
-    }
-    hkarray_i32_destroy(&array);
-
-    hkQueue_i32 *queue = hkqueue_i32_create();
-    hkqueue_i32_enqueue(queue, 0);
-    hkqueue_i32_enqueue(queue, 1);
-    hkqueue_i32_enqueue(queue, 2);
-    printf("%lld\n", queue->length);
-    hkNode_i32 *currentq = queue->head;
-    while (currentq) {
-        printf("current.data = %x, current.addr = %p, current.next = %p\n", 
-                currentq->data, currentq, currentq->next);
-        currentq = currentq->next;
-    }
-    hkNode_i32 *fetch = hkqueue_i32_dequeue(queue);
-    printf("fetch = %d\n", fetch->data);
-    hknode_i32_destroy(&fetch);
-    fetch = hkqueue_i32_dequeue(queue);
-    printf("fetch = %d\n", fetch->data);
-    hknode_i32_destroy(&fetch);
-    fetch = hkqueue_i32_dequeue(queue);
-    printf("fetch = %d\n", fetch->data);
-    hknode_i32_destroy(&fetch);
-    printf("queue head = %p\n", queue->head);
-    hkqueue_i32_destroy(&queue);
-
+i32 main(i32 argc, char *argv[]) {
+    printf("haikal test begin...\n");
+    memops_arena arena = {};
+    memops_arena_initialize(&arena);
+    tests_run(&arena);
+    printf("haikal test end...\n");
     return 0;
 }
+
+// Generated implementations. Keep these in one translation unit.
+#include <Vec.c>
+#include <BiNode.c>
+#include <DList.c>
+#include <Map.c>
+#include <List.c>
+#include <Node.c>
+#include <Stack.c>
+#include <Queue.c>
