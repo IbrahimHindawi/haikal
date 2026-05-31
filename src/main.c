@@ -251,6 +251,25 @@ void metacore(char *metaname) {
     }
 }
 
+static void initialize_umbrella_files(void) {
+    char *families[] = {
+        "Array",
+        "Vec",
+        "Node",
+        "List",
+        "BiNode",
+        "DList",
+        "Queue",
+        "Stack",
+        "Map",
+    };
+    usize count = sizeofarray(families);
+    for (usize i = 0; i < count; i += 1) {
+        metainit(families[i], ".h");
+        metainit(families[i], ".c");
+    }
+}
+
 static void usage(void) {
     printf("usage: haikal.exe --entry <path> --meta <path>\n");
 }
@@ -587,6 +606,8 @@ static void collect_type_table_walk(TypeTable *table, bstring source, TSNode nod
                     !node_is_type(child, "struct_specifier") &&
                     !node_is_type(child, "union_specifier") &&
                     !node_is_type(child, "enum_specifier") &&
+                    !node_is_type(child, "field_declaration_list") &&
+                    !node_is_type(child, "enumerator_list") &&
                     !node_is_type(child, "type_qualifier") &&
                     !node_is_type(child, "attribute_specifier")) {
                     record_type_identifier_descendants(table, source, child, typedef_kind);
