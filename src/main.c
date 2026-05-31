@@ -344,25 +344,6 @@ static void ensure_gen_directory(void) {
     bdestroy(genpath);
 }
 
-static void initialize_umbrella_files(void) {
-    char *metanames[] = {
-        "Array",
-        "Vec",
-        "Node",
-        "List",
-        "BiNode",
-        "DList",
-        "Queue",
-        "Stack",
-        "Map",
-    };
-
-    for (usize i = 0; i < sizeofarray(metanames); i += 1) {
-        metainit(metanames[i], ".h");
-        metainit(metanames[i], ".c");
-    }
-}
-
 static void parse_args(int argc, char **argv) {
     for (int i = 1; i < argc; i += 1) {
         if ((streq(argv[i], "--entry") || streq(argv[i], "-e")) && i + 1 < argc) {
