@@ -325,6 +325,25 @@ static void ensure_gen_directory(void) {
     bdestroy(genpath);
 }
 
+static void initialize_umbrella_files(void) {
+    char *metanames[] = {
+        "Array",
+        "Vec",
+        "Node",
+        "List",
+        "BiNode",
+        "DList",
+        "Queue",
+        "Stack",
+        "Map",
+    };
+
+    for (usize i = 0; i < sizeofarray(metanames); i += 1) {
+        metainit(metanames[i], ".h");
+        metainit(metanames[i], ".c");
+    }
+}
+
 static void parse_args(int argc, char **argv) {
     for (int i = 1; i < argc; i += 1) {
         if ((streq(argv[i], "--entry") || streq(argv[i], "-e")) && i + 1 < argc) {
@@ -347,6 +366,7 @@ static void parse_args(int argc, char **argv) {
     }
     metapath = with_trailing_slash(metapath);
     ensure_gen_directory();
+    initialize_umbrella_files();
 }
 
 static bstring read_file_bstring(const char *path) {
@@ -610,7 +630,7 @@ static const char *forward_decl_for_type(TypeTable *types, const char *type) {
         case TypeKind_struct: return "structdecl";
         case TypeKind_unknown: break;
     }
-    return "structdecl";
+    return "primdecl";
 }
 
 static void append_annotation(Node_bstring **head, bstring line, i32 foundat, bstring metaname, bstring metaarg) {
