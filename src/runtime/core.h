@@ -55,15 +55,6 @@ typedef str *strptr;
 #define structdef(structname) typedef struct structname structname; struct structname
 
 #define template(...)
-#define Array(...)
-#define Vec(...)
-#define Node(...)
-#define List(...)
-#define BiNode(...)
-#define DList(...)
-#define Queue(...)
-#define Stack(...)
-#define Map(...)
 
 #ifdef __cplusplus
     #define haikal_alignof(type) alignof(type)

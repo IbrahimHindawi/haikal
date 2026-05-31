@@ -251,6 +251,25 @@ void metacore(char *metaname) {
     }
 }
 
+static void initialize_umbrella_files(void) {
+    char *families[] = {
+        "Array",
+        "Vec",
+        "Node",
+        "List",
+        "BiNode",
+        "DList",
+        "Queue",
+        "Stack",
+        "Map",
+    };
+    usize count = sizeofarray(families);
+    for (usize i = 0; i < count; i += 1) {
+        metainit(families[i], ".h");
+        metainit(families[i], ".c");
+    }
+}
+
 static void usage(void) {
     printf("usage: haikal.exe --entry <path> --meta <path>\n");
 }
@@ -347,6 +366,7 @@ static void parse_args(int argc, char **argv) {
     }
     metapath = with_trailing_slash(metapath);
     ensure_gen_directory();
+    initialize_umbrella_files();
 }
 
 static bstring read_file_bstring(const char *path) {
@@ -567,6 +587,8 @@ static void collect_type_table_walk(TypeTable *table, bstring source, TSNode nod
                     !node_is_type(child, "struct_specifier") &&
                     !node_is_type(child, "union_specifier") &&
                     !node_is_type(child, "enum_specifier") &&
+                    !node_is_type(child, "field_declaration_list") &&
+                    !node_is_type(child, "enumerator_list") &&
                     !node_is_type(child, "type_qualifier") &&
                     !node_is_type(child, "attribute_specifier")) {
                     record_type_identifier_descendants(table, source, child, typedef_kind);
@@ -610,7 +632,7 @@ static const char *forward_decl_for_type(TypeTable *types, const char *type) {
         case TypeKind_struct: return "structdecl";
         case TypeKind_unknown: break;
     }
-    return "structdecl";
+    return "primdecl";
 }
 
 static void append_annotation(Node_bstring **head, bstring line, i32 foundat, bstring metaname, bstring metaarg) {
