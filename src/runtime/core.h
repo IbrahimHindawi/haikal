@@ -1,8 +1,8 @@
 #pragma once
 
-#ifdef _MSC_VER
-#   define _CRT_SECURE_NO_WARNINGS
-#endif
+// #ifdef _MSC_VER
+// #   define _CRT_SECURE_NO_WARNINGS
+// #endif
 
 #include <math.h>
 #include <stdint.h>
@@ -32,9 +32,9 @@ typedef void *voidptr;
 typedef const char *str;
 typedef str *strptr;
 
-#define internal static
-#define global static
-#define localpersist static
+#define static_internal static
+#define static_global static
+#define static_local static
 
 #define Kilobytes(N) ((u64)(N) * 1024)
 #define Megabytes(N) ((u64)Kilobytes(N) * 1024)
@@ -42,7 +42,7 @@ typedef str *strptr;
 
 #define stringify(s) #s
 #define concat(a, b) a##b
-#define Pi 3.141592f
+// #define pi 3.141592f
 #define sizeofarray(array) (sizeof(array) / sizeof(array[0]))
 #define cast(T, V) (T)(V)
 
@@ -54,37 +54,19 @@ typedef str *strptr;
 #define structdecl(structname) typedef struct structname structname
 #define structdef(structname) typedef struct structname structname; struct structname
 
+#define template(...)
+#define Array(...)
+#define Vec(...)
+#define Node(...)
+#define List(...)
+#define BiNode(...)
+#define DList(...)
+#define Queue(...)
+#define Stack(...)
+#define Map(...)
+
 #ifdef __cplusplus
     #define haikal_alignof(type) alignof(type)
 #else
     #define haikal_alignof(type) _Alignof(type)
-#endif
-
-#define def_eq_prot(T) bool T##_eq(T a, T b);
-#define def_eq_body(T) bool T##_eq(T a, T b) { return a == b; }
-
-def_eq_prot(f32);
-def_eq_prot(f64);
-def_eq_prot(u8);
-def_eq_prot(u16);
-def_eq_prot(u32);
-def_eq_prot(u64);
-def_eq_prot(i8);
-def_eq_prot(i16);
-def_eq_prot(i32);
-def_eq_prot(i64);
-def_eq_prot(usize);
-
-#ifdef CORE_IMPL
-def_eq_body(f32);
-def_eq_body(f64);
-def_eq_body(u8);
-def_eq_body(u16);
-def_eq_body(u32);
-def_eq_body(u64);
-def_eq_body(i8);
-def_eq_body(i16);
-def_eq_body(i32);
-def_eq_body(i64);
-def_eq_body(usize);
 #endif

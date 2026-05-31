@@ -1,3 +1,9 @@
 [submodule "scripts"]
 	path = scripts
 	url = https://www.github.com/IbrahimHindawi/scripts
+[submodule "extern/tree-sitter"]
+	path = extern/tree-sitter
+	url = https://github.com/tree-sitter/tree-sitter
+[submodule "extern/tree-sitter-c"]
+	path = extern/tree-sitter-c
+	url = https://github.com/tree-sitter/tree-sitter-c

@@ -1,31 +1,3 @@
-//-----------------------------------------------
-// primitives
-//-----------------------------------------------
-// haikal@Vec:voidptr:p
-// haikal@Vec:i8:p
-// haikal@Vec:i32:p
-// haikal@Vec:f32:p
-// haikal@Vec:char:p
-// haikal@Vec:u8:p
-// haikal@Map:i32:p
-// haikal@Map:u64:p
-// haikal@Node:i32:p
-// haikal@List:i32:p
-// haikal@BiNode:i32:p
-// haikal@DList:i32:p
-// haikal@Queue:i32:p
-// haikal@Stack:i32:p
-//-----------------------------------------------
-// structs
-//-----------------------------------------------
-// haikal@Vec:vec3:s
-// haikal@Map:vec3:s
-// haikal@Vec:List_i32:s
-// haikal@Map:Vec_i8:s
-// haikal@Map:Vec_i32:s
-//-----------------------------------------------
-// unions
-//-----------------------------------------------
 #define SAHA_IMPLEMENTATION
 #include <saha.h>
 
@@ -33,9 +5,22 @@
 #include <core.h>
 bool i32_eq(i32 a, i32 b) { return a == b; }
 
-// #include "string8.h"
-#include "tests.h"
+template(Vec(i8));
+template(Vec(i32));
+template(Vec(u8));
+template(Map(i32));
+template(Map(vec3));
+template(Node(i32));
+template(List(i32));
+template(BiNode(i32));
+template(DList(i32));
+template(Queue(i32));
+template(Stack(i32));
+template(Vec(vec3));
+template(Vec(List_i32));
+template(Map(Vec_i32));
 
+#include "tests.h"
 #include "vec3.h"
 
 // Generated public APIs. Value types above must be complete before this block.
