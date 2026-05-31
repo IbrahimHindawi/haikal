@@ -23,8 +23,6 @@
 // haikal@Vec:List_i32:s
 // haikal@Map:Vec_i8:s
 // haikal@Map:Vec_i32:s
-// haikal@Vec:string8:s
-// haikal@Vec:string8slice:s
 //-----------------------------------------------
 // unions
 //-----------------------------------------------
@@ -35,12 +33,13 @@
 #include <core.h>
 bool i32_eq(i32 a, i32 b) { return a == b; }
 
-#include "string8.h"
-#include "test_types.h"
+// #include "string8.h"
 #include "tests.h"
 
+#include "vec3.h"
+
 // Generated public APIs. Value types above must be complete before this block.
-#include <Array.h>
+// #include <Array.h>
 #include <Vec.h>
 #include <Node.h>
 #include <List.h>

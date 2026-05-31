@@ -1,8 +1,4 @@
 [core]
 metapath = "src/meta_arena/"
-mainpath = "src/main.c"
-[meta]
-hkArray = []
-hkNode = []
-hkQueue = []
-hkList = []
+# mainpath = "src/main.c"
+mainpath = "src/test.c"

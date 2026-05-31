@@ -9,4 +9,10 @@ add_executable(${PROJECT_NAME}
     src/main.c
     src/bstring/bstring/bstrlib.c
 )
+
+add_executable(haikal_test EXCLUDE_FROM_ALL
+    src/test.c
+    src/tests.c
+    src/bstring/bstring/bstrlib.c
+)
 # set(CMAKE_FOLDER include)

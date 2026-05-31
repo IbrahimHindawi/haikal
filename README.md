@@ -21,8 +21,10 @@ metatype_TYPE.c // implementation
 - Add `haikal` as a git submodule to your project and build the program.  
 - Add `haikal.toml` to your project root.
 - Add `include_directories(extern/haikal/src/meta/gen)` to your `CMakeLists.txt`.
+## Running the tests:
+`python build.py test debug`
 ## Examples:
-- [main.c](https://github.com/IbrahimHindawi/haikal/blob/main/src/main.c)
+- [main.c](https://github.com/IbrahimHindawi/haikal/blob/main/src/test.c)
 - [project](https://github.com/IbrahimHindawi/c-init)
 ## Usage:
 - To generate the files to `metapath`, build and invoke the `haikal` program from the your root directory.  

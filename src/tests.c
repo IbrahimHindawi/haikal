@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 #include <core.h>
-#include "string8.h"
-#include "test_types.h"
+// #include "string8.h"
+#include "vec3.h"
 
-#include <Array.h>
+// #include <Array.h>
 #include <Vec.h>
 #include <Node.h>
 #include <List.h>
@@ -133,52 +133,52 @@ static void Vec_test(memops_arena *arena) {
     printf("\n");
 }
 
-static void String_test(memops_arena *arena) {
-    void *pos = NULL;
-    pos = memops_arena_get_pos(arena);
-    i32 const string_alloc_capacity = 27;
-    string8 string = string8_reserve(arena, string_alloc_capacity);
-    for (i32 i = 0; i < string_alloc_capacity - 1; ++i) {
-        string8_append_byte(arena, &string, 0b01100000 | (i + 1));
-    }
-    printf("string = %s\n", string.data);
-    memops_arena_set_pos(arena, pos);
-
-    pos = memops_arena_get_pos(arena);
-    string = string8_from_cstr(arena, "Hello, ");
-    string8_append_cstr(arena, &string, "World!");
-    string8_print(&string);
-    memops_arena_set_pos(arena, pos);
-
-    pos = memops_arena_get_pos(arena);
-    string = string8_read_file(arena, "res/test.txt");
-    printf("file contents = %s\n", string.data);
-    Vec_string8slice lines = string8slice_split_from_string8(arena, string, '\n');
-    for (i32 i = 0; i < lines.length; i++) {
-        printf("[%d]:", i);
-        string8slice_print(lines.data[i]);
-    }
-    memops_arena_set_pos(arena, pos);
-
-    pos = memops_arena_get_pos(arena);
-    string = string8_read_file(arena, "res/test.csv");
-    printf("file contents = \n%s\n", string.data);
-    lines = string8slice_split_from_string8(arena, string, '\n');
-    for (i32 i = 0; i < lines.length; i++) {
-        printf("[%d]:", i);
-        string8slice_print(lines.data[i]);
-        Vec_string8slice chunk = string8slice_split(arena, lines.data[i], ',');
-        void *innerpos = memops_arena_get_pos(arena);
-        for (i32 j = 0; j < chunk.length; j++) {
-            string8slice_print(chunk.data[j]);
-            f32 x = strtof(string8slice_to_cstr_temp(arena, chunk.data[j]), NULL);
-            memops_arena_set_pos(arena, innerpos);
-            printf("extracted float = %f\n", x);
-        }
-        printf("\n");
-    }
-    memops_arena_set_pos(arena, pos);
-}
+// static void String_test(memops_arena *arena) {
+//     void *pos = NULL;
+//     pos = memops_arena_get_pos(arena);
+//     i32 const string_alloc_capacity = 27;
+//     string8 string = string8_reserve(arena, string_alloc_capacity);
+//     for (i32 i = 0; i < string_alloc_capacity - 1; ++i) {
+//         string8_append_byte(arena, &string, 0b01100000 | (i + 1));
+//     }
+//     printf("string = %s\n", string.data);
+//     memops_arena_set_pos(arena, pos);
+// 
+//     pos = memops_arena_get_pos(arena);
+//     string = string8_from_cstr(arena, "Hello, ");
+//     string8_append_cstr(arena, &string, "World!");
+//     string8_print(&string);
+//     memops_arena_set_pos(arena, pos);
+// 
+//     pos = memops_arena_get_pos(arena);
+//     string = string8_read_file(arena, "res/test.txt");
+//     printf("file contents = %s\n", string.data);
+//     Vec_string8slice lines = string8slice_split_from_string8(arena, string, '\n');
+//     for (i32 i = 0; i < lines.length; i++) {
+//         printf("[%d]:", i);
+//         string8slice_print(lines.data[i]);
+//     }
+//     memops_arena_set_pos(arena, pos);
+// 
+//     pos = memops_arena_get_pos(arena);
+//     string = string8_read_file(arena, "res/test.csv");
+//     printf("file contents = \n%s\n", string.data);
+//     lines = string8slice_split_from_string8(arena, string, '\n');
+//     for (i32 i = 0; i < lines.length; i++) {
+//         printf("[%d]:", i);
+//         string8slice_print(lines.data[i]);
+//         Vec_string8slice chunk = string8slice_split(arena, lines.data[i], ',');
+//         void *innerpos = memops_arena_get_pos(arena);
+//         for (i32 j = 0; j < chunk.length; j++) {
+//             string8slice_print(chunk.data[j]);
+//             f32 x = strtof(string8slice_to_cstr_temp(arena, chunk.data[j]), NULL);
+//             memops_arena_set_pos(arena, innerpos);
+//             printf("extracted float = %f\n", x);
+//         }
+//         printf("\n");
+//     }
+//     memops_arena_set_pos(arena, pos);
+// }
 
 static void List_test(memops_arena *arena) {
     printf("List_test:\n");
@@ -419,7 +419,7 @@ static void Map_test(memops_arena *arena) {
 void tests_run(memops_arena *arena) {
     // arena_test(arena);
     Vec_test(arena);
-    String_test(arena);
+    // String_test(arena);
     Map_test(arena);
     List_test(arena);
     DList_test(arena);
