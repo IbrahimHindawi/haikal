@@ -32,6 +32,32 @@ typedef void *voidptr;
 typedef const char *str;
 typedef str *strptr;
 
+typedef struct haikal_meta_field haikal_meta_field;
+struct haikal_meta_field {
+    str name;
+    str type;
+    usize offset;
+    usize size;
+    usize align;
+};
+
+typedef struct haikal_meta_enum_value haikal_meta_enum_value;
+struct haikal_meta_enum_value {
+    str name;
+    i64 value;
+};
+
+typedef struct haikal_meta_type haikal_meta_type;
+struct haikal_meta_type {
+    str name;
+    usize size;
+    usize align;
+    usize field_count;
+    haikal_meta_field *fields;
+    usize enum_value_count;
+    haikal_meta_enum_value *enum_values;
+};
+
 #define static_internal static
 #define static_global static
 #define static_local static
@@ -55,6 +81,7 @@ typedef str *strptr;
 #define structdef(structname) typedef struct structname structname; struct structname
 
 #define template(...)
+#define reflect(...)
 
 #ifdef __cplusplus
     #define haikal_alignof(type) alignof(type)
